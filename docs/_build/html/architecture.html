@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Architecture &#8212; OpenD6 Tools 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The magic2 module" href="magic2.html" />
+    <link rel="prev" title="Using the OpenD6 Tools" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="architecture">
+<span id="id1"></span><h1>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h1>
+<p>These tools define Domain Specific Languages (DSLs) for some broad categories of complex TTRPG constructs, including magical spells (and miracles) as well as characters (and monsters.)</p>
+<p>Consistent with the <a class="reference external" href="https://c4model.com">C4 Model</a>, this document will look at <a class="reference internal" href="#context">Context</a>, <a class="reference internal" href="#containers">Containers</a>, <a class="reference internal" href="#components">Components</a>, and <a class="reference internal" href="#code">Code</a>.
+This is a summary and overview of the common features and design approach.</p>
+<p>The details of each DSL are in separate <a class="reference internal" href="#code">Code</a> sections.</p>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>We’ve got a number of use cases for two primary audiences, a <strong>Software/DSL designer</strong>, and a <strong>Campaign designer</strong>. The campaign designer’s work product will often be shared with players and game masters; this sharing isn’t really part of this application.</p>
+<p>Here’s a summary of the context:</p>
+<p class="plantuml">
+<img src="_images/plantuml-880d947fd53fe000719f4d6d781b1d9b0b27d977.png" alt="&#64;startuml
+    'https://plantuml.com/use-case-diagram
+
+skinparam actorStyle awesome
+
+title Context for the *OpenD6* tools
+
+actor &quot;Software/DSL designer&quot; as sw
+actor &quot;Campaign designer&quot; as gm
+
+usecase &quot;Reproduces published rules.&quot; as uc1
+usecase &quot;Validates design details via\n**Change**-**Compute**-**Consider** cycle.&quot; as uc2
+usecase &quot;Publishes campaign documents.&quot; as uc3
+
+sw --&gt; uc1
+gm --&gt; uc2
+gm --&gt; uc3
+
+&#64;enduml"/>
+</p>
+<p>The <strong>Publishes campaign documents</strong> use case is implemented as processing the publication pipeline to create HTML, PDF, or EPUB documents.</p>
+<p>The <strong>Validates design details</strong> use case includes a number of alternative versions of the <strong>Change</strong>-<strong>Compute</strong>-<strong>Consider</strong> cycle.
+This can include fine-tunning a spell’s difficulty.
+See <a class="reference external" href="../../../../world/fantasy_rulebook/_build/html/Magic.html#fantasy-magic-adjusting-and-readjusting" title="(in OpenD6 Fantasy Rulebook)"><span class="xref std std-ref">fantasy.magic.adjusting_and_readjusting</span></a>.
+It can also include adjusting the dice budget for template characters, generic characters, creatures, and monsters.</p>
+<p>Additionally, this use case helps assure the rules and examples are internally consistent.
+Using software tools limits the author’s flexibility, helping to assure consistency.</p>
+<p>Finally, <strong>Reproduces published rules</strong> is an essential test case to be sure this implementation is correct and consistent.
+This has a number of challenges.
+Some of the challenges are self-imposed.
+Specifically, because this project embraces the <em>OpenD6</em> rules from a variety of sources and formats, the source documents need to be converted to a common RST format for (re-)publication as part of validating the extracted data.</p>
+<p>The <strong>Change</strong>-<strong>Compute</strong>-<strong>Consider</strong> cycle validates spell design details; this is an essential step.
+The DSL assures the difficulty of a magical spell or invocation meets the needs of the overall rules or a specific campaign.
+The <em>OpenD6</em> rules suggest that different religions will have distinct characteristics for invocations.
+This suggests some care to make sure the various religions have a balanced mix of strengths and weaknesses.</p>
+<p>Creating unique campaign documents is a matter of authoring new documents using RST markup.
+This can then be converted to HTML or PDF or EPUB for publication.</p>
+<p>Before we look at the DSL, we’ll take a short trip into conversions of the source material.
+This turned out to be a thorny problem.</p>
+<section id="challenges">
+<h3>Challenges<a class="headerlink" href="#challenges" title="Link to this heading">¶</a></h3>
+<p>To help clarify the challenges, we’ll look at the overall workflow for capturing details from <em>OpenD6</em> source documents.</p>
+<p class="plantuml">
+<img src="_images/plantuml-78d66f32a5da853ecabbe453be3081662072c250.png" alt="&#64;startuml
+    'https://plantuml.com/activity-diagram-beta
+
+title Source capture workflow
+
+start;
+:extract spell text from source PDF;
+:make v1 data structure from extracted details;
+:validate representation\nby compuing difficulties\nand comparing with source;
+stop
+&#64;enduml"/>
+</p>
+<p>There are a variety of challenges to working with the TTRPG rules in general and the <em>OpenD6</em> rules in particular.
+These include:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#draft-documents">Draft Documents</a>.</p></li>
+<li><p><a class="reference internal" href="#documents-designed-for-human-consumption">Documents Designed for Human Consumption</a>.</p></li>
+<li><p><a class="reference internal" href="#colorful-prose">Colorful Prose</a>.</p></li>
+</ul>
+<section id="draft-documents">
+<h4>Draft Documents<a class="headerlink" href="#draft-documents" title="Link to this heading">¶</a></h4>
+<p>The <em>OpenD6 Magic Guide</em> was never formally published; the available source document is a draft.
+This means the spell difficulty computations are not completely trustworthy.
+Indeed, a few of them make precious little sense.</p>
+<p>Further, the OCR processing is extremely rough.
+The document’s text content is – at best – an approximation of the original.
+Manual rework is required to create usable content from the sources.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">lOD+l</span></code> is the OCR version of <code class="docutils literal notranslate"><span class="pre">10D+1</span></code>. A great deal of patience is required to create something useful from some of the source documents.</p>
+</section>
+<section id="documents-designed-for-human-consumption">
+<h4>Documents Designed for Human Consumption<a class="headerlink" href="#documents-designed-for-human-consumption" title="Link to this heading">¶</a></h4>
+<p>Generally, all of the <em>OpenD6</em> books are published for human consumption.
+The display of a spell is helpful for a GM or player to understand the difficulty and the effects.
+While this design helps players enjoy the game, it leads to ambiguities.</p>
+<p>Creating automated tools is difficult when the baseline information is designed to present a lot of technical material in ways that aren’t overpoweringly dull.
+It helps the reader if the book introduces a subset of rules, followed by details, with examples scattered throughout.
+Ideally, the subset is <em>not</em> contradicted by the details.
+Further, there’s no guarantee that all examples fully match the detailed rules.</p>
+<p>It’s difficult to be <strong>sure</strong> all of the cases stated in the rules are covered by a software implementation.
+The examples, generally, serve as good test cases.
+Except when the draft document seems to have errors.</p>
+</section>
+<section id="colorful-prose">
+<h4>Colorful Prose<a class="headerlink" href="#colorful-prose" title="Link to this heading">¶</a></h4>
+<p>A great deal of the text is colorful and exciting.
+It’s not always clear.</p>
+<p>The most frustrating part is the poorly articulated effect.
+For an example, see the <em>OpenD6 Fantasy Rules</em>, the “Open Lock” cantrip.</p>
+<p>It’s not at all clear what this effect really is.
+The rules assign difficulty of 18.
+But. How do we map this spell’s effect to other rules?</p>
+<ul>
+<li><p>One interpretation is the spell does (temporary) physical damage to the lock. This would be Alteration, not Apportation.</p></li>
+<li><p>Another interpretation is the spell creates a new skill in lockpicking.
+This doesn’t fit the description well, but, the effect is easy to define as a Skill Modifier of  +4D <em>lock picking</em>.
+This has a difficulty of <span class="math notranslate nohighlight">\(4 \times 3 \times 1.5\)</span> which fits the difficulty perfectly. Except, this seems like it would  be Alteration not Apportation.</p></li>
+<li><p>To focus on Apportation magic, perhaps the lock’s internals are rearranged.
+Most apportation of an object weighing 1 kg or less is trivial. In this case, the spell difficulty would be under 5.
+This is nowhere near 18.</p>
+<p>Maybe there’s some additional – unstated – difficulty doing some kind of “skilled apportation” of selected parts of the lock?
+There’s no provision for this in the rules.</p>
+</li>
+</ul>
+<p>This makes it clear that in some cases, the effects were not carefully mapped against other parts of the rules.
+Indeed, because some of the rules are a draft, the presence of errors seems likely.</p>
+<p>The capture of source documents will create draft versions of Spells, Characters, and Creatures based on the version 1 definitions.
+How do we know these are properly captured?
+This leads to some consideration of the non-functional requirements.</p>
+</section>
+</section>
+<section id="non-functional-requirements">
+<h3>Non-Functional Requirements<a class="headerlink" href="#non-functional-requirements" title="Link to this heading">¶</a></h3>
+<p>These non-functional requirements are part of the design and development process.
+They’re not part of the final DSL.
+We’ll use the FURPS model: Functionality, <a class="reference internal" href="#usability">Usability</a>, <a class="reference internal" href="#reliability">Reliability</a>, <a class="reference internal" href="#performance">Performance</a>, and <a class="reference internal" href="#supportability">Supportability</a>.
+Functionality is generally described by the C4 model, including Context, Containers, Components, and Code, covered elsewhere in this document.</p>
+<section id="usability">
+<h4>Usability<a class="headerlink" href="#usability" title="Link to this heading">¶</a></h4>
+<p>As noted in the <a class="reference internal" href="#context">Context</a> section, these tools are focused on desktop publication of TTRPG rules – world books, campaign books, scenario details, etc.
+These software tools are not for interactive play.</p>
+<p>The tools need to work with a document production pipeline.</p>
+<p>More importantly, the spell definitions are plain text files that can be edited
+and processed by a wide variety of tools.
+This means the essential content can be extracted from these tools for use in other tools.</p>
+<p>We’ll return to the Usability question in the <a class="reference internal" href="notes.html#dsl-design"><span class="std std-ref">Notes on DSL Design</span></a> section.</p>
+</section>
+<section id="reliability">
+<h4>Reliability<a class="headerlink" href="#reliability" title="Link to this heading">¶</a></h4>
+<p>Since the tools run on a desktop, any reliability, availability, and security questions are pushed to the desktop OS.</p>
+</section>
+<section id="performance">
+<h4>Performance<a class="headerlink" href="#performance" title="Link to this heading">¶</a></h4>
+<p>We don’t spend any time optimizing these tools for high performance.
+They’re run rarely.</p>
+</section>
+<section id="supportability">
+<h4>Supportability<a class="headerlink" href="#supportability" title="Link to this heading">¶</a></h4>
+<p>The most important question is this:</p>
+<p><strong>How can we be sure the DSL “works”?</strong></p>
+<p>We’re done defining the DSL when it can reproduce the published content.
+This means that we can have a suite of automated tests to create Spells, Characters, Creatures, etc. which have correct computed difficulties.</p>
+<p>This test suite needs reflect lessons learned in the <a class="reference internal" href="#challenges">Challenges</a> section.
+The published documents are difficult to parse and contain some editorial errors.
+Therefore, the DSL will not trivially reproduce the published results.
+It will reproduce those results which are clearly free of errors.</p>
+</section>
+</section>
+</section>
+<section id="containers">
+<h2>Containers<a class="headerlink" href="#containers" title="Link to this heading">¶</a></h2>
+<p>The tools will run on a desktop. The idea is to have Python module files with spell definitions (or character definitions.)
+The actors can then process these files to compute difficulty or dice budget values.</p>
+<p>There are two general modes of operation.</p>
+<ul class="simple">
+<li><p>The interactive <strong>Change</strong>-<strong>Compute</strong>-<strong>Consider</strong> cycle.</p></li>
+<li><p>The final publication pipeline.</p></li>
+</ul>
+<p>An interactive environment is required to permit the actors to fiddle around with spell aspects (or character attributes) to get the budget correct.</p>
+<p>For interactive exploration, a tool like Jupyter Lab is ideal.
+The spell can be created and tested within a lab notebook.
+Later, an <code class="docutils literal notranslate"><span class="pre">opend6_tools</span></code> application can extract the notebook content to create the required Python module.
+This will feed the document publicatiojn pipeline.</p>
+<p>The document publication pipeline is best handled by a “static site generator” or similar tool.
+The Sphinx tool works well for this, since it can produce HTML, PDF, and EPUB outputs.</p>
+<p>This leads to using these four applications on the user’s desktop:</p>
+<ul class="simple">
+<li><p>Jupyter Lab to create and modify spell books.</p></li>
+<li><p>A text editor to create and modify campaign documents.</p></li>
+<li><p>The Sphinx tool to produce final, published documents. This can include HTML, EPUB, and PDF.</p></li>
+<li><p>The <strong>make</strong> tool to coordinate the <a class="reference internal" href="notebook_extract.html#module-opend6_tools.notebook_extract" title="opend6_tools.notebook_extract"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.notebook_extract</span></code></a> and Sphinx.</p></li>
+</ul>
+<p>The components interact like this:</p>
+<p class="plantuml">
+<img src="_images/plantuml-0debff59d91159d583178242fe1eac6d593ade28.png" alt="&#64;startuml
+    'https://plantuml.com/deployment-diagram
+skinparam actorStyle awesome
+
+title Container for the *OpenD6* tools
+
+
+node desktop {
+    boundary Browser
+    boundary Terminal
+
+    component jupyter
+    component sphinx
+    boundary editor
+    folder notebooks {
+        file &quot;spell notebook&quot; as nb &lt;&lt;.ipynb&gt;&gt;
+    }
+    folder campaign {
+        folder source {
+            file &quot;spell module&quot; as py &lt;&lt;.py&gt;&gt;
+            file &quot;other docs&quot; &lt;&lt;.rst&gt;&gt;
+        }
+        folder build {
+            file &quot;campaign book&quot; as book &lt;&lt;.html&gt;&gt;
+        }
+    }
+    component notebook_extract
+    notebook_extract --&gt; nb : &quot;consumes&quot;
+    notebook_extract --&gt; py : &quot;creates&quot;
+    jupyter --&gt; nb : &quot;creates&quot;
+    Browser --&gt; jupyter
+
+    sphinx --&gt; py : &quot;reads&quot;
+    sphinx --&gt; book : &quot;writes&quot;
+
+    component make
+    make --&gt; sphinx : &quot;runs&quot;
+    make --&gt; notebook_extract : &quot;runs&quot;
+    Terminal --&gt; make
+
+    component magic2
+    component character
+    nb ..&gt; magic2
+    nb ..&gt; character
+    py ..&gt; magic2
+    py ..&gt; character
+
+    editor ---&gt; &quot;other docs&quot;  : &quot;creates&quot;
+}
+actor &quot;campaign designer&quot; as gm
+gm --&gt; Browser : &quot;design&quot;
+gm --&gt; Terminal : &quot;publish&quot;
+
+gm --&gt; editor
+
+cloud &quot;players and GM's&quot; as players
+book ----&gt; players
+&#64;enduml"/>
+</p>
+<p>For reference, here’s a depiction of using Jupyter Lab to design and develop spell definitions.
+The workflow looks like this:</p>
+<p class="plantuml">
+<img src="_images/plantuml-c9480341428dafda8fcd156211e52157564f80d7.png" alt="&#64;startuml
+    'https://plantuml.com/activity-diagram-beta
+
+title Jupyter Lab workflow
+
+start;
+:start jupyter lab;
+:open or create notebook;
+:create or revise spell definition;
+while (spell difficulty?) is (not exepectd)
+:revise spell definition;
+endwhile (expected)
+:save notebook;
+stop
+
+&#64;enduml"/>
+</p>
+<p>This permits creating any number of notebooks with any mixture of ideas.
+Not all notebooks needs to be part of the final document production.</p>
+</section>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading">¶</a></h2>
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools</span></code> components have two purposes:</p>
+<ul class="simple">
+<li><p>Define DSLs for Spells, Characters, etc.
+These will support the “Validates design details via <strong>Change</strong>-<strong>Compute</strong>-<strong>Consider</strong> cycle” part of the  use case.
+They are tested by the “Reproduces published rules” use case.</p></li>
+<li><p>Applications to support publication by extracting RST-format details from the DSL.
+This supports the “Publish campaign documents” use case.</p></li>
+</ul>
+<p>The DSL is used in a Python module. The module can be created manually or extracted from a notebook.</p>
+<p>Generally, spell and character definitions depend on these modules in several distinct ways.</p>
+<ul class="simple">
+<li><p>The definition DSL depends on the <a class="reference internal" href="magic2.html#module-opend6_tools.magic2" title="opend6_tools.magic2"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.magic2</span></code></a> or <a class="reference internal" href="character.html#module-opend6_tools.character" title="opend6_tools.character"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.character</span></code></a> module.</p></li>
+<li><p>The extraction of a spell module from a Jupter Notebook is performed by the <a class="reference internal" href="notebook_extract.html#module-opend6_tools.notebook_extract" title="opend6_tools.notebook_extract"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.notebook_extract</span></code></a>. application</p></li>
+<li><p>The conversion of a spell module to RST is an internal feature of the spell module.</p></li>
+</ul>
+<p>These relationships are shown below.</p>
+<p class="plantuml">
+<img src="_images/plantuml-62f4156d51092a7fa67ac8096b57392950145731.png" alt="&#64;startuml
+    'https://plantuml.com/component-diagram
+
+title Component Relationships
+
+folder opend6_tools {
+component magic2 &lt;&lt;lib&gt;&gt;
+component notebook_extract &lt;&lt;app&gt;&gt;
+}
+
+folder notebooks {
+    file &quot;spells notebook&quot; as nb &lt;&lt;.ipynb&gt;&gt;
+    nb ..&gt; magic2 : &quot;imports&quot;
+}
+
+folder docs {
+    component &quot;spells module&quot; as py &lt;&lt;app&gt;&gt;
+    py ..&gt; magic2 : &quot;imports&quot;
+    artifact &quot;spells source&quot; as rst &lt;&lt;RST&gt;&gt;
+    py -&gt; rst : &quot;creates&quot;
+}
+
+folder build {
+    artifact &quot;target document&quot; as doc &lt;&lt;HTML&gt;&gt;
+}
+
+nb &lt;-- notebook_extract : &quot;reads&quot;
+notebook_extract ---&gt; py : &quot;writes&quot;
+
+component sphinx
+
+rst --&gt; sphinx : &quot;reads&quot;
+sphinx --&gt; doc : &quot;writes&quot;
+
+&#64;enduml"/>
+</p>
+<p>The publication operations are controlled by Makefiles.
+Generally, there will be three Makefiles.</p>
+<ul>
+<li><p>The overall document Makefile, generated by <code class="docutils literal notranslate"><span class="pre">sphinx-quickstart</span></code> with two modifications.</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span class="nf">%</span><span class="o">:</span><span class="w"> </span><span class="n">Makefile</span>
+<span class="hll"><span class="w">        </span>%<span class="o">(</span>MAKE<span class="o">)</span><span class="w"> </span>-C<span class="w"> </span>spells
+</span><span class="hll"><span class="w">        </span>%<span class="o">(</span>MAKE<span class="o">)</span><span class="w"> </span>-C<span class="w"> </span>characters
+</span><span class="w">        </span>@<span class="k">$(</span>SPHINXBUILD<span class="k">)</span><span class="w"> </span>-M<span class="w"> </span><span class="nv">$@</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>SOURCEDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>BUILDDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">$(</span>SPHINXOPTS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>O<span class="k">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">spells/Makefile</span></code> to emit spells and invocations.</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span class="c"># Spells Makefile</span>
+<span class="nf">.phony</span><span class="o">:</span><span class="w"> </span><span class="n">spells</span>
+
+<span class="cp">vpath %.ipynb ../../notebooks</span>
+
+<span class="c"># Create a Python Spell module from a Jupyter Notebook with the same name.</span>
+<span class="nf">%.py </span><span class="o">:</span><span class="w"> </span>%.<span class="n">ipynb</span>
+<span class="w">    </span>python<span class="w"> </span>-m<span class="w"> </span>opend6_tools.notebook_extract<span class="w"> </span>spells<span class="w"> </span>$&lt;<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+
+<span class="c"># Create an RST text file from a Python Spell module with the same name.</span>
+<span class="nf">%.txt </span><span class="o">:</span><span class="w"> </span>%.<span class="n">py</span>
+<span class="w">    </span>python<span class="w"> </span>$&lt;<span class="w"> </span>display<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+
+<span class="hll"><span class="nf">spells </span><span class="o">:</span><span class="w"> </span><span class="n">spell_</span>1.<span class="n">txt</span> <span class="n">spell_</span>2.<span class="n">txt</span><span class="p">,</span> <span class="n">etc</span>.
+</span></pre></div>
+</div>
+<p>The definition of the <code class="docutils literal notranslate"><span class="pre">spells</span></code> target needs to be changed to reflect
+the files that must be converted for the final documentation.</p>
+</li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">characters/Makefile</span></code> to emit characters and creatures.</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span class="c"># Characters and Creatures Makefile</span>
+<span class="nf">.phony</span><span class="o">:</span><span class="w"> </span><span class="n">characters</span>
+
+<span class="cp">vpath %.ipynb ../../notebooks</span>
+
+<span class="c"># Create a Python Character or Creature module from a Jupyter Notebook with the same name.</span>
+<span class="nf">%.py </span><span class="o">:</span><span class="w"> </span>%.<span class="n">ipynb</span>
+<span class="w">    </span>python<span class="w"> </span>-m<span class="w"> </span>opend6_tools.notebook_extract<span class="w"> </span>characters<span class="w"> </span>$&lt;<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+
+<span class="c"># Create an RST text file from a Python Character or Creature module with the same name.</span>
+<span class="nf">%.txt </span><span class="o">:</span><span class="w"> </span>%.<span class="n">py</span>
+<span class="w">    </span>python<span class="w"> </span>$&lt;<span class="w"> </span>display<span class="w"> </span>--format<span class="w"> </span>SHORT<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+
+<span class="hll"><span class="nf">characters </span><span class="o">:</span><span class="w"> </span><span class="n">characters</span>.<span class="n">txt</span> <span class="n">creatures</span>.<span class="n">txt</span>
+</span></pre></div>
+</div>
+<p>Note that there are a number of character formats.
+The <code class="docutils literal notranslate"><span class="pre">SHORT</span></code> format is used for most descriptions of characters and creatures.
+There are however, some longer formats available.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LONG</span></code> Very detailed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LONG2</span></code> Less detailed, often used for non-human races.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SHORT</span></code> The kind of summary shown in the Adventure Tips chapter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TABLE</span></code> A full character sheet using HTML table constructs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LITERAL</span></code> A full character sheet using RST literal constructs.</p></li>
+</ul>
+<p>The need for some <code class="docutils literal notranslate"><span class="pre">LONG2</span></code> characters for the non-human races,
+and <code class="docutils literal notranslate"><span class="pre">TABLE</span></code> for the character templates will make the characters <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> somewhat more complicated.</p>
+</li>
+</ul>
+<p>The overall Publication idea is called “recursive make”.
+The top-level <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> invokes two subsidiary <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>s in distinct sub-directories.
+This is needed to assure the notebook extract processing uses appropriate parameters.</p>
+</section>
+<section id="code">
+<h2>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h2>
+<p>The implementation code is covered in documents for each component:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="magic2.html#magic-module"><span class="std std-ref">The magic2 module</span></a>.</p></li>
+<li><p><a class="reference internal" href="character.html#character-module"><span class="std std-ref">The character module</span></a>.</p></li>
+<li><p><a class="reference internal" href="notebook_extract.html#notebook-extract-app"><span class="std std-ref">The notebook_extract application</span></a>.</p></li>
+<li><p><a class="reference internal" href="computations.html#misc-comp"><span class="std std-ref">Miscellaneous Computations</span></a>.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenD6 Tools</a></h1>
+
+
+
+
+
+
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage.html" title="previous chapter">Using the OpenD6 Tools</a></li>
+      <li>Next: <a href="magic2.html" title="next chapter">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#context">Context</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#challenges">Challenges</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#draft-documents">Draft Documents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#documents-designed-for-human-consumption">Documents Designed for Human Consumption</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#colorful-prose">Colorful Prose</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#non-functional-requirements">Non-Functional Requirements</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#usability">Usability</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reliability">Reliability</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#performance">Performance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#supportability">Supportability</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#containers">Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#components">Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code">Code</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="computations.html">Miscellaneous Computations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes.html">Notes on DSL Design</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, S.Lott.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/architecture.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

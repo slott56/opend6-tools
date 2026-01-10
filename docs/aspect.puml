@@ -1,0 +1,136 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+enum Sign {
+    Increase
+    Decrease
+}
+
+interface DifficultyAdjustment {
+    difficulty: Sign
+}
+interface IncreasesDifficulty
+interface DecreasesDifficulty
+DifficultyAdjustment <|-- IncreasesDifficulty
+DifficultyAdjustment <|-- DecreasesDifficulty
+IncreasesDifficulty -- Sign
+DecreasesDifficulty -- Sign
+
+Aspect - DifficultyAdjustment : "Mixin"
+
+abstract class Lookup {
+    choices: dict[name, Any]
+    parse(text)
+    value(measure)
+}
+
+class Modifier
+Lookup <|-- Modifier
+
+class Factor
+Lookup <|-- Factor
+
+class Unit {
+    value(measure)
+}
+Lookup <|-- Unit
+
+class DieUnit
+Unit <|-- DieUnit
+class TimeUnit
+Unit <|-- TimeUnit
+class DistUnit
+Unit <|-- DistUnit
+class MassUnit
+Unit <|-- MassUnit
+
+
+abstract class Aspect {
+    difficulty() -> int
+    points() -> int
+    description() -> str
+}
+
+class Effect
+Aspect <|-- Effect
+IncreaseDifficulty <|--- Effect
+
+class SkillEffect
+Effect <|-- SkillEffect
+SkillEffect --- DieUnit
+
+class DamageEffect
+Effect <|-- DamageEffect
+DamageEffect --- DieUnit
+
+class ProtectionEffect
+Effect <|-- ProtectionEffect
+ProtectionEffect --- DieUnit
+
+class CompositeEffect
+CompositeEffect *-- Effect
+Effect <|-- CompositeEffect
+
+abstract class DistanceAspect
+Aspect <|-- DistanceAspect
+DistanceAspect --- DistUnit
+
+abstract class TimeAspect
+Aspect <|-- TimeAspect
+TimeAspect --- TimeUnit
+
+class RangeAspect
+DistanceAspect <|-- RangeAspect
+IncreaseDifficulty <|--- RangeAspect
+
+class SpeedAspect
+TimeAspect <|-- SpeedAspect
+IncreaseDifficulty <|--- SpeedAspect
+
+class DurationAspect
+TimeAspect <|-- DurationAspect
+IncreaseDifficulty <|--- DurationAspect
+
+class CastingTimeAspect
+TimeAspect <|-- CastingTimeAspect
+DecreasesDifficulty <|--- CastingTimeAspect
+
+abstract class OtherAspect
+Aspect <|-- OtherAspect
+OtherAspect --- Modifier
+OtherAspect --- Factor
+OtherAspect --- Unit
+
+class Condition
+Aspect <|-- Condition
+
+class Spell {
+    name: str
+    effect: Effect
+    duration: DurationAspect
+    range: RangeAspect
+    casting_time: CastingTimeAspect
+    speed: SpeedAspect
+    skill: str
+    notes: str
+    other_aspects: dict[str, Aspect]
+    conditions: list[Condition]
+    csv() -> tuple[str, ...]
+}
+
+class Miracle
+Spell <|-- Miracle
+
+class Cantrip
+Spell <|-- Cantrip
+
+class SpellWriter {
+    report()
+    summary()
+}
+
+SpellWriter -- Spell
+
+Spell *-- "5..m" Aspect
+Spell *-- "0..n" Condition
+@enduml

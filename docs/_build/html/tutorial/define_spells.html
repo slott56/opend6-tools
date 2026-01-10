@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Define Spells &#8212; OpenD6 Tools 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Define Characters" href="define_characters.html" />
+    <link rel="prev" title="OpenD6 Tools" href="opend6_tools.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="define-spells">
+<span id="tutorial-define-spells"></span><h1>Define Spells<a class="headerlink" href="#define-spells" title="Link to this heading">¶</a></h1>
+<p>It’s time to look at how we can create a <code class="docutils literal notranslate"><span class="pre">Magic</span></code> chapter in our campaign document.
+Once we have the new chapter, we need to start adding Spell definitions.</p>
+<p>The steps in this tutorial will support the <strong>Change-Compute-Consider</strong> cycle.
+The Spell definitions use a DSL to support interactive computation.
+The DSL <strong>also</strong> supports document publication.</p>
+<p>We’ll break this tutorial into several steps.</p>
+<ol class="arabic simple">
+<li><p>Adding a chapter for magic.</p></li>
+<li><p>Writing a Spell in a Jupyter Notebook.
+This will have some background plus the details of putting a few lines of code into a Notebook.</p></li>
+<li><p>Converting the Notebook to some RST that can be published.
+This is a multi-step process.
+We can do it manually, but, it’s done best by configuring the <strong>make</strong> tool.
+The idea is that any change made to the Notebook cascades into a change to the final document.</p></li>
+<li><p>Including the Spell’s RST in the chapter.</p></li>
+</ol>
+<section id="step-1-adding-a-chapter">
+<h2>Step 1: Adding a chapter<a class="headerlink" href="#step-1-adding-a-chapter" title="Link to this heading">¶</a></h2>
+<p>In the <cite>Start Writing</cite> part of the tutorial, we added some chapters.
+We’ll repeat the overview of the steps again because – for a lot of folks – this is a new and different way to create.</p>
+<ol class="arabic">
+<li><p>Create a new <code class="docutils literal notranslate"><span class="pre">.rst</span></code> file for the chapter.
+We might create a file named <code class="docutils literal notranslate"><span class="pre">magic.rst</span></code>.</p></li>
+<li><p>Put the title in the chapter.
+The first two lines of the <code class="docutils literal notranslate"><span class="pre">magic.rst</span></code> file can be</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="gh">Magic</span>
+<span class="gh">=====</span>
+</pre></div>
+</div>
+</li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive in <code class="docutils literal notranslate"><span class="pre">index.rst</span></code> to include the name of the new file. Just include the stem of the name, <code class="docutils literal notranslate"><span class="pre">magic</span></code> not the entire name.</p></li>
+</ol>
+<p>At this point, we can run the following <strong>make</strong> command to see the work in process:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>html
+</pre></div>
+</div>
+<p>This will regenerate the HTML so we can be see our new, empty chapter.</p>
+</section>
+<section id="background-on-spell-definition">
+<h2>Background on Spell definition<a class="headerlink" href="#background-on-spell-definition" title="Link to this heading">¶</a></h2>
+<p>The domain-specific language for spells uses Python syntax.
+Here’s an example.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6.magic2</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">example</span> <span class="o">=</span> <span class="n">Spell</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example&quot;</span><span class="p">,</span>
+    <span class="n">notes</span><span class="o">=</span><span class="s2">&quot;Mage waves their hands and says the words&quot;</span><span class="p">,</span>
+    <span class="n">skill</span><span class="o">=</span><span class="s2">&quot;Transformation&quot;</span><span class="p">,</span>
+    <span class="n">effect</span><span class="o">=</span><span class="n">SkillEffect</span><span class="p">(</span><span class="s2">&quot;Acumen: testing&quot;</span><span class="p">,</span> <span class="s2">&quot;+4D&quot;</span><span class="p">),</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">DurationAspect</span><span class="p">(</span><span class="s2">&quot;1 sec&quot;</span><span class="p">),</span>
+    <span class="nb">range</span><span class="o">=</span><span class="n">RangeAspect</span><span class="p">(</span><span class="s2">&quot;1m&quot;</span><span class="p">),</span>
+    <span class="n">casting_time</span><span class="o">=</span><span class="n">CastingTimeAspect</span><span class="p">(</span><span class="s2">&quot;5 sec&quot;</span><span class="p">),</span>
+    <span class="n">speed</span><span class="o">=</span><span class="n">SpeedAspect</span><span class="o">.</span><span class="n">based_on</span><span class="p">(</span><span class="s2">&quot;range&quot;</span><span class="p">,</span> <span class="s2">&quot;Instantaneous&quot;</span><span class="p">),</span>
+    <span class="n">other_aspects</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">other_conditions</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">GenericAspect</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Everything else is completed&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>(Yes, there’s a wee bit of redundancy here. It’s a bit annoying, but can be helpful for pinpointing errors.)</p>
+<p>The first line adds the Spell DSL to the names Python recognizes.</p>
+<p>It helps to write a Spell definition as an assignment statement.
+A <code class="docutils literal notranslate"><span class="pre">name</span> <span class="pre">=</span> <span class="pre">Spell()</span></code> statement has a variable name, <code class="docutils literal notranslate"><span class="pre">name</span></code>, and an object definition. The <code class="docutils literal notranslate"><span class="pre">=</span></code> is required.
+It’s helps to make the variable name an echo of the spell name.
+Python variable names should be composed <strong>only</strong> of lower-case letters, digits, and the <code class="docutils literal notranslate"><span class="pre">_</span></code> character;
+the variable name may not precisely match the spell name.
+For example, spell names can have spaces, variable names can’t; use <code class="docutils literal notranslate"><span class="pre">_</span></code> instead of spaces in the variable name: <code class="docutils literal notranslate"><span class="pre">pass_wall</span> <span class="pre">=</span> <span class="pre">Spell(name=&quot;Pass</span> <span class="pre">Wall&quot;,</span> <span class="pre">...)</span></code>.
+(There are a few more permitted characters in variable names; avoiding them is recommended.)</p>
+<p>The <strong>OpenD6 Rules</strong> list eight characteristics of a spell.
+The DSL removes <code class="docutils literal notranslate"><span class="pre">difficulty</span></code>, and adds some additional characteristics.
+Here’s a run-down of what a <code class="docutils literal notranslate"><span class="pre">Spell</span></code> can contain.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">name=</span></code>. The <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> characters are required around the name.
+In the unlikely event the spell name has a <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> character in it, use <code class="docutils literal notranslate"><span class="pre">'</span></code> apostrophe’s around the spell name instead of <code class="docutils literal notranslate"><span class="pre">&quot;</span></code>. In the really, really unlikely event the spell name has <strong>both</strong> <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">'</span></code> in it, use <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span></code> instead of single <code class="docutils literal notranslate"><span class="pre">&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">notes=</span></code>. If these are fit on one line, use <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">'</span></code> around the notes.
+If the notes are more than one line long, use <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span></code> around the notes and write as much as you need to write.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">skill=</span></code> should be the skill used. This is rarely more than a word or two.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">effect=</span></code>. This will use one of the defined <code class="docutils literal notranslate"><span class="pre">Effect()</span></code> objects. In this example, it’s a <code class="docutils literal notranslate"><span class="pre">SkillEffect()</span></code>. The others are named in the <a class="reference internal" href="../usage.html#usage"><span class="std std-ref">Using the OpenD6 Tools</span></a> section.</p>
+<p>Note the effect is broken into two clauses: a general description, and the more specific die code.
+The descriptive text can be anything that clarifies this for your reader.
+The die code must follow narrow syntax rules: <code class="docutils literal notranslate"><span class="pre">+{n}D</span></code>, <code class="docutils literal notranslate"><span class="pre">+{n}D+{p}</span></code>. For example <code class="docutils literal notranslate"><span class="pre">&quot;+4D&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;+4D+2&quot;</span></code>.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">duration=</span></code> uses a <code class="docutils literal notranslate"><span class="pre">DurationAspect()</span></code> object. The value must be a number followed by a time unit; usually seconds, but a variety of common time period names are permitted here.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">range=</span></code> uses a <code class="docutils literal notranslate"><span class="pre">RangeAspect()</span></code> object. The value must be a number followed by a distance unit; usually meters, but a variety of common distance names are permitted here.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">casting_time=</span></code> uses a <code class="docutils literal notranslate"><span class="pre">CastingTimeAspect()</span></code> object. The rules are the same as for duration: a number and a time unit.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">speed=</span></code> is frequently based on distance. The <code class="docutils literal notranslate"><span class="pre">SpeedAspect</span></code> object needs to be based on the distance to be instantaneous.
+There’s no reason to manually assure the speed and distance match; the DSL uses <code class="docutils literal notranslate"><span class="pre">based_on(&quot;range&quot;,</span> <span class="pre">...)</span></code> to make sure they match.
+Note the <code class="docutils literal notranslate"><span class="pre">&quot;</span></code> around <code class="docutils literal notranslate"><span class="pre">&quot;range&quot;</span></code>; this is required.</p>
+<p>What’s important is that misspelling will lead to peculiar-looking error messages.
+For example, using <code class="docutils literal notranslate"><span class="pre">based_on(&quot;rage&quot;,</span> <span class="pre">...)</span></code> won’t work because there is no <code class="docutils literal notranslate"><span class="pre">&quot;rage&quot;</span></code> attribute of a spell.</p>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">other_aspects={}</span></code> details any other aspects of the spell.
+The use of <code class="docutils literal notranslate"><span class="pre">{}</span></code> is Python syntax for a dictionary with words and objects.</p>
+<p>We might have <code class="docutils literal notranslate"><span class="pre">{&quot;gestures&quot;,</span> <span class="pre">GesturesAspect(...)}</span></code> to add gestures to a spell. The dictionary will have a well-known aspect name, and the associated <code class="docutils literal notranslate"><span class="pre">Aspect()</span></code> definition.</p>
+<p>If there are more than one, separate each <code class="docutils literal notranslate"><span class="pre">&quot;name&quot;:</span> <span class="pre">Aspect()</span></code> pairing with <code class="docutils literal notranslate"><span class="pre">,</span></code>.</p>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">other_conditions=[...]</span></code> details any other conditions that constrain the spell.
+The use of <code class="docutils literal notranslate"><span class="pre">[]</span></code> is Python syntax for a simple list.
+These are often <code class="docutils literal notranslate"><span class="pre">GenericAspect()</span></code> definitions, with a specific difficulty and a descriptive text.</p>
+<p>If there are more than one, separate each <code class="docutils literal notranslate"><span class="pre">Aspect()</span></code> with <code class="docutils literal notranslate"><span class="pre">,</span></code>.</p>
+</li>
+</ul>
+<p>The difficulty is conspicuously absent from a spell definition.
+It’s computed.</p>
+</section>
+<section id="step-2-start-a-spell-notebook">
+<h2>Step 2: Start a Spell Notebook<a class="headerlink" href="#step-2-start-a-spell-notebook" title="Link to this heading">¶</a></h2>
+<p>Look back at the <a class="reference internal" href="opend6_tools.html#tutorial-opend6-tools"><span class="std std-ref">OpenD6 Tools</span></a> tutorial.
+If you have a starting notebook still open, close the open tab by clicking the <code class="docutils literal notranslate"><span class="pre">×</span></code> on the tab for the notebook.</p>
+<p>Generally, we expect to be looking at a Launcher in the center panel.
+If not, the big <code class="docutils literal notranslate"><span class="pre">+</span></code> button on the File Browser panel will create a Launcher panel.</p>
+<p>In the center panel, under the “Notebook” banner, click the <code class="docutils literal notranslate"><span class="pre">Python</span> <span class="pre">3</span> <span class="pre">(ipykernel)</span></code> icon to create a new Notebook in the <code class="docutils literal notranslate"><span class="pre">notebooks</span></code> folder.</p>
+<p>Do the following things in this notebook.</p>
+<ol class="arabic">
+<li><p>Change the first cell’s type from <code class="docutils literal notranslate"><span class="pre">Code</span></code> to <code class="docutils literal notranslate"><span class="pre">Markdown</span></code>.
+Put in a summary of the notebook – something about an exercise to define a Spell and learn the Spell DSL.</p></li>
+<li><p>Add a second cell with the following line of code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.magic2</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>This will import the Spell-centric DSL to the notebook.</p>
+<p>Execute the cell with the <a class="reference internal" href="../_images/icon_run.png"><img alt="Run and advance" src="../_images/icon_run.png" style="height: 12pt;" /></a> icon at the top of the panel.</p>
+</li>
+<li><p>In the next cell, put in a Spell definition.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">add_chapter</span> <span class="o">=</span> <span class="n">Spell</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Add Chapter&quot;</span><span class="p">,</span>
+    <span class="n">notes</span><span class="o">=</span><span class="s2">&quot;Mage adds a chapter to their spellbook&quot;</span><span class="p">,</span>
+    <span class="n">skill</span><span class="o">=</span><span class="s2">&quot;Transformation&quot;</span><span class="p">,</span>
+    <span class="n">effect</span><span class="o">=</span><span class="n">SkillEffect</span><span class="p">(</span><span class="s2">&quot;Intellect: scholarship&quot;</span><span class="p">,</span> <span class="s2">&quot;+4D&quot;</span><span class="p">),</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">DurationAspect</span><span class="p">(</span><span class="s2">&quot;1 sec&quot;</span><span class="p">),</span>
+    <span class="nb">range</span><span class="o">=</span><span class="n">RangeAspect</span><span class="p">(</span><span class="s2">&quot;1m&quot;</span><span class="p">),</span>
+    <span class="n">casting_time</span><span class="o">=</span><span class="n">CastingTimeAspect</span><span class="p">(</span><span class="s2">&quot;5 sec&quot;</span><span class="p">),</span>
+    <span class="n">speed</span><span class="o">=</span><span class="n">SpeedAspect</span><span class="o">.</span><span class="n">based_on</span><span class="p">(</span><span class="s2">&quot;range&quot;</span><span class="p">,</span> <span class="s2">&quot;Instantaneous&quot;</span><span class="p">),</span>
+    <span class="n">other_aspects</span><span class="o">=</span><span class="p">{},</span>
+    <span class="n">other_conditions</span><span class="o">=</span><span class="p">[],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Execute the cell with the <a class="reference internal" href="../_images/icon_run.png"><img alt="Run and advance" src="../_images/icon_run.png" style="height: 12pt;" /></a> icon at the top of the panel.</p>
+</li>
+<li><p>Add the following to see the computed difficulty.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">add_chapter</span><span class="o">.</span><span class="n">difficulty</span>
+</pre></div>
+</div>
+<p>Execute the cell with the <a class="reference internal" href="../_images/icon_run.png"><img alt="Run and advance" src="../_images/icon_run.png" style="height: 12pt;" /></a> icon at the top of the panel.</p>
+<p>The result will be shown below the cell: 4.</p>
+<p>Here’s what the notebook looks like:</p>
+<figure class="align-default" id="id1">
+<img alt="../_images/lab_3.png" src="../_images/lab_3.png" />
+<figcaption>
+<p><span class="caption-text">Jupyter Notebook with an example spell, “Add Chapter”.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>This spell is too easy, we need to make a chnage.</p>
+</li>
+</ol>
+<p>5.  In the cell with the label <code class="docutils literal notranslate"><span class="pre">[2]</span></code>, change the
+<code class="docutils literal notranslate"><span class="pre">duration=DurationAspect(&quot;1</span> <span class="pre">sec&quot;),</span></code> clause of the definition.</p>
+<blockquote>
+<div><p>Instead of <code class="docutils literal notranslate"><span class="pre">&quot;1</span> <span class="pre">sec&quot;</span></code>, make it <code class="docutils literal notranslate"><span class="pre">&quot;1</span> <span class="pre">hr&quot;</span></code>.</p>
+<p>Execute cell <code class="docutils literal notranslate"><span class="pre">[2]</span></code> with the <a class="reference internal" href="../_images/icon_run.png"><img alt="Run and advance" src="../_images/icon_run.png" style="height: 12pt;" /></a> icon at the top of the panel.
+This changes the definition.</p>
+<p>Note the cell number changes to <code class="docutils literal notranslate"><span class="pre">[4]</span></code>. It’s the fourth computation.</p>
+<p>Then, execute cell <code class="docutils literal notranslate"><span class="pre">[3]</span></code> with the <a class="reference internal" href="../_images/icon_run.png"><img alt="Run and advance" src="../_images/icon_run.png" style="height: 12pt;" /></a> icon at the top of the panel.
+This recomputes the difficulty.
+It also updates the cell number to <code class="docutils literal notranslate"><span class="pre">[5]</span></code> to show it’s the fifth computation.</p>
+</div></blockquote>
+<ol class="arabic" start="6">
+<li><p>Change the duration to <code class="docutils literal notranslate"><span class="pre">&quot;1</span> <span class="pre">day&quot;</span></code>.</p>
+<p>Execute the entire notebook using the <a class="reference internal" href="../_images/icon_restart_run_all.png"><img alt="Restart the kernel and run all cells" src="../_images/icon_restart_run_all.png" style="height: 12pt;" /></a> icon  at the top of the panel.
+Note the cells all get reset to simple, ascending order.</p>
+<p>And the difficulty jumped to a number that makes the spell much more challenging.</p>
+</li>
+<li><p>Be sure to rename the notebook to a valid name. (Use only ower-case letters, digits, and <code class="docutils literal notranslate"><span class="pre">_</span></code>.)
+The rest of the tutorial assumes it’s called <code class="docutils literal notranslate"><span class="pre">example_1</span></code>.
+If you pick a more meaningful name, be sure to use the name you picked.</p></li>
+<li><p>Be sure to save the final version.</p></li>
+</ol>
+<p>We’ve made a few trips around the <strong>Change-Compute-Consider</strong> cycle.</p>
+<ul class="simple">
+<li><p>Change the definition.</p></li>
+<li><p>Compute the difficulty.</p></li>
+<li><p>Consider the results in the context of world building, campaign, or scenario.</p></li>
+</ul>
+<p>The computation is (almost) immediate and doesn’t require punching numbers into a calculator.
+Now that we’ve got a spell, we need to make two conversions to put this into our working book.</p>
+</section>
+<section id="step-3-update-the-publication-pipeline">
+<h2>Step 3: Update the publication pipeline<a class="headerlink" href="#step-3-update-the-publication-pipeline" title="Link to this heading">¶</a></h2>
+<p>There are several transformations that need be applied to our spell to make it ready for publication.
+The pipeline will have three stages in it.</p>
+<ol class="arabic simple">
+<li><p>Convert the Notebook to a Python module.</p></li>
+<li><p>Run the Python module as an app to create a RST-format file that can be included into the final document.</p></li>
+<li><p>As we’ve seen in previous parts of the tutorial, the final document is created by transforming all of the document from RST files to HTML (or PDF or EPUB.)</p></li>
+</ol>
+<p>This forms a pipeline where our content flows throught a number of transformation steps.
+The final stage of the pipeline is handled by Sphinx’s <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>.
+When we enter the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> command, the <strong>make</strong> application takes off and does what needs to be done to create the final document.
+The <strong>make</strong> application runs <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code> to do the real work of transformation.</p>
+<p>We will make a total of three separate changes to expand the publishing pipeline.</p>
+<ol class="loweralpha simple">
+<li><p>Update the Sphinx <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> to add steps 1 and 2 to it.</p></li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">spells/Makefile</span></code> to provide a concrete implementation for steps 1 and 2.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">magic.rst</span></code> document in our campaign book to include the generated  RST-format file with the spell details, nicely formatted.</p></li>
+</ol>
+<section id="step-3a-update-the-makefile">
+<h3>Step 3a – Update the Makefile<a class="headerlink" href="#step-3a-update-the-makefile" title="Link to this heading">¶</a></h3>
+<p>Open the Sphinx-supplied <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>.</p>
+<p>You’ll see something like this cryptic looking recipe definition around line 19:</p>
+<div class="highlight-make notranslate"><div class="highlight"><pre><span></span><span class="nf">%</span><span class="o">:</span><span class="w"> </span><span class="n">Makefile</span>
+<span class="w">	</span>@<span class="k">$(</span>SPHINXBUILD<span class="k">)</span><span class="w"> </span>-M<span class="w"> </span><span class="nv">$@</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>SOURCEDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>BUILDDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">$(</span>SPHINXOPTS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>O<span class="k">)</span>
+</pre></div>
+</div>
+<p>What does this recipe do? For <em>any</em> target given on the command line (other than <code class="docutils literal notranslate"><span class="pre">help</span></code>) this recipe will run the given command, <code class="docutils literal notranslate"><span class="pre">$(SPHINXBUILD)</span></code>.
+The value of the <code class="docutils literal notranslate"><span class="pre">SPHINXBUILD</span></code> variable is the actual <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code> command.
+The parameter will replace the <code class="docutils literal notranslate"><span class="pre">$&#64;</span></code>.</p>
+<p>Change the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> to add one new line, <code class="docutils literal notranslate"><span class="pre">$(MAKE)</span> <span class="pre">-C</span> <span class="pre">spells</span></code>.
+It should look like the following:</p>
+<div class="highlight-make notranslate"><div class="highlight"><pre><span></span><span class="nf">%</span><span class="o">:</span><span class="w"> </span><span class="n">Makefile</span>
+<span class="w">    </span><span class="k">$(</span>MAKE<span class="k">)</span><span class="w"> </span>-C<span class="w"> </span>spells
+<span class="w">    </span>@<span class="k">$(</span>SPHINXBUILD<span class="k">)</span><span class="w"> </span>-M<span class="w"> </span><span class="nv">$@</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>SOURCEDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>BUILDDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">$(</span>SPHINXOPTS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>O<span class="k">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">%</span></code> recipe now has two steps.</p>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span></code> while changing the working directory to <code class="docutils literal notranslate"><span class="pre">spells</span></code>. This will use the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> it finds in that directory.</p></li>
+<li><p>Run the <code class="docutils literal notranslate"><span class="pre">$(SPHINXBUILD)</span></code> command to create the final document.</p></li>
+</ol>
+<p>There are two requirements for this recipe to work.</p>
+<ol class="arabic simple">
+<li><p>The project has a folder named <code class="docutils literal notranslate"><span class="pre">spells</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">spells</span></code> folder has a <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> in it.</p></li>
+</ol>
+<p>We’ll take some additional steps to make sure these two requirements are satisfied.</p>
+</section>
+<section id="step-3b-add-the-spells-makefile">
+<h3>Step 3b – add the spells/Makefile<a class="headerlink" href="#step-3b-add-the-spells-makefile" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">spells/Makefile</span></code> is not terribly complicated.
+It has a bunch of “boilerplate” – standard stuff that won’t change.
+It has one line will change as our document grows and evolves.</p>
+<div class="highlight-make notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nf">.phony</span><span class="o">:</span><span class="w"> </span><span class="n">spells</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="cp">vpath %.ipynb ../notebooks</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c"># Create a Python Spell module from a Jupyter Notebook with the same name.</span>
+<span class="linenos"> 6</span><span class="nf">%.py </span><span class="o">:</span><span class="w"> </span>%.<span class="n">ipynb</span>
+<span class="linenos"> 7</span><span class="w">    </span>python<span class="w"> </span>-m<span class="w"> </span>opend6_tools.notebook_extract<span class="w"> </span>spells<span class="w"> </span>$&lt;<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="c"># Create an RST text file from a Python Spell module with the same name.</span>
+<span class="linenos">10</span><span class="nf">%.txt </span><span class="o">:</span><span class="w"> </span>%.<span class="n">py</span>
+<span class="linenos">11</span><span class="w">    </span>python<span class="w"> </span>$&lt;<span class="w"> </span>display<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="nf">spells </span><span class="o">:</span><span class="w"> </span><span class="n">example_</span>1.<span class="n">txt</span>
+</pre></div>
+</div>
+<p>This <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> has four separate recipes, and one directive.
+We’ll start at the top.</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">.phony:</span> <span class="pre">spells</span></code> is a special-purpose recipe to tell <strong>make</strong> that <code class="docutils literal notranslate"><span class="pre">spells</span></code> isn’t really a file.</dt><dd><p>It’s a phony target name.</p>
+</dd>
+</dl>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">vpath</span></code> directoive tells  <strong>make</strong> to search for <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> files in a <code class="docutils literal notranslate"><span class="pre">../notebooks</span></code> directory.
+The <code class="docutils literal notranslate"><span class="pre">..</span></code> means the “parent of this directory”.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">%.py</span> <span class="pre">:</span> <span class="pre">%.ipynb</span></code> recipe shows how to make a Python module from a Notebook.
+The use of <code class="docutils literal notranslate"><span class="pre">%</span></code> means the file stem remains constant, but a file with a new suffix will be created.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">%.txt</span> <span class="pre">:</span> <span class="pre">%.py</span></code> recipe shows how to make an RST file from a Python module.
+The <code class="docutils literal notranslate"><span class="pre">display</span></code> argument will provide a useful display of the spells.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">spells</span> <span class="pre">:</span> <span class="pre">example_1.txt</span></code> recipe provides a concrete definition for the phony <code class="docutils literal notranslate"><span class="pre">spells</span></code> target. This defines what will be done in response to the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">spells</span></code> command.
+The phony target depends on a concrete file, <code class="docutils literal notranslate"><span class="pre">example_1.txt</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">%.txt</span> <span class="pre">:</span> <span class="pre">%.py</span></code> recipe means an <code class="docutils literal notranslate"><span class="pre">example_1.py</span></code> file needs to be found and converted.
+The <code class="docutils literal notranslate"><span class="pre">%.py</span> <span class="pre">:</span> <span class="pre">%.ipynb</span></code> recipe means an <code class="docutils literal notranslate"><span class="pre">example_1.ipynb</span></code> notebook needs to be found and converted.
+It can be found either in the <code class="docutils literal notranslate"><span class="pre">spells</span></code> directory or – better – in the <code class="docutils literal notranslate"><span class="pre">notebooks</span></code> directory named in the <code class="docutils literal notranslate"><span class="pre">vpath</span></code> directive.</p></li>
+</ol>
+<p>This example assumes the spell notebook needs to be called <code class="docutils literal notranslate"><span class="pre">example_1.ipynb</span></code>.
+If the notebook has a different name, use that instead of <code class="docutils literal notranslate"><span class="pre">example_1.ipynb</span></code>.
+The name’s stem has to be lowercaes letters, digits, and <code class="docutils literal notranslate"><span class="pre">_</span></code>. The suffix has to be <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>.
+The name claimed in the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> (<code class="docutils literal notranslate"><span class="pre">example_1</span></code>) needs to match the actual name the actual notebook actually has.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>.txt is the suffix for the RST-format file</p>
+<p>The suffix of <code class="docutils literal notranslate"><span class="pre">.txt</span></code> is distinct from the <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files we created by hand.
+We use this suffix to make it invisible to the <strong>Sphinx</strong> tools.
+It’s still RST-formatted spell details.</p>
+<p>We want to use <code class="docutils literal notranslate"><span class="pre">.rst</span></code> for manually-created files because <strong>Sphinx</strong> will look around in the working directory to be sure all <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files are part of the current project.
+This helps locate spelling mistakes in the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">tocreee::</span></code> directives.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">spells</span> <span class="pre">:</span> <span class="pre">example_1.txt</span></code> recipe will grow as we add new notebooks.
+The rest of the file will remain unchanged.
+As new notebooks are created, add the file names to the <code class="docutils literal notranslate"><span class="pre">spells</span> <span class="pre">:</span></code> recipe.
+The names go at the end, separated from each other by at least one space.
+Maybe this recipe will evolve to <code class="docutils literal notranslate"><span class="pre">spells</span> <span class="pre">:</span> <span class="pre">example_1.txt</span> <span class="pre">rank_2.txt</span> <span class="pre">cantrips.txt</span></code> to reflect three groups of spells.</p>
+<p>The final step is to add an <code class="docutils literal notranslate"><span class="pre">..</span>&#160; <span class="pre">include::</span> <span class="pre">spells/example_1.txt</span></code> in the <code class="docutils literal notranslate"><span class="pre">magic.rst</span></code> chapter of the campaign book.</p>
+</section>
+<section id="step-3b-include-the-spells-rst-file">
+<h3>Step 3b – include the spells RST file<a class="headerlink" href="#step-3b-include-the-spells-rst-file" title="Link to this heading">¶</a></h3>
+<p>In our <code class="docutils literal notranslate"><span class="pre">magic.rst</span></code> chapter, we might have some text like this.</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span>Here&#39;s the list of spells:
+
+<span class="p">..</span>  <span class="ow">include</span><span class="p">::</span> spells/example_1.txt
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">include::</span></code> directive tells Sphinx to read the <code class="docutils literal notranslate"><span class="pre">example_1.txt</span></code> file here.
+The RST-formatted version of the <code class="docutils literal notranslate"><span class="pre">example_1.ipynb</span></code> notebook will be included here in the document.</p>
+<p>As noted above, if your actual notebook name is not <code class="docutils literal notranslate"><span class="pre">example_1</span></code>, change this to match your
+actual notebook name.</p>
+</section>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h2>
+<p>We’ve added a section to our book.
+This section includes spell definitions, which means we’ve done a number of related things.</p>
+<ol class="arabic simple">
+<li><p>We’ve used a notebook to define the spell, and help us with the <strong>Change-Compute-Consider</strong> part of design.</p></li>
+<li><p>We’ve updated the Sphinx <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> to build spells.</p></li>
+<li><p>We’ve creaete a <code class="docutils literal notranslate"><span class="pre">spells/Makefile</span></code> to build RST-formatted files from the notebooks in which we put our ideas.</p></li>
+</ol>
+<p>As important note is that we can have as many spells as we want in a single notebook.</p>
+<p>They will <strong>all</strong> wind up in a single RST-format file.</p>
+<p>The notebook organization, then, reflects the organization of <code class="docutils literal notranslate"><span class="pre">..</span>&#160; <span class="pre">include::</span></code> directives in our book.</p>
+<ul class="simple">
+<li><p>One master list of all spells? One big notebook and one big RST file will work.</p></li>
+<li><p>Separate lists of spells based on skill used? This suggests one notebook for each skill area. This will create one RST-format file for each skill area.
+The final book, then, will have an <code class="docutils literal notranslate"><span class="pre">..</span>&#160; <span class="pre">include::</span></code> directive for each of these lists of spells.</p></li>
+<li><p>Separate lists of spells for each rank of difficulty? This, too, suggests one notebook for each rank. This will create one RST-format file for each rank.
+The final book, then, will have an <code class="docutils literal notranslate"><span class="pre">..</span>&#160; <span class="pre">include::</span></code> directive for each of these lists of spells.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenD6 Tools</a></h1>
+
+
+
+
+
+
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Tutorial</a><ul>
+      <li>Previous: <a href="opend6_tools.html" title="previous chapter">OpenD6 Tools</a></li>
+      <li>Next: <a href="define_characters.html" title="next chapter">Define Characters</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#the-big-picture">The Big Picture</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#this-tutorial">This Tutorial</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installing_software.html">Installing Software</a></li>
+<li class="toctree-l3"><a class="reference internal" href="start_writing.html">Start Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="opend6_tools.html">OpenD6 Tools</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Define Spells</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#step-1-adding-a-chapter">Step 1: Adding a chapter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#background-on-spell-definition">Background on Spell definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-2-start-a-spell-notebook">Step 2: Start a Spell Notebook</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-3-update-the-publication-pipeline">Step 3: Update the publication pipeline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="define_characters.html">Define Characters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../computations.html">Miscellaneous Computations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes.html">Notes on DSL Design</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, S.Lott.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/tutorial/define_spells.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,15 @@
+###############
+ Tool Overview
+###############
+
+There are several collections of tools.
+
+-   The :py:mod:`magic2` and :py:mod:`character` modules, which create a Domain-Specific Language (DSL) for designing spells and characters.
+    These modules allow the definition of spells (and miracles) in Python syntax.
+    They also allow building characters that fit within a campaign.
+
+-   There some other modules to compute a few tables in the OpenD6 rules.
+    The :py:mod:`die_simplification` and :py:mod:`spell_measure` modules restate some essential tables.
+
+-   Finally, a large number of modules are used for one-time-only parsing the source PDF files.
+    These are somewhat less useful in general.

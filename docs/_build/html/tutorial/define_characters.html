@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Define Characters &#8212; OpenD6 Tools 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Using the OpenD6 Tools" href="../usage.html" />
+    <link rel="prev" title="Define Spells" href="define_spells.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="define-characters">
+<span id="tutorial-define-characters"></span><h1>Define Characters<a class="headerlink" href="#define-characters" title="Link to this heading">¶</a></h1>
+<p>It’s time to look at how we can create a number of sections in our campaign document:</p>
+<ul class="simple">
+<li><p>We’ll add template characters in the Templates chapter.</p></li>
+<li><p>We’ll add sample creatures and Characters in the Adventure Tips chapter.</p></li>
+</ul>
+<p>Character descriptions will show up in a few other places, also.</p>
+<p>These are in several different chapters, each of which will include character and creature definitions.</p>
+<p>The steps in this tutorial will support the <strong>Change-Compute-Consider</strong> cycle.
+The Character and Creature definitions use a DSL to support interactive computation.
+The DSL <strong>also</strong> supports document publication.</p>
+<p>We’ll break this tutorial into several steps.</p>
+<ol class="arabic simple">
+<li><p>Adding some chapters for characters and creatures.</p></li>
+<li><p>Writing a Character definition in a Jupyter Notebook.
+This will have some background plus the details of putting a few lines of code into a Notebook.</p></li>
+<li><p>Converting the Notebook to some RST that can be published.
+This is a multi-step process.
+We can do it manually, but, it’s done best by configuring the <strong>make</strong> tool.
+The idea is that any change made to the Notebook cascades into a change to the final document.</p></li>
+<li><p>Including the Character’s or Creature’s RST in the appropriate places in various chapters.</p></li>
+</ol>
+<section id="step-1-adding-a-chapter">
+<h2>Step 1: Adding a chapter<a class="headerlink" href="#step-1-adding-a-chapter" title="Link to this heading">¶</a></h2>
+<p>In the <cite>Start Writing</cite> part of the tutorial, we added some chapters.
+We’ll repeat the overview of the steps again because – for a lot of folks – this is a new and different way to create.</p>
+<p>Character details are often found in several places:</p>
+<ol class="arabic simple">
+<li><p>In an Introduction chapter that describes the game in general, there will be a detailed character sheet.</p></li>
+<li><p>In an Adventure Tips chapter will have short descriptions of generic characters.</p></li>
+<li><p>The Non-Human Races chapter will have long descriptions of some character types.
+These have a middle level of detail – more than the summaries of generic characters, but not full character sheets.</p></li>
+<li><p>In a Templates chapter will have full character sheets for a number of characters.</p></li>
+</ol>
+<p>Creature details are often confined to several sections of an Adventure Tips chapter along with generic characters.</p>
+<p>Let’s look closely at writing an Adventure Tips chapter, since it includes both characters and creatures.</p>
+<ol class="arabic">
+<li><p>Create a new <code class="docutils literal notranslate"><span class="pre">.rst</span></code> file for the chapter.
+We might create a file named <code class="docutils literal notranslate"><span class="pre">adventure_tips.rst</span></code>.</p></li>
+<li><p>Put the title in the chapter.
+The first two lines of the <code class="docutils literal notranslate"><span class="pre">adventure_tips.rst</span></code> file can be</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="gh">Adventure Tips</span>
+<span class="gh">==============</span>
+</pre></div>
+</div>
+</li>
+<li><p>This chapter will have a number of topics.</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="gh">Creating Adventures</span>
+<span class="gh">-------------------</span>
+
+Ideas.
+
+<span class="gh">Running Adventures</span>
+<span class="gh">------------------</span>
+
+Suggestions.
+
+<span class="gh">Rewarding the Players</span>
+<span class="gh">---------------------</span>
+
+Guidelines.
+
+<span class="gh">Generic People</span>
+<span class="gh">--------------</span>
+
+Introduction.
+
+Include a list of characters.
+
+<span class="gh">Generic Animals</span>
+<span class="gh">---------------</span>
+
+Introduction.
+
+Include a list of creatures.
+
+<span class="gh">Generic Monsters</span>
+<span class="gh">---------------</span>
+
+Introduction.
+
+Include a list of creatures.
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Some designers find it helpful to have an outline.
+Details are filled in later.</p>
+<p>The idea to replace these generic <code class="docutils literal notranslate"><span class="pre">Include</span> <span class="pre">a</span> <span class="pre">list...</span></code> constructs with actual character and creature details.</p>
+<ol class="arabic simple" start="3">
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive in <code class="docutils literal notranslate"><span class="pre">index.rst</span></code> to include the name of the new file. Just include the stem of the name, <code class="docutils literal notranslate"><span class="pre">magic</span></code> not the entire name.</p></li>
+</ol>
+<p>At this point, we can run the following <strong>make</strong> command to see the work in process:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>html
+</pre></div>
+</div>
+<p>This will regenerate the HTML so we can be see our new, empty chapter.</p>
+</section>
+<section id="background-on-character-definition">
+<h2>Background on Character definition<a class="headerlink" href="#background-on-character-definition" title="Link to this heading">¶</a></h2>
+<p>The domain-specific language for characters (and creatures) uses Python syntax.
+Here’s an example.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6.character</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">hero</span> <span class="o">=</span> <span class="n">Character</span><span class="p">(</span>
+    <span class="n">occupation</span><span class="o">=</span><span class="s2">&quot;Aspiring Hero&quot;</span><span class="p">,</span>
+    <span class="n">race</span><span class="o">=</span><span class="s2">&quot;Human&quot;</span><span class="p">,</span>
+    <span class="n">agility</span><span class="o">=</span><span class="n">Agility</span><span class="p">(</span>
+        <span class="mi">3</span> <span class="o">*</span> <span class="n">D</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;acrobatics&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;climbing&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;dodge&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;fighting&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;flying&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;jumping&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;melee combat&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;stealth&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">intellect</span><span class="o">=</span><span class="n">Intellect</span><span class="p">(</span>
+        <span class="mi">2</span> <span class="o">*</span> <span class="n">D</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;cultures&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;healing&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;navigation&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;speaking&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;trading&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;traps&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">coordination</span><span class="o">=</span><span class="n">Coordination</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">D</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s2">&quot;marksmanship&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;throwing&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    <span class="p">),</span>
+    <span class="n">acumen</span><span class="o">=</span><span class="n">Acumen</span><span class="p">(</span>
+        <span class="mi">3</span> <span class="o">*</span> <span class="n">D</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;crafting&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;hide&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;investigation&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;know-how&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;search&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;streetwise&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;survival&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;tracking&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">),</span>
+    <span class="n">physique</span><span class="o">=</span><span class="n">Physique</span><span class="p">(</span>
+        <span class="mi">3</span> <span class="o">*</span> <span class="n">D</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;lifting&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;running&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;swimming&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;stamina&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    <span class="p">),</span>
+    <span class="n">charisma</span><span class="o">=</span><span class="n">Charisma</span><span class="p">(</span>
+        <span class="mi">3</span> <span class="o">*</span> <span class="n">D</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;charm&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;intimidation&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;mettle&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;persuade&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    <span class="p">),</span>
+    <span class="n">equipment</span><span class="o">=</span><span class="s2">&quot;Dagger (damage +1D); leather jerkin (Armor Value + 2); shoulder bag with cheese, bread, and silver coins in it&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">        Always fascinated by the traveling sword-showmen that came through</span>
+<span class="s2">        your little village, you practiced mimicking their techniques (in between your chores</span>
+<span class="s2">        - and sometimes as part of them). Perhaps inheriting wanderlust from your uncle, you</span>
+<span class="s2">        have set on to find your fortune in the larger world and maybe gain fame by helping a few</span>
+<span class="s2">        people along the way&quot;&quot;&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The first line adds the Character (and Creature) DSL to the names Python recognizes.</p>
+<p>It helps to write a Character definition as an assignment statement.
+A <code class="docutils literal notranslate"><span class="pre">name</span> <span class="pre">=</span> <span class="pre">Character()</span></code> statement has a variable name, <code class="docutils literal notranslate"><span class="pre">name</span></code>, and an object definition. The <code class="docutils literal notranslate"><span class="pre">=</span></code> is required.
+It’s helps to make the variable name an echo of the occupation (for generic characters) or the character’s name (for important, named characters.)
+Python variable names should be composed <strong>only</strong> of lower-case letters, digits, and the <code class="docutils literal notranslate"><span class="pre">_</span></code> character;
+the variable name may not precisely match the character occupation or name.
+For example, character names can have spaces, variable names can’t; use <code class="docutils literal notranslate"><span class="pre">_</span></code> instead of spaces in the variable name: <code class="docutils literal notranslate"><span class="pre">aspiring_hero</span> <span class="pre">=</span> <span class="pre">Character(occupation=&quot;Aspiring</span> <span class="pre">Hero&quot;,</span> <span class="pre">...)</span></code>.
+In the example above, <code class="docutils literal notranslate"><span class="pre">hero</span></code> was the variable name used.</p>
+<p>The <strong>OpenD6 Rules</strong> list the six essential attributes for a character, plus an optional seventh.
+However, a character is often described by numerous additional details.
+Here’s a run-down of what a <code class="docutils literal notranslate"><span class="pre">Character</span></code> can contain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">name<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any name.</p>
+</dd>
+<dt class="field-even">occupation<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any text.</p>
+</dd>
+<dt class="field-odd">race<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any text.</p>
+</dd>
+<dt class="field-even">gender<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any text.</p>
+</dd>
+<dt class="field-odd">age<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any text can be here. This is descriptive text, it is not tied to the Age disadvantage.</p>
+</dd>
+<dt class="field-even">height<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any text, usually a number in cm. For example:</p>
+<ul class="simple">
+<li><p>Female humans: 155 + Physique roll</p></li>
+<li><p>Male humans: 169 + Physique roll</p></li>
+</ul>
+</dd>
+<dt class="field-odd">weight<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any text, usually a number in kilograms. For example:</p>
+<ul class="simple">
+<li><p>Female humans: 48 + 3 × Physique roll</p></li>
+<li><p>Male humans: 70 + 2 × Physique roll</p></li>
+</ul>
+</dd>
+<dt class="field-even">physical_description<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any text.</p>
+</dd>
+<dt class="field-odd">agility<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <a class="reference internal" href="../character.html#opend6_tools.character.Agility" title="opend6_tools.character.Agility"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Agility</span></code></a> object.
+This is given a base Die Code for Agility in general, followed by a <code class="docutils literal notranslate"><span class="pre">{}</span></code>-wrapped of specific skills and any additional value.
+The available skills are: <code class="docutils literal notranslate"><span class="pre">acrobatics</span></code>, <code class="docutils literal notranslate"><span class="pre">climbing</span></code>,``contortion``, <code class="docutils literal notranslate"><span class="pre">dodge</span></code>, <code class="docutils literal notranslate"><span class="pre">fighting</span></code>, <code class="docutils literal notranslate"><span class="pre">flying</span></code>, <code class="docutils literal notranslate"><span class="pre">jumping</span></code>, <code class="docutils literal notranslate"><span class="pre">melee</span> <span class="pre">combat</span></code>, <code class="docutils literal notranslate"><span class="pre">combat</span></code>, <code class="docutils literal notranslate"><span class="pre">riding</span></code>, <code class="docutils literal notranslate"><span class="pre">stealth</span></code>.</p>
+</dd>
+<dt class="field-even">intellect<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <a class="reference internal" href="../character.html#opend6_tools.character.Intellect" title="opend6_tools.character.Intellect"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Intellect</span></code></a> object.
+It has a base Die Code, followed by <code class="docutils literal notranslate"><span class="pre">{}</span></code>-wrapped skills and die codes. The skills are: <code class="docutils literal notranslate"><span class="pre">cultures</span></code>, <code class="docutils literal notranslate"><span class="pre">devices</span></code>, <code class="docutils literal notranslate"><span class="pre">healing</span></code>, <code class="docutils literal notranslate"><span class="pre">navigation</span></code>, <code class="docutils literal notranslate"><span class="pre">reading/writing</span></code>, <code class="docutils literal notranslate"><span class="pre">scholar</span></code>, <code class="docutils literal notranslate"><span class="pre">speaking</span></code>, <code class="docutils literal notranslate"><span class="pre">trading</span></code>, <code class="docutils literal notranslate"><span class="pre">traps</span></code>.</p>
+</dd>
+<dt class="field-odd">coordination<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <a class="reference internal" href="../character.html#opend6_tools.character.Coordination" title="opend6_tools.character.Coordination"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Coordination</span></code></a> object, with a base Die Code, followed by <code class="docutils literal notranslate"><span class="pre">{}</span></code>-wrapped skills and die codes.
+The skill names: <code class="docutils literal notranslate"><span class="pre">charioteering</span></code>, <code class="docutils literal notranslate"><span class="pre">lockpicking</span></code>, <code class="docutils literal notranslate"><span class="pre">marksmanship</span></code>, <code class="docutils literal notranslate"><span class="pre">pilotry</span></code>, <code class="docutils literal notranslate"><span class="pre">sleight</span> <span class="pre">of</span> <span class="pre">hand</span></code>, <code class="docutils literal notranslate"><span class="pre">throwing</span></code>.</p>
+</dd>
+<dt class="field-even">acumen<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <a class="reference internal" href="../character.html#opend6_tools.character.Acumen" title="opend6_tools.character.Acumen"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Acumen</span></code></a> object.
+Skills: <code class="docutils literal notranslate"><span class="pre">artist</span></code>, <code class="docutils literal notranslate"><span class="pre">crafting</span></code>, <code class="docutils literal notranslate"><span class="pre">disguise</span></code>, <code class="docutils literal notranslate"><span class="pre">gambling</span></code>, <code class="docutils literal notranslate"><span class="pre">hide</span></code>, <code class="docutils literal notranslate"><span class="pre">investigation</span></code>, <code class="docutils literal notranslate"><span class="pre">know-how</span></code>, <code class="docutils literal notranslate"><span class="pre">search</span></code>, <code class="docutils literal notranslate"><span class="pre">streetwise</span></code>, <code class="docutils literal notranslate"><span class="pre">survival</span></code>, <code class="docutils literal notranslate"><span class="pre">tracking</span></code>.</p>
+</dd>
+<dt class="field-odd">physique<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <a class="reference internal" href="../character.html#opend6_tools.character.Physique" title="opend6_tools.character.Physique"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Physique</span></code></a> object. Skills:
+<code class="docutils literal notranslate"><span class="pre">lifting</span></code>, <code class="docutils literal notranslate"><span class="pre">running</span></code>, <code class="docutils literal notranslate"><span class="pre">stamina</span></code>, <code class="docutils literal notranslate"><span class="pre">swimming</span></code>.</p>
+</dd>
+<dt class="field-even">charisma<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <a class="reference internal" href="../character.html#opend6_tools.character.Charisma" title="opend6_tools.character.Charisma"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Charisma</span></code></a> object. Skills:
+<code class="docutils literal notranslate"><span class="pre">animal</span> <span class="pre">handling</span></code>, <code class="docutils literal notranslate"><span class="pre">bluff</span></code>, <code class="docutils literal notranslate"><span class="pre">charm</span></code>, <code class="docutils literal notranslate"><span class="pre">command</span></code>, <code class="docutils literal notranslate"><span class="pre">intimidation</span></code>, <code class="docutils literal notranslate"><span class="pre">mettle</span></code>, <code class="docutils literal notranslate"><span class="pre">persuasion</span></code>.</p>
+</dd>
+<dt class="field-odd">extranormal<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optionally, a <a class="reference internal" href="../character.html#opend6_tools.character.Magic" title="opend6_tools.character.Magic"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Magic</span></code></a> or an <code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Kiracles</span></code> object.</p>
+<ul class="simple">
+<li><p>Magic skills: <code class="docutils literal notranslate"><span class="pre">alteration</span></code>, <code class="docutils literal notranslate"><span class="pre">apportatio</span></code>, <code class="docutils literal notranslate"><span class="pre">conjuration</span></code>, <code class="docutils literal notranslate"><span class="pre">divination</span></code>.</p></li>
+<li><p>Miracle skills: <code class="docutils literal notranslate"><span class="pre">divination</span></code>, <code class="docutils literal notranslate"><span class="pre">favor</span></code>, <code class="docutils literal notranslate"><span class="pre">strife</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">advantages<span class="colon">:</span></dt>
+<dd class="field-even"><p>An optional list of <a class="reference internal" href="../character.html#opend6_tools.character.Advantage" title="opend6_tools.character.Advantage"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Advantage</span></code></a> objects.
+Object class names include: <code class="docutils literal notranslate"><span class="pre">Authority</span></code>, <code class="docutils literal notranslate"><span class="pre">Contacts</span></code>, <code class="docutils literal notranslate"><span class="pre">Cultures</span></code>, <code class="docutils literal notranslate"><span class="pre">Equipment</span></code>, <code class="docutils literal notranslate"><span class="pre">Fame</span></code>, <code class="docutils literal notranslate"><span class="pre">Patron</span></code>, <code class="docutils literal notranslate"><span class="pre">Size</span></code>, <code class="docutils literal notranslate"><span class="pre">TrademarkSpecialization</span></code>, <code class="docutils literal notranslate"><span class="pre">Wealth</span></code>.
+All advantages are described by a rank and details.</p>
+</dd>
+<dt class="field-odd">disadvantages<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An optional list of <a class="reference internal" href="../character.html#opend6_tools.character.Disadvantage" title="opend6_tools.character.Disadvantage"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.Disadvantage</span></code></a> objects.
+Classes include: <code class="docutils literal notranslate"><span class="pre">AchillesHeel</span></code>, <code class="docutils literal notranslate"><span class="pre">AdvantageFlaw</span></code>, <code class="docutils literal notranslate"><span class="pre">MinorStigma</span></code>, <code class="docutils literal notranslate"><span class="pre">Age</span></code>, <code class="docutils literal notranslate"><span class="pre">BadLuck</span></code>, <code class="docutils literal notranslate"><span class="pre">BurnOut</span></code>, <code class="docutils literal notranslate"><span class="pre">CulturalUnfamiliarity</span></code>, <code class="docutils literal notranslate"><span class="pre">Debt</span></code>, <code class="docutils literal notranslate"><span class="pre">Devotion</span></code>, <code class="docutils literal notranslate"><span class="pre">Employed</span></code>, <code class="docutils literal notranslate"><span class="pre">Enemy</span></code>, <code class="docutils literal notranslate"><span class="pre">Hindrance</span></code>, <code class="docutils literal notranslate"><span class="pre">Infamy</span></code>, <code class="docutils literal notranslate"><span class="pre">LanguageProblems</span></code>, <code class="docutils literal notranslate"><span class="pre">LearningProblems</span></code>, <code class="docutils literal notranslate"><span class="pre">Poverty</span></code>, <code class="docutils literal notranslate"><span class="pre">Prejudice</span></code>, <code class="docutils literal notranslate"><span class="pre">Price</span></code>, <code class="docutils literal notranslate"><span class="pre">Quirk</span></code>, <code class="docutils literal notranslate"><span class="pre">ReducedAttribute</span></code>.
+All disadvantages are described by a rank and details.</p>
+</dd>
+<dt class="field-even">special_abilities<span class="colon">:</span></dt>
+<dd class="field-even"><p>An optional list of <a class="reference internal" href="../character.html#opend6_tools.character.SpecialAbility" title="opend6_tools.character.SpecialAbility"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.SpecialAbility</span></code></a> objects.
+There are a lot of these: <code class="docutils literal notranslate"><span class="pre">AcceleratedHealing</span></code>, <code class="docutils literal notranslate"><span class="pre">Ambidextrous</span></code>, <code class="docutils literal notranslate"><span class="pre">AnimalControl</span></code>, <code class="docutils literal notranslate"><span class="pre">ArmorDefeatingAttack</span></code>, <code class="docutils literal notranslate"><span class="pre">AtmosphericTolerance</span></code>, <code class="docutils literal notranslate"><span class="pre">AttackResistance</span></code>, <code class="docutils literal notranslate"><span class="pre">AttributeScramble</span></code>, <code class="docutils literal notranslate"><span class="pre">Blur</span></code>, <code class="docutils literal notranslate"><span class="pre">CombatSense</span></code>, <code class="docutils literal notranslate"><span class="pre">Confusion</span></code>, <code class="docutils literal notranslate"><span class="pre">Darkness</span></code>, <code class="docutils literal notranslate"><span class="pre">Elasticity</span></code>, <code class="docutils literal notranslate"><span class="pre">Endurance</span></code>, <code class="docutils literal notranslate"><span class="pre">EnhancedSense</span></code>, <code class="docutils literal notranslate"><span class="pre">EnvironmentalResistance</span></code>, <code class="docutils literal notranslate"><span class="pre">ExtraBodyPart</span></code>, <code class="docutils literal notranslate"><span class="pre">ExtraSense</span></code>, <code class="docutils literal notranslate"><span class="pre">FastReactions</span></code>, <code class="docutils literal notranslate"><span class="pre">Fear</span></code>, <code class="docutils literal notranslate"><span class="pre">Flight</span></code>, <code class="docutils literal notranslate"><span class="pre">GliderWings</span></code>, <code class="docutils literal notranslate"><span class="pre">Hardiness</span></code>, <code class="docutils literal notranslate"><span class="pre">Hypermovement</span></code>, <code class="docutils literal notranslate"><span class="pre">Immortality</span></code>, <code class="docutils literal notranslate"><span class="pre">Immunity</span></code>, <code class="docutils literal notranslate"><span class="pre">IncreasedAttribute</span></code>, <code class="docutils literal notranslate"><span class="pre">InfravisionUltravision</span></code>, <code class="docutils literal notranslate"><span class="pre">Intangibility</span></code>, <code class="docutils literal notranslate"><span class="pre">Invisibility</span></code>, <code class="docutils literal notranslate"><span class="pre">IronWill</span></code>, <code class="docutils literal notranslate"><span class="pre">LifeDrain</span></code>, <code class="docutils literal notranslate"><span class="pre">Longevity</span></code>, <code class="docutils literal notranslate"><span class="pre">LuckGood</span></code>, <code class="docutils literal notranslate"><span class="pre">LuckGreat</span></code>, <code class="docutils literal notranslate"><span class="pre">MasterOfDisguise</span></code>, <code class="docutils literal notranslate"><span class="pre">MultipleAbilities</span></code>, <code class="docutils literal notranslate"><span class="pre">NaturalArmor</span></code>, <code class="docutils literal notranslate"><span class="pre">NaturalHandWeapon</span></code>, <code class="docutils literal notranslate"><span class="pre">NaturalMagick</span></code>, <code class="docutils literal notranslate"><span class="pre">NaturalRangedWeapon</span></code>, <code class="docutils literal notranslate"><span class="pre">Omnivorous</span></code>, <code class="docutils literal notranslate"><span class="pre">ParalyzingTouch</span></code>, <code class="docutils literal notranslate"><span class="pre">PossessionLimited</span></code>, <code class="docutils literal notranslate"><span class="pre">PossessionFull</span></code>, <code class="docutils literal notranslate"><span class="pre">QuickStudy</span></code>, <code class="docutils literal notranslate"><span class="pre">SenseOfDirection</span></code>, <code class="docutils literal notranslate"><span class="pre">Shapeshifting</span></code>, <code class="docutils literal notranslate"><span class="pre">Silence</span></code>, <code class="docutils literal notranslate"><span class="pre">SkillBonus</span></code>, <code class="docutils literal notranslate"><span class="pre">SkillMinimum</span></code>, <code class="docutils literal notranslate"><span class="pre">Teleportation</span></code>, <code class="docutils literal notranslate"><span class="pre">Transmutation</span></code>, <code class="docutils literal notranslate"><span class="pre">UncannyAptitude</span></code>, <code class="docutils literal notranslate"><span class="pre">Ventriloquism</span></code>, <code class="docutils literal notranslate"><span class="pre">WaterBreathing</span></code>, <code class="docutils literal notranslate"><span class="pre">YouthfulAppearance</span></code>, <code class="docutils literal notranslate"><span class="pre">NaturalAbility</span></code>.
+All special abilities are described by a rank and details.</p>
+</dd>
+<dt class="field-odd">equipment<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any text</p>
+</dd>
+<dt class="field-even">description<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any text (Yes, this can be redundant, see <code class="docutils literal notranslate"><span class="pre">physical_description</span></code> above.)</p>
+</dd>
+<dt class="field-odd">realm<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any text. This defaults to ‘Human realm’ if nothing is provided.</p>
+</dd>
+<dt class="field-even">move<span class="colon">:</span></dt>
+<dd class="field-even"><p>The movement in meters per round. This default to 10 if nothing is provided.</p>
+</dd>
+<dt class="field-odd">strength_damage<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This is generally computed from the lifting skill of the Strength attribute.
+A value can be provided, to override the automatic computation.</p>
+</dd>
+<dt class="field-even">body<span class="colon">:</span></dt>
+<dd class="field-even"><p>This is generally computed from the Physique attribute via a die roll.
+A value can be provided, to override the automatic computation.</p>
+</dd>
+<dt class="field-odd">wounds<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An automatically computed mapping of wound level names and ranges of body points.</p>
+</dd>
+<dt class="field-even">funds<span class="colon">:</span></dt>
+<dd class="field-even"><p>This is generally computed from the Charisma attribute via a die roll.
+It’s the base dice roll to purchase equipment.</p>
+</dd>
+<dt class="field-odd">silver<span class="colon">:</span></dt>
+<dd class="field-odd"><p>This is computed from the funds. It’s an equivalent to the funds die roll in silver coins.</p>
+</dd>
+<dt class="field-even">fate_points<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of fate points.</p>
+</dd>
+<dt class="field-odd">character_points<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of characte points.</p>
+</dd>
+<dt class="field-even">personality<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any text</p>
+</dd>
+<dt class="field-odd">objectives<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any text</p>
+</dd>
+<dt class="field-even">native_language<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any text</p>
+</dd>
+<dt class="field-odd">other_notes<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any other text that doesn’t have a home in the object definition.</p>
+</dd>
+</dl>
+<p>A number of computations are part of this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The sum of the dice (and pips) to purchase the core 6 (or 7) attributes.</p>
+</dd>
+<dt class="field-even">skills<span class="colon">:</span></dt>
+<dd class="field-even"><p>The sum of the additional dice (and pips) scattered around in the skills.</p>
+</dd>
+<dt class="field-odd">options<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The sum of additional dice (and pips) used to purchase advantages and special abilities, reduced by the dice for disadvantages.
+This is the net cost of those three sets of character options.</p>
+</dd>
+</dl>
+</section>
+<section id="step-2-start-character-and-creature-notebooks">
+<h2>Step 2: Start Character and Creature Notebooks<a class="headerlink" href="#step-2-start-character-and-creature-notebooks" title="Link to this heading">¶</a></h2>
+<p>Look back at the <a class="reference internal" href="opend6_tools.html#tutorial-opend6-tools"><span class="std std-ref">OpenD6 Tools</span></a> tutorial.
+If you have a starting notebook still open, close the open tab by clicking the <code class="docutils literal notranslate"><span class="pre">×</span></code> on the tab for the notebook.</p>
+<p>Generally, we expect to be looking at a Launcher in the center panel.
+If not, the big <code class="docutils literal notranslate"><span class="pre">+</span></code> button on the File Browser panel will create a Launcher panel.</p>
+<section id="step-2a-character-notebook">
+<h3>Step 2a: Character Notebook<a class="headerlink" href="#step-2a-character-notebook" title="Link to this heading">¶</a></h3>
+<p>In the launcher panel, under the “Notebook” banner, click the <code class="docutils literal notranslate"><span class="pre">Python</span> <span class="pre">3</span> <span class="pre">(ipykernel)</span></code> icon to create a new Notebook in the <code class="docutils literal notranslate"><span class="pre">notebooks</span></code> folder.</p>
+<p>Do the following things in this new character notebook.</p>
+<ol class="arabic">
+<li><p>Change the first cell’s type from <code class="docutils literal notranslate"><span class="pre">Code</span></code> to <code class="docutils literal notranslate"><span class="pre">Markdown</span></code>.
+Put in a summary of the notebook – something about an exercise to define a Character and learn the Character DSL.</p></li>
+<li><p>Add a second cell with the following line of code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.character</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>This will import the Character-centric DSL to the notebook.</p>
+<p>Execute the cell with the <a class="reference internal" href="../_images/icon_run.png"><img alt="Run and advance" src="../_images/icon_run.png" style="height: 12pt;" /></a> icon at the top of the panel.</p>
+</li>
+<li><p>In the next cell, put in a Character definition.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fowler</span> <span class="o">=</span> <span class="n">Character</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Fowler&quot;</span><span class="p">,</span>
+    <span class="n">occupation</span><span class="o">=</span><span class="s2">&quot;High Priest and Inspector for the Main Temple of Cyþan&quot;</span><span class="p">,</span>
+    <span class="n">age</span><span class="o">=</span><span class="s2">&quot;Late 40&#39;s&quot;</span><span class="p">,</span>
+    <span class="n">physical_description</span><span class="o">=</span><span class="s2">&quot;Some scars reveal a depth of experience; plenty of muscle to back up his words&quot;</span><span class="p">,</span>
+    <span class="n">agility</span><span class="o">=</span><span class="n">Agility</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">intellect</span><span class="o">=</span><span class="n">Intellect</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">coordination</span><span class="o">=</span><span class="n">Coordination</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">acumen</span><span class="o">=</span><span class="n">Acumen</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="p">),</span>
+    <span class="n">physique</span><span class="o">=</span><span class="n">Physique</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="p">),</span>
+    <span class="n">charisma</span><span class="o">=</span><span class="n">Physique</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">advantages</span><span class="o">=</span><span class="p">[</span><span class="n">Patron</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Great Priest backs him.&quot;</span><span class="p">),],</span>
+    <span class="n">disadvantages</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Devotion</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;High Priest&quot;</span><span class="p">),</span>
+        <span class="n">Employed</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Part of the Temple hierarchy&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">equipment</span><span class="o">=</span><span class="s2">&quot;His walking-stick conceals a long, narrow sword.&quot;</span><span class="p">,</span>
+    <span class="n">personality</span><span class="o">=</span><span class="s2">&quot;Devoted to justice, sometimes at odds with the priests trying to maintain order within the temple.&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Execute the cell with the <a class="reference internal" href="../_images/icon_run.png"><img alt="Run and advance" src="../_images/icon_run.png" style="height: 12pt;" /></a> icon at the top of the panel.</p>
+</li>
+<li><p>Add the following to see the computed budget values for attributes, skills, and options. (The empty <code class="docutils literal notranslate"><span class="pre">()</span></code> are required.)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fowler</span><span class="o">.</span><span class="n">budget_check</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Execute the cell with the <a class="reference internal" href="../_images/icon_run.png"><img alt="Run and advance" src="../_images/icon_run.png" style="height: 12pt;" /></a> icon at the top of the panel.</p>
+<p>Here’s what the notebook looks like:</p>
+<figure class="align-default" id="id1">
+<img alt="../_images/lab_4.png" src="../_images/lab_4.png" />
+<figcaption>
+<p><span class="caption-text">Jupyter Notebook with an example character.</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</li>
+<li><p>Be sure to rename the notebook to a valid name. (Use only ower-case letters, digits, and <code class="docutils literal notranslate"><span class="pre">_</span></code>.)
+The rest of the tutorial assumes it’s called <code class="docutils literal notranslate"><span class="pre">fowler</span></code>.
+If you pick a more meaningful name, be sure to use the name you picked.</p></li>
+<li><p>Be sure to save the final version.</p></li>
+</ol>
+<p>The computations are (almost) immediate and don’t require punching numbers into a calculator.</p>
+<p>Here’s what it shows; which reveals a number of interesting problems:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Attributes 18D+1
+Skills
+Options -1D+2
+</pre></div>
+</div>
+<p>First, this character is only slightly above the standard budget for <strong>starting</strong> character attributes total of 18D. This is an experienced character, and it would make sense to have a few points of experience to boost the attributes.</p>
+<p>Second, this character has no skills. A starting character should have 7D of skills.
+An experienced character may have at least twice this value, perhaps as much as 21D of skills.
+More work needs to be done on this detail.</p>
+<p>Finally, the options dice is a weird-looking negative number.
+This means the disadvantages outweigh the advantages plus special abilities.
+This suggests more work needs to be done here, also.</p>
+<p>After some careful consideration, this character needs changes.
+Which means recomputing the totals and reconsidering the design.</p>
+<p>Feel free to iterate until the character looks more experienced, more skillful, and has advantages or special abilities that outweigh the disadvantages.</p>
+</section>
+<section id="step-2b-creature-notebook">
+<h3>Step 2b: Creature Notebook<a class="headerlink" href="#step-2b-creature-notebook" title="Link to this heading">¶</a></h3>
+<p>Return to a launcher panel.
+In some versions of Jupyter Lab, the Launcher tab is still visible.
+In some versions, it’s not visible.</p>
+<p>If a tab for the Launcher is visible, select it.</p>
+<p>If there’s no tab for the Launcher, click the big “+” button on the browser panel. This will add a Launcher tab.</p>
+<p>In the launcher panel, under the “Notebook” banner, click the <code class="docutils literal notranslate"><span class="pre">Python</span> <span class="pre">3</span> <span class="pre">(ipykernel)</span></code> icon to create a new Notebook in the <code class="docutils literal notranslate"><span class="pre">notebooks</span></code> folder.</p>
+<p>Do the following things in this new creature notebook.</p>
+<ol class="arabic">
+<li><p>Change the first cell’s type from <code class="docutils literal notranslate"><span class="pre">Code</span></code> to <code class="docutils literal notranslate"><span class="pre">Markdown</span></code>.
+Put in a summary of the notebook – something about an exercise to define a Creature and learn the Character DSL.</p></li>
+<li><p>Add a second cell with the following line of code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.character</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>This will import the Character-centric DSL to the notebook.
+This DSL is <strong>also</strong> used for creatures.</p>
+<p>Execute the cell with the <a class="reference internal" href="../_images/icon_run.png"><img alt="Run and advance" src="../_images/icon_run.png" style="height: 12pt;" /></a> icon at the top of the panel.</p>
+</li>
+<li><p>In the next cell, put in a Creature definition.</p>
+<p>Here’s the contents of cell <code class="docutils literal notranslate"><span class="pre">[2]</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grease_pit</span> <span class="o">=</span> <span class="n">Creature</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;grease pit&quot;</span><span class="p">,</span>
+    <span class="n">physical_description</span><span class="o">=</span><span class="s2">&quot;looks like a large puddle or a damp spot on the forest floor; emits a variety of alluring scents.&quot;</span><span class="p">,</span>
+    <span class="n">agility</span><span class="o">=</span><span class="n">Agility</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;fighting&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="p">}),</span>
+    <span class="n">intellect</span><span class="o">=</span><span class="n">Intellect</span><span class="p">(</span><span class="mi">1</span><span class="o">*</span><span class="n">D</span><span class="p">),</span>
+    <span class="n">coordination</span><span class="o">=</span><span class="n">Coordination</span><span class="p">(</span><span class="mi">1</span><span class="o">*</span><span class="n">D</span><span class="p">),</span>
+    <span class="n">acumen</span><span class="o">=</span><span class="n">Acumen</span><span class="p">(</span><span class="mi">1</span><span class="o">*</span><span class="n">D</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;spotting prey&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="p">}),</span>
+    <span class="n">physique</span><span class="o">=</span><span class="n">Physique</span><span class="p">(</span><span class="mi">6</span><span class="o">*</span><span class="n">D</span><span class="p">),</span>
+    <span class="n">charisma</span><span class="o">=</span><span class="n">Physique</span><span class="p">(</span><span class="mi">1</span><span class="o">*</span><span class="n">D</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;persuasion&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="p">}),</span>
+    <span class="n">move</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">natural_abilities</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Here’s the contents of cell <code class="docutils literal notranslate"><span class="pre">[3]</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grease_pit</span><span class="o">.</span><span class="n">budget_check</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here’s what the notebook looks like:</p>
+<figure class="align-default" id="id2">
+<img alt="../_images/lab_5.png" src="../_images/lab_5.png" />
+<figcaption>
+<p><span class="caption-text">Jupyter Notebook with an example creature.</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+</figcaption>
+</figure>
+</li>
+</ol>
+<ol class="arabic simple" start="5">
+<li><p>Be sure to rename the notebook to a valid name. (Use only ower-case letters, digits, and <code class="docutils literal notranslate"><span class="pre">_</span></code>.)
+The rest of the tutorial assumes it’s called <code class="docutils literal notranslate"><span class="pre">monsters</span></code>.
+If you pick a more meaningful name, be sure to use the name you picked.</p></li>
+<li><p>Be sure to save the final version.</p></li>
+</ol>
+<p>Note that the value for <code class="docutils literal notranslate"><span class="pre">natural_abilities</span></code> is an empty list, the value <code class="docutils literal notranslate"><span class="pre">[]</span></code>.
+A creature often have special abilities that are natural, and – consequently – have no cost.
+Perhaps <code class="docutils literal notranslate"><span class="pre">Confusion</span></code> or <code class="docutils literal notranslate"><span class="pre">Invisibility</span></code> would be appropriate.</p>
+<p>The overall budget started with 13D of attributes, and 8D of skills.
+This is a total of 21D, which slightly weaker than a starting character with 25D.</p>
+<p>Here’s the Consider part of this design effort.
+What’s this creature’s role in the overall world?</p>
+<ul class="simple">
+<li><p>A stiff fight? If so, this creature needs an additional 4D of advantages, special abilities, skills, or attributes to make it a  challenge for beginning characters.</p></li>
+<li><p>A common annoyance, easily defeated? If so, this may need to be weakened a bit.</p></li>
+<li><p>A seriously difficult problem requiring a clever solution?
+In that case, it seems like a large number of additional dice are needed.
+Some natural abilities might also be needed.</p></li>
+</ul>
+<p>Feel free to play around with this monster’s definition.
+Maybe there should be two varieties – smaller and larger?</p>
+</section>
+</section>
+<section id="step-3-update-the-publication-pipeline">
+<h2>Step 3: Update the publication pipeline<a class="headerlink" href="#step-3-update-the-publication-pipeline" title="Link to this heading">¶</a></h2>
+<p>There are several transformations that need be applied to our two notebooks to make them ready for publication.
+The pipeline will have three stages in it.</p>
+<ol class="arabic simple">
+<li><p>Convert the two Notebooks into Python modules.</p></li>
+<li><p>Run the Python modules as apps to create a RST-format file that can be included into the final document.</p></li>
+<li><p>As we’ve seen in previous parts of the tutorial, the final document is created by transforming all of the document from RST files to HTML (or PDF or EPUB.)</p></li>
+</ol>
+<p>The final stage of the transformation pipeline is handled by Sphinx’s <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>.
+When we enter the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> command, the <strong>make</strong> application takes off and does what needs to be done to create the final document.
+This includes running <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code> to do the real work.</p>
+<p>We will make a total of three separate changes to expand the publishing pipeline.</p>
+<ol class="loweralpha simple">
+<li><p>Update the Sphinx <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> to add steps 1 and 2 to it.</p></li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">characters/Makefile</span></code> to provide a concrete implementation for steps 1 and 2.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">adventure_tips.rst</span></code> document in our campaign book to include the generated  RST-format file with the character and creature details, nicely formatted.</p></li>
+</ol>
+<section id="step-3a-update-the-makefile">
+<h3>Step 3a – Update the Makefile<a class="headerlink" href="#step-3a-update-the-makefile" title="Link to this heading">¶</a></h3>
+<p>Open the Sphinx-supplied <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>.</p>
+<p>You’ll see something like this cryptic looking recipe definition around line 19:</p>
+<div class="highlight-make notranslate"><div class="highlight"><pre><span></span><span class="nf">%</span><span class="o">:</span><span class="w"> </span><span class="n">Makefile</span>
+<span class="w">	</span>@<span class="k">$(</span>SPHINXBUILD<span class="k">)</span><span class="w"> </span>-M<span class="w"> </span><span class="nv">$@</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>SOURCEDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>BUILDDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">$(</span>SPHINXOPTS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>O<span class="k">)</span>
+</pre></div>
+</div>
+<p>If you did the “Define Spells” tutorial, there should be a <code class="docutils literal notranslate"><span class="pre">$(MAKE)</span> <span class="pre">-C</span> <span class="pre">spells</span></code> line.
+(If you didn’t do that tutorial, it will look like the above example.)</p>
+<p>What does this recipe do? The recipe provides a way to make <em>any</em> target (other than <code class="docutils literal notranslate"><span class="pre">help</span></code>).
+For any name, it will run the given command, <code class="docutils literal notranslate"><span class="pre">$(SPHINXBUILD)</span></code>.
+The value of the <code class="docutils literal notranslate"><span class="pre">SPHINXBUILD</span></code> variable is the actual <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code> command.</p>
+<p>Change the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> to add another new line, <code class="docutils literal notranslate"><span class="pre">$(MAKE)</span> <span class="pre">-C</span> <span class="pre">characters</span></code> in addition to the <code class="docutils literal notranslate"><span class="pre">$(MAKE)</span> <span class="pre">-C</span> <span class="pre">spells</span></code> added in an earlier tutorial.
+It should look like the following:</p>
+<div class="highlight-make notranslate"><div class="highlight"><pre><span></span><span class="nf">%</span><span class="o">:</span><span class="w"> </span><span class="n">Makefile</span>
+<span class="w">    </span><span class="k">$(</span>MAKE<span class="k">)</span><span class="w"> </span>-C<span class="w"> </span>spells
+<span class="w">    </span><span class="k">$(</span>MAKE<span class="k">)</span><span class="w"> </span>-C<span class="w"> </span>characters
+<span class="w">    </span>@<span class="k">$(</span>SPHINXBUILD<span class="k">)</span><span class="w"> </span>-M<span class="w"> </span><span class="nv">$@</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>SOURCEDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>BUILDDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">$(</span>SPHINXOPTS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>O<span class="k">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">%</span></code> recipe now has three steps.</p>
+<ol class="arabic simple">
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span></code> while changing the working directory to <code class="docutils literal notranslate"><span class="pre">spells</span></code>. This will use the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> it finds in that directory.</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span></code> while changing the working directory to <code class="docutils literal notranslate"><span class="pre">characters</span></code>. This will use the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> it finds in that directory.</p></li>
+<li><p>Run the <code class="docutils literal notranslate"><span class="pre">$(SPHINXBUILD)</span></code> command to create the final document.</p></li>
+</ol>
+<p>There are now four requirements for this recipe to work.</p>
+<ol class="arabic simple">
+<li><p>The project has a folder named <code class="docutils literal notranslate"><span class="pre">spells</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">spells</span></code> folder has a <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> in it.</p></li>
+<li><p>The project has a folder named <code class="docutils literal notranslate"><span class="pre">characters</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">characters</span></code> folder has a <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> in it.</p></li>
+</ol>
+<p>We’ll make some changes to make sure the last two requirements are satisfied.</p>
+</section>
+<section id="step-3b-add-the-characters-makefile">
+<h3>Step 3b – add the characters/Makefile<a class="headerlink" href="#step-3b-add-the-characters-makefile" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">characters/Makefile</span></code> is not terribly complicated.
+It has a bunch of “boilerplate” – standard stuff that won’t change.
+It has one line will change as our document grows and evolves.</p>
+<div class="highlight-make notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="nf">.phony</span><span class="o">:</span><span class="w"> </span><span class="n">characters</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="cp">vpath %.ipynb ../../notebooks</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c"># Create a Python Character or Creature module from a Jupyter Notebook with the same name.</span>
+<span class="linenos"> 6</span><span class="nf">%.py </span><span class="o">:</span><span class="w"> </span>%.<span class="n">ipynb</span>
+<span class="linenos"> 7</span><span class="w">    </span>python<span class="w"> </span>-m<span class="w"> </span>opend6_tools.notebook_extract<span class="w"> </span>characters<span class="w"> </span>$&lt;<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="c"># Create an RST text file from a Python Character or Creature module with the same name.</span>
+<span class="linenos">10</span><span class="nf">%.txt </span><span class="o">:</span><span class="w"> </span>%.<span class="n">py</span>
+<span class="linenos">11</span><span class="w">    </span>pytest<span class="w"> </span>--doctest-modules<span class="w"> </span>$&lt;
+<span class="linenos">12</span><span class="w">    </span>python<span class="w"> </span>$&lt;<span class="w"> </span>display<span class="w"> </span>--format<span class="w"> </span>SHORT<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="nf">characters </span><span class="o">:</span><span class="w"> </span><span class="n">fowler</span>.<span class="n">txt</span> <span class="n">monsters</span>.<span class="n">txt</span>
+</pre></div>
+</div>
+<p>This <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> has four separate recipes, and one directive.
+We’ll start at the top.</p>
+<ol class="arabic">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">.phony:</span> <span class="pre">characters</span></code> is a special-purpose recipe to tell <strong>make</strong> that <code class="docutils literal notranslate"><span class="pre">characters</span></code> isn’t really a file.</dt><dd><p>It’s a phony target name.</p>
+</dd>
+</dl>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">vpath</span></code> directoive tells  <strong>make</strong> to search for <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> files in a <code class="docutils literal notranslate"><span class="pre">../notebooks</span></code> directory.
+The <code class="docutils literal notranslate"><span class="pre">..</span></code> means the “parent of this directory”.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">%.py</span> <span class="pre">:</span> <span class="pre">%.ipynb</span></code> recipe shows how to make a Python module from a Notebook.
+The use of <code class="docutils literal notranslate"><span class="pre">%</span></code> means the file stem remains constant, but a file with a new suffix will be created.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">%.txt</span> <span class="pre">:</span> <span class="pre">%.py</span></code> recipe shows how to make an RST file from a Python module.
+The <code class="docutils literal notranslate"><span class="pre">display</span></code> argument will provide a useful display of the spells.
+The <code class="docutils literal notranslate"><span class="pre">--format</span> <span class="pre">SHORT</span></code> uses the short form for the character or creature.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">characters</span> <span class="pre">:</span> <span class="pre">fowler.txt</span> <span class="pre">monsters.txt</span></code> recipe provides a concrete definition for the phony <code class="docutils literal notranslate"><span class="pre">characters</span></code> target.
+This defines what will be done in response to the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">characters</span></code> command.
+The phony target depends on two concrete files, <code class="docutils literal notranslate"><span class="pre">fowler.txt</span></code>, and <code class="docutils literal notranslate"><span class="pre">monsters.txt</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">%.txt</span> <span class="pre">:</span> <span class="pre">%.py</span></code> recipe means an <code class="docutils literal notranslate"><span class="pre">fowler.py</span></code> file needs to be found and converted.
+The <code class="docutils literal notranslate"><span class="pre">%.py</span> <span class="pre">:</span> <span class="pre">%.ipynb</span></code> recipe means an <code class="docutils literal notranslate"><span class="pre">fowler.ipynb</span></code> notebook needs to be found and converted.
+It can be found either in the <code class="docutils literal notranslate"><span class="pre">characters</span></code> directory or – better – in the <code class="docutils literal notranslate"><span class="pre">notebooks</span></code> directory named in the <code class="docutils literal notranslate"><span class="pre">vpath</span></code> directive.</p>
+<p>Similarly, to create the <code class="docutils literal notranslate"><span class="pre">monsters.txt</span></code>, a <code class="docutils literal notranslate"><span class="pre">monsters.py</span></code> is requied.
+This can be built from <code class="docutils literal notranslate"><span class="pre">monsters.ipynb</span></code>.</p>
+</li>
+</ol>
+<p>This example assumes the notebooks will be called <code class="docutils literal notranslate"><span class="pre">fowler.ipynb</span></code> and <code class="docutils literal notranslate"><span class="pre">monsters.ipynb</span></code>.
+If the notebooks have different names, use those names instead of <code class="docutils literal notranslate"><span class="pre">fowler.ipynb</span></code> or <code class="docutils literal notranslate"><span class="pre">monsters.ipynb</span></code>.
+The name’s stem has to be lowercaes letters, digits, and <code class="docutils literal notranslate"><span class="pre">_</span></code>. The suffix has to be <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>.
+The names claimed in the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> (<code class="docutils literal notranslate"><span class="pre">fowler</span></code> and <code class="docutils literal notranslate"><span class="pre">monsters</span></code>) needs to match the actual name the actual notebooks actually have.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>.txt is the suffix for the RST-format file</p>
+<p>The suffix of <code class="docutils literal notranslate"><span class="pre">.txt</span></code> is distinct from the <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files we created by hand.
+We use this suffix to make it invisible to the <strong>Sphinx</strong> tools.
+It’s still RST-formatted spell details.</p>
+<p>We want to use <code class="docutils literal notranslate"><span class="pre">.rst</span></code> for manually-created files because <strong>Sphinx</strong> will look around in the working directory to be sure all <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files are part of the current project.
+This helps locate spelling mistakes in the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">tocreee::</span></code> directives.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">characters</span> <span class="pre">:</span> <span class="pre">fowler.txt</span> <span class="pre">monsters.txt</span></code> recipe will grow as we add new notebooks.
+The rest of the file will remain unchanged.
+As new notebooks are created, add the file names to the <code class="docutils literal notranslate"><span class="pre">characters</span> <span class="pre">:</span></code> recipe.
+The names go at the end, separated from each other by at least one space.</p>
+<p>The final step is to add an <code class="docutils literal notranslate"><span class="pre">..</span>&#160; <span class="pre">include::</span> <span class="pre">characters/fowler.txt</span></code> and <code class="docutils literal notranslate"><span class="pre">..</span>&#160; <span class="pre">include::</span> <span class="pre">characters/fowler.txt</span></code> in the <code class="docutils literal notranslate"><span class="pre">adventure_tips.rst</span></code> chapter of the campaign book.</p>
+</section>
+<section id="step-3b-include-the-character-and-creature-rst-files">
+<h3>Step 3b – include the character and creature RST files<a class="headerlink" href="#step-3b-include-the-character-and-creature-rst-files" title="Link to this heading">¶</a></h3>
+<p>In our <code class="docutils literal notranslate"><span class="pre">adventure_tips.rst</span></code> chapter, we might have some text like this.</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span>Here&#39;s a list of example characters:
+
+<span class="p">..</span>  <span class="ow">include</span><span class="p">::</span> characters/fowler.txt
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">include::</span></code> directive tells Sphinx to read the <code class="docutils literal notranslate"><span class="pre">fowler.txt</span></code> file here.
+The RST-formatted version of the <code class="docutils literal notranslate"><span class="pre">fowler.ipynb</span></code> notebook will be included here in the document.</p>
+<p>As noted above, if your actual notebook name is not <code class="docutils literal notranslate"><span class="pre">fowler</span></code>, change this to match your
+actual notebook name.</p>
+<p>Similarly, there needs to be an <code class="docutils literal notranslate"><span class="pre">..</span>&#160; <span class="pre">include::</span> <span class="pre">characters/monsters.txt</span></code> in the place where a monster list is presented in the text.</p>
+</section>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h2>
+<p>We’ve added a section to our book.
+This section includes character and creatures definitions, which means we’ve done a number of related things.</p>
+<ol class="arabic simple">
+<li><p>We’ve used notebooks to define the characters and creatures.
+This helps us with the <strong>Change-Compute-Consider</strong> part of design.</p></li>
+<li><p>We’ve updated the Sphinx <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> to build characters.</p></li>
+<li><p>We’ve creaete a <code class="docutils literal notranslate"><span class="pre">characters/Makefile</span></code> to build RST-formatted files from the notebooks in which we put our ideas.</p></li>
+</ol>
+<p>As important note is that we can have as many characters or creatures as we want in a single notebook.</p>
+<p>They will <strong>all</strong> wind up in a single RST-format file.
+They will <strong>all</strong> wind up in a single RST-format file.</p>
+<p>The notebook organization, then, reflects the organization of <code class="docutils literal notranslate"><span class="pre">..</span>&#160; <span class="pre">include::</span></code> directives in our book.</p>
+<ul class="simple">
+<li><p>One master list of all template characters? One big notebook and one big RST file will work.</p></li>
+<li><p>Separate lists of characters for distinct contexts? This is common because character details show up in many places.
+It’s also common because creatures are often split into “common” and “uncommon” groups.</p></li>
+</ul>
+<p>The point here is to make sure the organization of the information is reflected in the file structure.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenD6 Tools</a></h1>
+
+
+
+
+
+
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Tutorial</a><ul>
+      <li>Previous: <a href="define_spells.html" title="previous chapter">Define Spells</a></li>
+      <li>Next: <a href="../usage.html" title="next chapter">Using the OpenD6 Tools</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#the-big-picture">The Big Picture</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#this-tutorial">This Tutorial</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installing_software.html">Installing Software</a></li>
+<li class="toctree-l3"><a class="reference internal" href="start_writing.html">Start Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="opend6_tools.html">OpenD6 Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="define_spells.html">Define Spells</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Define Characters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#step-1-adding-a-chapter">Step 1: Adding a chapter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#background-on-character-definition">Background on Character definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-2-start-character-and-creature-notebooks">Step 2: Start Character and Creature Notebooks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-3-update-the-publication-pipeline">Step 3: Update the publication pipeline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../computations.html">Miscellaneous Computations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes.html">Notes on DSL Design</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, S.Lott.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/tutorial/define_characters.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

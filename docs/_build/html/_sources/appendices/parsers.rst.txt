@@ -1,0 +1,25 @@
+#####################
+ Parser Applications
+#####################
+
+The following modules are applications to parse source documents:
+
+-   download.py
+
+-   migrate_magic.py
+
+-   parse_equipment.py
+
+-   parse_fwb_spells.py
+
+-   parse_fwn_spells.py
+
+-   parse_spells_d6p.py
+
+-   parse_spells_fantasy.py
+
+-   parse_spells_mg.py
+
+-   pdf_scrape.py
+
+These aren't generally useful, and may be removed in the future.

@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.tox
+
+# Sphinx
+/docs/_build/html/.buildinfo
+/docs/_build/html/.buildinfo.bak
+
+# Other files
+/fix_details.md

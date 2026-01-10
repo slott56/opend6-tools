@@ -1,0 +1,33 @@
+Results of doctest builder run on 2026-01-10 16:29:17
+=====================================================
+
+Document: character
+-------------------
+1 item passed all tests:
+  29 tests in default
+29 tests in 1 item.
+29 passed.
+Test passed.
+
+Document: magic2
+----------------
+1 item passed all tests:
+ 364 tests in default
+364 tests in 1 item.
+364 passed.
+Test passed.
+
+Document: usage
+---------------
+1 item passed all tests:
+   6 tests in default
+6 tests in 1 item.
+6 passed.
+Test passed.
+
+Doctest summary
+===============
+  399 tests
+    0 failures in tests
+    0 failures in setup code
+    0 failures in cleanup code

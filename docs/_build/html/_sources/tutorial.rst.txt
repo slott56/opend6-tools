@@ -1,0 +1,633 @@
+..  _tutorial:
+
+############
+  Tutorial
+############
+
+The point of the **OpenD6** tools project is to help designers (as well as game masters) create consistent definitions of spells and characters.
+These tools handle the accounting details for spell difficulty and character dice allocations.
+
+The immediate goal is publication of documents.
+These may be intended for sale, or to be shared with interested readers and players.
+
+The publication process is centered around a chain of tools to allow anyone to write some text and get a slick, professionally-formatted result in a number of distinct publication formats.
+This means explicitly stepping away from WYSIAYG ("What You See Is All You Get") word processing tools.
+Why?
+These tools have a number of limitations that make things seem easier for some simple tasks, but get in the way of more complex tasks.
+
+..  sidebar:: Some problems with word processing.
+
+    Here are the two problems that suggest WYSIAYG word processing is inadequate for our needs.
+
+    -   Maintaining consistent styles in a complex document is too difficult.
+        A highly-skilled user can use and maintain document-wide styles and often get things to look pretty good.
+        Less skilled users will often have inconsistent styles. One cause of this is the invisible scope of a style and structure settings. For example, a list might winds up with a mixed bag of styles because an emphasis change (e.g. italics) wasn't confined to one word of one item in the list, but instead included the entire following item.
+
+    -   The Spells and Characters are very complex structures, and validation rules are impossible to enforce without creating complex add-on extension modules for the word processor tool.
+        Simple, external tools can't easily extract details from the depths of a word-processing document.
+        It's easier to use text-based writing to build a document from a collection of text files, easily processed by external tools.
+
+The general approach, then, is this.
+
+1.  Write the source material using a programming text editor.
+    The author use ReStructuredText (RST) markup for the structure and emphasis in the document.
+    For example, **bold** text looks like this: ``**bold**``.
+    It's wrapped in double ``*`` characters.
+    Similarly, *italic* text looks like this: ``*italic*``.
+    Headings are underlined. List items are indented.
+
+2.  The details of Spells, Invocations, Characters, Creatures, etc. are in external files.
+    An ``..  include::`` directive injects the externally-produced RST content into the overall document.
+
+3.  Commands entered in a Terminal window convert RST into HTML (or PDF or EPUB) products by converting the collection of source RST files to the desired output.
+
+For advanced document designers, HTML styles can be added to alter the general look.
+The HTML templates can be changed to alter the structure of the resulting pages.
+
+Changes are always made to the source RST. The HTML, PDF, and EPUB are **never** touched manually, they're simply distributed to the target audience.
+
+Installing Software
+===================
+
+Using the OpenD6 tools is adjacent to computer programming.
+No, we won't be writing algorithms and if-statements and that kind of thing.
+We will, however, be using software tools and the syntax of the Python programming language to create Spells and Characters.
+
+The tools are written in Python. (See https://python.org).
+Think of Python as the engine in the front of a tractor-trailer rig dragging around thirty-thousand pounds of bananas.
+Our interest is the produce, not the details of how the diesel engine works.
+We don't even care how many wheels or axles the tractor-trailer has.
+We simply want fresh fruit.
+
+Python -- the language -- is essential, but will be largely invisible.
+Our only real interaction with Python will be the formal syntax rules borrowed from this language.
+The arrangement of quotation marks, parenthesis, commas, etc., will come from Python.
+
+Adjacent to the Python language is the "ecosystem" of add-on components.
+This collection of tools, applications, and library modules is vast, published on-line, and used widely.
+We'll be using some of these add-on components to produce our **OpenD6** documents.
+
+Beacuse we're using Python, it helps to understand what Python folks call a "virtual" environment.
+The qualifier -- *virtual* -- is necessary because the operating system defines the real environment.
+The environment applies every time we start an application or open a terminal window.
+It includes the user information (which implies certain permissions), and the user's current working directory, as well as the user's collection of available applications and libraries.
+Over the decades, Python developers have learned it's best not to try to touch the real OS environment. (Why? Partly because Windows, Linux and macos have too many unique features.)
+Instead, Python folks use tools to create virtual environments.
+
+..  important::
+
+    Python virtual environments need to be *activated*.
+    One very common problem is installing software in one virtual environment and then trying to use the software from another environment.
+    It's important to make sure we know which virtual environment is active before doing anything.
+
+    For those familiar with command-line tools the virtual environment name is a prefix on the prompt. It might be ``(my-book)`` to show the active environment.
+
+    We'll look at details in some later steps.
+
+Since the writing process is adjacent to software development, we'll be installing new software on our computer.
+This means we need administrative rights to the computer we're using.
+A lot of these steps will be done using the **Terminal** (or **Powershell**) window.
+Not everyone is familiar with this, so we'll start with a necessary preparation step.
+
+Preparation
+------------
+
+We'll be using tools that have a Command-Line Interface (CLI).
+We interact with these using the Terminal (or Powershell) application.
+
+This means we need to find the Terminal (or Powershell) window on our computer.
+For readers used to programming, this goes without saying.
+For readers not used to using advanced software tools to help with TTRPG design, this may be something new.
+
+In **macos** the Terminal window can be found by running the **Launchpad** and typing "Term" into the search bar at the top of the screen.
+This will highlight the icon for the Terminal window.
+Some folks will drag this into the dock to make a reminder.
+
+In **Windows**, the "Powershell" window is used.
+Generally, the **Start Menu** will have a way to start Powershell.
+https://learn.microsoft.com/en-us/powershell/scripting/windows-powershell/starting-windows-powershell?view=powershell-7.5
+
+Folks using **Linux** are generally comfortable with using the terminal window to interact with CLI tools.
+Most desktop environments will open a terminal window by default.
+
+Finding a Terminal window (or Powershell) window is essential.
+We'll do software installation and run the publication tools from the terminal window.
+
+In order to manage Python's ecosystem and our computer's virtual environments, we'll start by installing a handy tool, called **uv**.
+See https://docs.astral.sh/uv/.
+
+Step 1: Install uv
+--------------------
+
+Using **uv** helps because it can install Python, install add-on packages, and create multiple virtual environments for folks who have multiple proceects in progress at one time.
+
+See https://docs.astral.sh/uv/getting-started/installation/.
+
+Here's what this might look like:
+
+..  code-block:: text
+
+    writer@MacBook-Pro-M4 ~ % cd Documents
+    writer@MacBook-Pro-M4 Documents % curl -LsSf https://astral.sh/uv/install.sh | sh
+    downloading uv 0.9.17 aarch64-apple-darwin
+    no checksums to verify
+    installing to /Users/writer/.local/bin
+      uv
+      uvx
+    everything's installed!
+
+    To add $HOME/.local/bin to your PATH, either restart your shell or run:
+
+        source $HOME/.local/bin/env (sh, bash, zsh)
+        source $HOME/.local/bin/env.fish (fish)
+    writer@MacBook-Pro-M4 Documents % source $HOME/.local/bin/env
+
+At this point, the **uv** tool is available.
+We'll use this to install other tools.
+Before we do that, however, it helps to install a programming editor or IDE.
+
+Step 2: Install a programming editor or IDE
+-------------------------------------------
+
+As noted above, we're avoiding the limitations of word processors.
+This means using a **simpler** editor for text files.
+The editor is actually simpler than a word processor; it may look confusing at first, but then, all new things look confusing at first.
+
+Some programming editors come with a ton of tools.
+These are called an Integrated Development Environment (IDE.)
+The number of tools is daunting.
+We won't use many of them.
+
+There are innumerable programming editors.
+It's very difficult to choose one.
+We'll make two suggestions that are available for most platforms.
+
+1. PyCharm from JetBrains. https://www.jetbrains.com/pycharm/
+    This is a commercial product, but there is a community edition.
+
+2. Spyder. https://www.spyder-ide.org.
+    This is open-source.
+
+These have similar install procedures:
+
+-   Download the installer from the web site.
+
+-   Run the installer by double-clicking it.
+    Under **macos**, the Safari browser will launch the installer automatically, saving the two clicks.
+
+-   In the case of Spyder, when the the installer is finished, Spyder will start, and offer a number of tours and tutorials. These are highly recommended.
+
+Step 3: Use uv to install Python
+--------------------------------
+
+We'll use **uv** to install Python.
+Enter this ``uv`` command in the Terminal (or Powershell) window.
+
+..  code-block:: bash
+
+    uv python install 3.14
+
+This is the same on all platforms -- **macos**, **Windows**, or **Linux**. That's one of the reasons why installing **uv** is so helpful.
+
+It might look like this:
+
+..  code-block:: text
+
+    writer@MacBook-Pro-M4 my_book % uv python install 3.14
+    Installed Python 3.14.2 in 2.59s
+     + cpython-3.14.2-macos-aarch64-none (python3.14)
+
+This has put ``python3.14`` into your current environment.
+Try it out.
+
+..  code-block:: text
+
+    writer@MacBook-Pro-M4 my_book % python3.14
+    Python 3.14.2 (main, Dec  9 2025, 19:29:30) [Clang 21.1.4 ] on darwin
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>>
+
+Your version of Python may not be ``3.14.2``.  It's likely to be a lot newer.
+
+Enter ``exit`` at the ``>>>`` prompt and hit return to leave Python.
+
+We don't want to be looking at the Python ``>>>`` prompt.
+We want to be looking at the Terminal prompt ending with ``%`` (or ``>`` for Windows.)
+For **macos**, the prompt character will have a prefix like ``writer@MacBook-Pro-M4 my_book`` which is the username, ``writer``,, the machine name, ``MacBook-Pro-M4``, and the current directory, ``my_book``. This helps provide context for the ``%`` prompt.
+
+For **Windows**, the prefix may be ``C:\`` or something equally terse.
+
+What's important is there's no ``(my-book)`` prefix to the prompt.
+This prefix will be inserted when we've activated a virtual environment.
+
+Step 4: Use uv to start a project
+-----------------------------------
+
+Let's say we're going to create a campaign document.
+We're going call it ``my_book``.
+(It's a working title; we'll change it later.)
+
+We'll start by using ``uv`` to create the project directory.
+Then we'll change to the newly-created ``my_book`` directory.
+
+Enter this ``uv`` commands in the Terminal (or Powershell) window.
+
+..  code-block:: bash
+
+    uv init --app --python 3.14 my_book
+    cd my_book
+
+A few files have been created in this directory by the **uv init** command.
+We can use the ``ls`` (or **Windows** ``dir``) command to list the contents of this directory.
+
+It might look like this:
+
+..  code-block:: bash
+
+    writer@MacBook-Pro-M4 Documents % uv init --app --python 3.14 my_book
+    Initialized project `my-book` at `/Users/writer/Documents/my_book`
+    writer@MacBook-Pro-M4 Documents % cd my_book
+    writer@MacBook-Pro-M4 my_book % ls
+    main.py		pyproject.toml	README.md
+
+We don't **need** these files. They can be helpful, however, so it helps to look at them.
+What are they?
+
+-   ``main.py`` is a little application that shows what a Python application looks like. In the long run, we'll often delete this.
+
+-   ``pyproject.toml`` describes the project from a technical perspective. It lists the name, the authors, and those kinds of things.
+    It also lists the components on which the project depends.
+    This list of dependencies is essential for working with collaborators.
+    This file lets others reconstruct a virtual environment that matches the one you're creating.
+
+-   ``README.md`` can provide some essential background details on the project. It expands on the bare technical facts in the ``pyproject.toml`` to help a person understand what this directory contains.
+    It helps to think of this as an "elevator pitch" for the project. It's a synopsis we can rattle off in an elevator ride up to the executive conference room.
+
+A book will use a large number of files.
+Since we're going to use Sphinx to produce the documents,
+the next step is to install Sphinx.
+
+Above, we noted that a virtual environment is important.
+We can create one now, with a ``uv venv`` command.
+Or, we can wait, and the **uv** tool will add a virtual environment automatically when it installs Sphinx.
+
+Step 5: Use uv to add Sphinx to the project
+-------------------------------------------
+
+The next installation step is to add the central tool for creating the final document.
+We'll add Sphinx to our virtual environment.
+See https://sphinx-doc.org.
+
+Enter this ``uv`` commands in the Terminal (or Powershell) window.
+
+..  code-block:: bash
+
+    uv add sphinx
+
+This will add Sphinx to the project environment, allowing us to create an empty book, ready to hold our ideas.
+
+This will **also** create a virtual environment to contain the unique tools we've added for this project.
+Look for the ``Creating virtual environment`` line in the output to confirm that this happened.
+
+The output is long, so we've truncated it. It might look like this:
+
+..  code-block:: bash
+
+    writer@MacBook-Pro-M4 my_book % uv add sphinx
+    Using CPython 3.14.2
+    Creating virtual environment at: .venv
+    Resolved 24 packages in 398ms
+    Prepared 22 packages in 3.22s
+    Installed 22 packages in 34ms
+     + alabaster==1.0.0
+    ...
+     + sphinx==9.0.4
+     + sphinxcontrib-applehelp==2.0.0
+     + sphinxcontrib-devhelp==2.0.0
+     + sphinxcontrib-htmlhelp==2.1.0
+     + sphinxcontrib-jsmath==1.0.1
+     + sphinxcontrib-qthelp==2.0.0
+     + sphinxcontrib-serializinghtml==2.0.0
+     + urllib3==2.6.2
+    writer@MacBook-Pro-M4 my_book %
+
+We now have enough software that we can use **Spyder** and **Sphinx** to start writing our campaign book.
+
+The final step is to initialize the book's directory structure.
+This means adding a few more directories and files to the ``my_book`` directory.
+
+Step 6: Use sphinx-quickstart to get started
+--------------------------------------------
+
+We'll use **uv** to run the Sphinx quickstart script.
+
+..  code-block:: bash
+
+    uv run sphinx-quickstart
+
+This will ask a few questions about the project.
+Then it will create the required files.
+
+We used the ``cd`` command to set our current working directory to be the ``my_book`` directory.
+We can confirm that using the **macos** ``pwd`` or **Windows** ``cd`` commands.
+
+(The **Windows** ``cd`` command shows the current directory.
+The **macos** and **Linus** ``cd`` command changes the current directory to be our home directory.)
+
+When the quickstart script asks for the ``Selected root path``, the answer is the current working directory. This has a name of ``.``. Yes. One period is the name of the working directory.
+
+It might look like this:
+
+..  code-block:: text
+
+    writer@MacBook-Pro-M4 my_book % uv run sphinx-quickstart
+    Welcome to the Sphinx 9.0.4 quickstart utility.
+
+    Please enter values for the following settings (just press Enter to
+    accept a default value, if one is given in brackets).
+
+    Selected root path: .
+
+    You have two options for placing the build directory for Sphinx output.
+    Either, you use a directory "_build" within the root path, or you separate
+    "source" and "build" directories within the root path.
+    > Separate source and build directories (y/n) [n]:
+
+    The project name will occur in several places in the built documentation.
+    > Project name: my_book
+    > Author name(s): S.Lott
+    > Project release []:
+
+    If the documents are to be written in a language other than English,
+    you can select a language here by its language code. Sphinx will then
+    translate text that it generates into that language.
+
+    For a list of supported codes, see
+    https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-language.
+    > Project language [en]:
+
+    Creating file /Users/writer/Documents/my_book/conf.py.
+    Creating file /Users/writer/Documents/my_book/index.rst.
+    Creating file /Users/writer/Documents/my_book/Makefile.
+    Creating file /Users/writer/Documents/my_book/make.bat.
+
+    Finished: An initial directory structure has been created.
+
+    You should now populate your master file /Users/writer/Documents/my_book/index.rst and create other documentation
+    source files. Use the Makefile to build the docs, like so:
+       make builder
+    where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
+
+    writer@MacBook-Pro-M4 my_book %
+
+The log says four files were made. This is what was done for you:
+
+-   ``conf.py`` is a configuration for Sphinx. It has a few project details in it. We'll need to edit this to change the configuration slightly.
+
+-   ``index.rst`` is the root of the document to be created.
+
+-   ``Makefile`` is used by the **make** utility to rebuild the book when any of the source files change. The ``make.bat`` file is a handy proxy for this when working with **Windows** where the **make** utility may be unavailable.
+
+Step 7: Create a Spyder project
+-------------------------------
+
+It helps to tell Spyder what we're doing.
+That way, we can simple click on the Spyder icon and start work.
+
+There's **Project** menu in the Spyder window.
+This has a **New...** item.
+The **Project->New** menu item will lets us pick the "my_book" folder. This will create the needed project.
+
+The left-side of the Spyder window will fill in with the files already created as part of this project.
+
+We'll make one small change to the configuration file in the final step.
+
+Step 8: Tweak the configuration
+-------------------------------
+
+To change the configuration, click the ``conf.py`` file.
+
+This file starts with a line that looks like the following:
+
+..  code-block:: Python
+
+    # Configuration file for the Sphinx documentation builder.
+    #
+    # For the full list of built-in configuration values, see the documentation:
+    # https://www.sphinx-doc.org/en/master/usage/configuration.html
+
+We need to add a line at the end.
+
+..  code-block:: python
+
+    exclude_patterns = ['.venv/*']
+
+This will prevent Sphinx from peering around in the ``.venv`` directory tree, looking for elements of our book.
+
+Start Writing
+=============
+
+Each writing session will involve updating the ``.rst`` (and other) files in the project directory.
+
+It may involve also running ``make html`` at the command line to see the HTML-format web pages built from the source files.
+
+Step 1: Activate the virtual environment
+----------------------------------------
+
+Each time we sit down to a fresh, new Terminal window (or Powershell prompt) we'll need to make sure our virtual environment is active.
+The OS prompt provides a little hint.
+
+- If the prompt starts with ``(my-book)`` then the virtual environment is active. Nothing more needs to be done.
+    Skip the rest of this step.
+
+- Otherwise, the virtual environment is not active, and needs to be activated.
+
+In order to run ``make``, the virtual environment needs to be active.
+Here's the command to activate the virtual environment.
+
+..  code-block:: bash
+
+    source .venv/bin/activate
+
+For **Windows** the command is slightly simpler.
+
+..  code-block:: bash
+
+    .venv\Scripts\Activate.ps1
+
+This will make all the Python scripts and tools into first-class parts of the current working environment.
+
+The prompt will change to include ``(my-book)`` as a reminder that the virtual environment is now active.
+
+Step 2: Write
+-------------
+
+Open Spyder.
+
+Open the ``index.rst`` file. It should look something like this.
+
+..  code-block:: rst
+
+    .. my_book documentation master file, created by
+       sphinx-quickstart on Thu Dec 11 15:10:08 2025.
+       You can adapt this file completely to your liking, but it should at least
+       contain the root `toctree` directive.
+
+    my_book documentation
+    =====================
+
+    Add your content using ``reStructuredText`` syntax. See the
+    `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
+    documentation for details.
+
+
+    .. toctree::
+       :maxdepth: 2
+       :caption: Contents:
+
+This shows a number of RST features.
+
+-   The line starting with ``..`` is a "comment" or "note".
+    The indented lines that follow are part of the note.
+    This is private material, for the author's eyes only.
+    It's not included in the output.
+
+-   The title is ``my_book documentation``.
+    We know this is some kind of heading because it is followed by an underline that has the same length as the line above it.
+    A heading **must** have this two-line structure.
+
+    RST headings are underlined using any of a variety of characters.
+    We suggest the following pattern:
+
+    -   Book Title has ``#`` as the underline character.
+    -   Chapter titles have ``=`` as the underline character.
+    -   Section titles have ``-`` as the underline.
+    -   Subsections can have ``~`` as the underline.
+
+    If you need subsubsections, use ``*``.
+
+    Consistency matters.
+
+-   The use of the `````` character pairs to surround text that's shown in "terminal" font.
+    The ``index.rst`` example doesn't show using ``**`` for strong emphasis, and ``*`` for emphasis. Strong emphasis often uses a **bold** style. Emphasis often uses an *italic* style.
+
+-   There's a two-part hyperlink: ```text <URL>`_``.
+    Note the use of single ````` characters to surround the hyperlink, and the use of ``_`` at the end to show that this link leads away from this document to another site on the internet.
+    The text is what the reader will see.
+    The part in ``<`` ... ``>`` is the Uniform Resource Locator (URL) to which they can be directed if they click.
+
+-   The ``.. toctree::`` is a "directive".
+    A directive is not part of the text, but is an instruction to Sphinx to do something here.
+    This specific directive tells Sphinx to locate the files named within the directive and create a table of contents from them.
+    Right now, there are no files inside this directive.
+
+Two changes are important here:
+
+-   Change the title to something more interesting.
+    Change the line of ``=`` to a line of ``#`` that matches your more interesting title.
+
+-   Add five empty chapters:
+
+    -   Introduction
+    -   Key Terms
+    -   Character Basics
+    -   Character Options
+    -   Improving Characters
+
+What's involved in adding a chapter?
+
+1.  Create a new ``.rst`` file for the chapter.
+    We might create a file named ``introduction.rst``.
+
+2.  Put the title in the chapter.
+    The first line of ``introduction.rst`` might be
+
+    ..  code-block:: rst
+
+        Introduction
+        ============
+
+3.  Update the ``.. toctree::`` directive to include the name of the new file.
+
+    It might look like this:
+
+    ..  code-block:: rst
+
+        .. toctree::
+           :maxdepth: 2
+           :caption: Contents:
+
+            introduction
+
+    What's important is the file name is **indented** within the ``.. toctree::`` directive.
+
+These three steps should be repeated for each of the five new chapters.
+This will add five new files.
+It will add five filenames to the ``.. toctree::`` directive.
+
+Step 3: Run Make
+----------------
+
+Outside Spyder, at the **Terminal** window, run the following command
+
+..  code-block:: bash
+
+    make html
+
+This will make a nice HTML version of our draft book.
+Look inside the ``_build`` directory for the ``html`` sub-directory.
+Inside here, there's an ``index.html`` that is the resulting web site.
+
+Spyder can open a browser to display the ``index.html`` file.
+
+It also works to open the OS file management window and double click the ``index.html`` file to see it in a browser.
+
+Adding Spells
+=============
+
+The language uses Python to provide syntax and do comptuations and transformations.
+
+Here's an example.
+
+..  code-block:: python
+
+    example = Spell(
+        name="Example",
+        notes="Mage waves their hands and says the words",
+        skill="Transformation",
+        effect=SkillEffect("Acumen: testing", "+4D"),
+        duration=DurationAspect("1 sec"),
+        range=RangeAspect("1m"),
+        casting_time=CastingTimeAspect("5 sec"),
+        speed=SpeedAspect.based_on("range", description="Instantaneous"),
+        other_aspects = {},
+        other_conditions = [GenericAspect(1, "Everthing else is completed")],
+    )
+
+(Yes, there's a wee bit of redundancy here. It's actually helpful because it helps to pinpoint errors.)
+
+The **OpenD6 Rules** list 8 characteristics of a spell.
+
+-   Skill Used.
+
+-   Difficulty.  This is conspicuously absent from the above example.
+
+-   Effect.
+
+-   Duration.
+
+-   Range.
+
+-   Speed.
+
+-   Casting Time.
+
+-   Other Aspects.
+
+This definition includes a name, notes, and other conditions.
+It does **not** include the difficulty.
+
+The doff
+
+Adding Characters
+==================
