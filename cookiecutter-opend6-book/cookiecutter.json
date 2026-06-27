@@ -1,0 +1,9 @@
+{
+  "full_name": "S. Lott",
+  "email": "slott@example.com",
+  "project_name": "OpenD6 Book",
+  "package_name": "{{ cookiecutter.project_name.replace(' ', '-') }}",
+  "project_short_description": "OpenD6 Campaign {{ cookiecutter.project_name }}",
+  "year": "{% now 'utc', '%Y' %}",
+  "calver_version": "{% now 'utc', '%Y.%m.%d' %}"
+}

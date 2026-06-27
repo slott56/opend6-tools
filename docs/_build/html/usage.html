@@ -5,17 +5,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using the OpenD6 Tools &#8212; OpenD6 Tools 1.0 documentation</title>
+    <title>Using the OpenD6 Tools &#8212; OpenD6 Tools 2026.6.26.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
-    <script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/documentation_options.js?v=4e5c487b"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Architecture" href="architecture.html" />
-    <link rel="prev" title="Define Characters" href="tutorial/define_characters.html" />
+    <link rel="next" title="Applications" href="applications.html" />
+    <link rel="prev" title="The Character DSL" href="tutorial/define_characters.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -37,41 +37,38 @@
 <span id="usage"></span><h1>Using the OpenD6 Tools<a class="headerlink" href="#using-the-opend6-tools" title="Link to this heading">¶</a></h1>
 <p>In this section, we’ll talk about the following two use cases for these tools:</p>
 <ul class="simple">
-<li><p>Creating and validating elements of a world, campaign, or encounter – characters, spells, creatures, etc.</p></li>
+<li><p>Creating and validating elements of a world, campaign, or encounter.
+This includes the DSL’s for spells, characters, creatures, etc.
+This the essential <strong>Create-Compute-Consider</strong> cycle.</p></li>
 <li><p>Publishing documents for game masters and players.</p></li>
 </ul>
-<p class="plantuml">
-<img src="_images/plantuml-2a0c3c9c7dc37a5e98461c8e4158d8c48f6a9fb0.png" alt="&#64;startuml
-    'https://plantuml.com/use-case-diagram
-    skinparam actorStyle awesome
-
-    actor Designer
-
-    usecase &quot;Creating and changing\nelements of a world\nComputing derived values\nConsidering the overall design.&quot; as uc_1
-    usecase &quot;Publishing documents for\ngame masters and players.&quot; as uc_2
-
-    Designer --&gt; uc_1
-    Designer --&gt; uc_2
-&#64;enduml"/>
-</p>
-<p>Generally, the creation-change-compute-consider is a repeating cycle of activity that precedes publication.
-We’ll start with using these tools to create elements and compute derived values.</p>
+<p>We’ll start with using the tools to create things like Spells and Characters,
+and computing derived values like spell difficulty or the character dice budget.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The examples use “docstring” examples.</p>
-<p>The code is prefaced with <code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span></code> as if you were typing it interactively to the Python interpreter.
-This is <strong>not</strong> practical, but it’s how examples are shown (and validated) in Python documentation.</p>
+<p>The examples in this document use code prefaced with <code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span></code>.
+This shows things as if you were typing them interactively to the Python interpreter.
+This is <strong>not</strong> practical, but it’s the conventional approach to showing examples in Python documentation.
+It makes it easy for tools to find and validate the examples.</p>
 <p>Pragmatically, you’ll be creating cells in a Jupyter Notebook or writing text in a <code class="docutils literal notranslate"><span class="pre">.py</span></code> module file with a programming text editor.</p>
 </div>
 <section id="creation">
 <h2>Creation<a class="headerlink" href="#creation" title="Link to this heading">¶</a></h2>
-<p>These tools offer a language specific to the <strong>OpenD6</strong> TTRPG domain.
-(We call it a “DSL”, Domain-Specific Language.)</p>
-<p>There are two sub-categories of language with the <strong>OpenD6</strong> domain: Spells and Characters. They’re similar in some respects, but generally have very little actual overlap.</p>
-<section id="spells">
-<h3>Spells<a class="headerlink" href="#spells" title="Link to this heading">¶</a></h3>
-<p>The DSL uses Python to do computations and transformations on a Spell definition.
-This also includes invocations and magical items.</p>
+<p>These tools offer two languages specific to the <strong>OpenD6</strong> TTRPG domain.
+(We call them “DSL’s”, Domain-Specific Languages.)</p>
+<p>There are two sub-categories of languages with the <strong>OpenD6</strong> domain: Spells and Characters.
+They have similar Python syntax.
+Otherwise, there’s little actual overlap.
+Spells and Items are focused on a difficulty budget.
+Characters and Creatures are focused on skills with a dice budget.</p>
+<p>In a larger game context, a character’s skills determine how many dice they get to roll.
+The spell’s details (and the situation in the game) determine the difficulty that must be exceeded by a roll of the dice to make that spell work.</p>
+<section id="spells-invocations-and-items">
+<h3>Spells, Invocations, and Items<a class="headerlink" href="#spells-invocations-and-items" title="Link to this heading">¶</a></h3>
+<p>The Spell DSL uses Python to do computations and transformations on a Spell definition.
+This also includes Invocations and magical Items – they’re all bundles of effects
+with additional aspects.</p>
 <p>Here’s an example.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.magic2</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 </pre></div>
@@ -89,81 +86,148 @@ This also includes invocations and magical items.</p>
 <span class="gp">... </span>        <span class="s2">&quot;gestures&quot;</span><span class="p">:</span> <span class="n">GesturesAspect</span><span class="p">(</span><span class="s2">&quot;waves hands&quot;</span><span class="p">,</span> <span class="s2">&quot;simple&quot;</span><span class="p">),</span>
 <span class="gp">... </span>        <span class="s2">&quot;incantations&quot;</span><span class="p">:</span> <span class="n">IncantationsAspect</span><span class="p">(</span><span class="s2">&quot;says the words&quot;</span><span class="p">,</span> <span class="s2">&quot;short&quot;</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="p">},</span>
-<span class="gp">... </span>    <span class="n">other_conditions</span> <span class="o">=</span> <span class="p">[</span><span class="n">GenericAspect</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Everthing else is completed&quot;</span><span class="p">)],</span>
+<span class="gp">... </span>    <span class="n">other_conditions</span> <span class="o">=</span> <span class="p">[</span><span class="n">GenericAspect</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Everything else is completed&quot;</span><span class="p">)],</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">example</span><span class="o">.</span><span class="n">difficulty</span>
 <span class="go">5</span>
 </pre></div>
 </div>
-<p>(Yes, there’s a wee bit of redundancy here. It’s actually helpful because it helps to pinpoint errors.)</p>
-<p>The <strong>OpenD6 Rules</strong> list 8 characteristics of a spell.
-There are some minor discrepancies.</p>
+<p>(Yes, there’s a bit of redundancy here. It’s helpful for pinpointing errors.)</p>
+<p>The <strong>OpenD6 Rules</strong> list 8 characteristics of a spell:
+Skill Used, Difficulty, Effect, Duration, Range, Speed, Casting Time, and
+“Other Aspects”.
+This DSL is very close (but not identical) to the definition offered in the rules:</p>
 <ul class="simple">
-<li><p>Difficulty.  This is not provided in the <code class="xref py py-class docutils literal notranslate"><span class="pre">Spell</span></code> code block.
-It’s computed. The <code class="docutils literal notranslate"><span class="pre">example.difficulty</span></code> reveals the computed difficulty.</p></li>
-<li><p>Name, notes, and other conditions were added to the <code class="xref py py-class docutils literal notranslate"><span class="pre">Spell</span></code> definition.</p></li>
+<li><p>Skill Used is optional, and can sometimes be deduced from the effect definition.</p></li>
+<li><p>Difficulty is not provided by the spell designer.
+This is computed from the details.
+The Python expression <code class="docutils literal notranslate"><span class="pre">example.difficulty</span></code> reveals the computed difficulty.</p></li>
+<li><p>Three new characteristics are added to the spell definition:
+Name, Notes, and “Other Conditions”.</p></li>
+<li><p>The “Other Aspects” of a spell have a specific list of allowed aspects.</p></li>
 </ul>
-<p>There are a lot of distinct classes of <code class="xref py py-class docutils literal notranslate"><span class="pre">Effect</span></code>.
-See <a class="reference internal" href="magic2.html#magic-module-implementation"><span class="std std-ref">Implementation</span></a> for the complete reference.</p>
+<p>The Effect of a Spell (or Invocation or Item) defines what happens.
+There are a number of distinct specialized subclasses of <code class="xref py py-class docutils literal notranslate"><span class="pre">Effect</span></code>.
+See <a class="reference internal" href="reference/magic2.html#magic-module-implementation"><span class="std std-ref">Implementation</span></a> for the complete reference.</p>
 <p>Here’s the short list of effects, with examples.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">DamageEffect(&quot;Body</span> <span class="pre">damage&quot;,</span> <span class="pre">&quot;+4D+1&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ProtectionEffect(&quot;Damage</span> <span class="pre">Resistance&quot;,</span> <span class="pre">&quot;+4D+1&quot;,</span> <span class="pre">&quot;physical</span> <span class="pre">damage&quot;,</span> <span class="pre">&quot;ignore</span> <span class="pre">all</span> <span class="pre">armor&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SkillEffect(&quot;Physique:</span> <span class="pre">lifting&quot;,</span> <span class="pre">&quot;+5D&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AttributeEffect(&quot;Physique&quot;,</span> <span class="pre">&quot;+5D&quot;,</span> <span class="pre">&quot;attribute</span> <span class="pre">modifier&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SpecialAbilityEffect(&quot;Extra</span> <span class="pre">Sense:</span> <span class="pre">Bugs&quot;,</span> <span class="pre">3)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DisadvantageEffect(&quot;Hindrance:</span> <span class="pre">Initiative&quot;,</span> <span class="pre">5,</span> <span class="pre">&quot;-10</span> <span class="pre">to</span> <span class="pre">all</span> <span class="pre">initiative</span> <span class="pre">totals&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">TimeEffect(&quot;Reduces</span> <span class="pre">duration&quot;,</span> <span class="pre">&quot;10</span> <span class="pre">min&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DistanceEffect(&quot;Moves</span> <span class="pre">something&quot;,</span> <span class="pre">&quot;1</span> <span class="pre">km&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MassEffect(&quot;Moves&quot;,</span> <span class="pre">&quot;100</span> <span class="pre">kilograms&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">VolumeEffect(&quot;Creates&quot;,</span> <span class="pre">&quot;100</span> <span class="pre">liters&quot;)</span></code></p></li>
-</ul>
-<p>Similarly, there are a large number of potential <code class="xref py py-class docutils literal notranslate"><span class="pre">Aspect</span></code> values that can be included in the <code class="docutils literal notranslate"><span class="pre">other_aspects</span></code> dictionary.</p>
-<p>Here are the required aspects:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">DurationAspect(&quot;1</span> <span class="pre">min&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">RangeAspect(&quot;15</span> <span class="pre">m&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SpeedAspect.based_on(&quot;range&quot;,</span> <span class="pre">description=&quot;Instantaneous&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CastingTimeAspect(&quot;1</span> <span class="pre">r&quot;)</span></code></p></li>
-</ul>
-<p>Note that Speed is almost always based on range.
-Rather than state the range twice (once as range, and once as speed, it’s easier to use this <code class="docutils literal notranslate"><span class="pre">based_on()</span></code> construct.</p>
-<p>Here are the “other” aspects:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">AreaEffectAspect(&quot;2.5</span> <span class="pre">m</span> <span class="pre">circle;</span> <span class="pre">3m</span> <span class="pre">l</span> <span class="pre">1m</span> <span class="pre">r</span> <span class="pre">cone&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ChangeTargetAspect(&quot;2</span> <span class="pre">targets&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ChargesAspect(10)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CommunityAspect(&quot;31</span> <span class="pre">helpers&quot;,</span> <span class="pre">&quot;Simple</span> <span class="pre">actions&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ComponentsAspect(&quot;something&quot;,</span> <span class="pre">&quot;uncommon;</span> <span class="pre">destroyed&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ConcentrationAspect.based_on(&quot;casting_time&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FeedbackAspect(3)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FocusedAspect.based_on((&quot;effect&quot;,</span> <span class="pre">&quot;duration&quot;))</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GesturesAspect(&quot;waves</span> <span class="pre">hands&quot;,</span> <span class="pre">&quot;simple;</span> <span class="pre">offensive&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">IncantationsAspect(&quot;Die,</span> <span class="pre">scum&quot;,</span> <span class="pre">'phrase;</span> <span class="pre">loud;</span> <span class="pre">offensive')</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MultipleTargetAspect(&quot;3</span> <span class="pre">targets&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">UnrealEffectAspect.based_on(&quot;effect&quot;,</span> <span class="pre">&quot;difficulty</span> <span class="pre">9&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">VariableDurationAspect(&quot;on/off</span> <span class="pre">switch&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">VariableEffectAspect(&quot;Can</span> <span class="pre">increase&quot;,</span> <span class="pre">10)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">VariableMovementAspect(&quot;bend</span> <span class="pre">around</span> <span class="pre">same</span> <span class="pre">size&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ArcaneKnowledgeAspect(description=&quot;dimension,</span> <span class="pre">time&quot;,</span> <span class="pre">difficulty=0)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GenericAspect(2,</span> <span class="pre">&quot;Not</span> <span class="pre">too</span> <span class="pre">hard&quot;)</span></code></p></li>
-</ul>
-<p>Computations.</p>
-<ul class="simple">
-<li><p>The difficulty appears to be an attribute of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Spell</span></code> object.
-It’s not actually static, it’s a dynamic property,
-computed as needed.</p></li>
-<li><p>The <a class="reference internal" href="magic2.html#opend6_tools.magic2.debug" title="opend6_tools.magic2.debug"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic2.debug()</span></code></a> function.
-This is handy in a Notebook to see details of the spell and the difficulty computation.</p></li>
-<li><p>The <a class="reference internal" href="magic2.html#opend6_tools.magic2.detail" title="opend6_tools.magic2.detail"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic2.detail()</span></code></a> function.
-This is used by the <code class="docutils literal notranslate"><span class="pre">magic2</span></code> application to transform spell definitions into RST for use by Sphinx.</p></li>
-</ul>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SpecialAbilityEffect('Extra</span> <span class="pre">Sense:</span> <span class="pre">Bugs',</span> <span class="pre">3)</span></code></p></td>
+<td><p>Grants one of the defined special abilities with the given rank.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DisadvantageEffect('Hindrance:</span> <span class="pre">Initiative',</span> <span class="pre">5,</span> <span class="pre">'-10</span> <span class="pre">to</span> <span class="pre">all</span> <span class="pre">initiative</span> <span class="pre">totals')</span></code></p></td>
+<td><p>Saddles a character with one of the defined disadvantages with a given rank and additional notes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DamageEffect('Body</span> <span class="pre">damage',</span> <span class="pre">4*D+1)</span></code></p></td>
+<td><p>Does the defined amount of damage.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ProtectionEffect('Damage</span> <span class="pre">Resistance',</span> <span class="pre">4*D+1,</span> <span class="pre">'physical</span> <span class="pre">damage',</span> <span class="pre">'ignore</span> <span class="pre">all</span> <span class="pre">armor')</span></code></p></td>
+<td><p>Provides the defied armor value, with additional notes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SkillEffect('Physique:</span> <span class="pre">lifting',</span> <span class="pre">5*D)</span></code></p></td>
+<td><p>Grants a new skill to a character with the given number of dice.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AttributeEffect('Physique',</span> <span class="pre">5*D,</span> <span class="pre">'attribute</span> <span class="pre">modifier')</span></code></p></td>
+<td><p>Modifies a character’s attribute.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The following are often part of a <code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeEffect</span></code>, and provides additional details on the scope of the effect:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TimeEffect('Reduces</span> <span class="pre">duration',</span> <span class="pre">'10</span> <span class="pre">min')</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DistanceEffect('Moves</span> <span class="pre">something',</span> <span class="pre">'1</span> <span class="pre">km')</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MassEffect('Moves',</span> <span class="pre">'100</span> <span class="pre">kilograms')</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VolumeEffect('Creates',</span> <span class="pre">'100</span> <span class="pre">liters')</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>In addition to the Effect of a spell, there are a large number of other Aspects.
+Here are the four required aspects for any Spell or Invocation:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DurationAspect('1</span> <span class="pre">min')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RangeAspect('15</span> <span class="pre">m')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SpeedAspect.based_on('range',</span> <span class="pre">description='Instantaneous')</span></code></p></td>
+<td><p>This is the most common specification for speed.
+Rather than state the range twice (once as range, and once as speed), it’s easier to use this <code class="docutils literal notranslate"><span class="pre">based_on()</span></code> construct to assure they match.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CastingTimeAspect('1</span> <span class="pre">r')</span></code></p></td>
+<td><p>‘r’ is short for ‘round’</p></td>
+</tr>
+</tbody>
+</table>
+<p>Here are the aspects that are often included in the “other aspects” details of a Spell or Invocation:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AreaEffectAspect('2.5</span> <span class="pre">m</span> <span class="pre">circle;</span> <span class="pre">3m</span> <span class="pre">l</span> <span class="pre">1m</span> <span class="pre">r</span> <span class="pre">cone')</span></code></p></td>
+<td><p>The area of effect includes a large number of shapes, including circle, sphere, hemisphere, divination sphere, cone, wall, cuboid, and blast.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ChangeTargetAspect('2</span> <span class="pre">targets')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ChargesAspect(10)</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CommunityAspect('31</span> <span class="pre">helpers',</span> <span class="pre">'Simple</span> <span class="pre">actions')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ComponentsAspect('something',</span> <span class="pre">'uncommon;</span> <span class="pre">destroyed')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ConcentrationAspect.based_on('casting_time')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FeedbackAspect(3)</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FocusedAspect.based_on(('effect',</span> <span class="pre">'duration'))</span></code></p></td>
+<td><p>Yes, the double ()’s are required to provide this kind of complex based-on computation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GesturesAspect('waves</span> <span class="pre">hands',</span> <span class="pre">'simple;</span> <span class="pre">offensive')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IncantationsAspect('Die,</span> <span class="pre">scum',</span> <span class="pre">'phrase;</span> <span class="pre">loud;</span> <span class="pre">offensive')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MultipleTargetAspect('3</span> <span class="pre">targets')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">UnrealEffectAspect.based_on('effect',</span> <span class="pre">'difficulty</span> <span class="pre">9')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VariableDurationAspect('on/off</span> <span class="pre">switch')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">VariableEffectAspect('Can</span> <span class="pre">increase',</span> <span class="pre">10)</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VariableMovementAspect('bend</span> <span class="pre">around</span> <span class="pre">same</span> <span class="pre">size')</span></code></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ArcaneKnowledgeAspect('dimension,</span> <span class="pre">time')</span></code></p></td>
+<td><p>This is a zero-difficulty marker for additional skill details.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GenericAspect(2,</span> <span class="pre">'Not</span> <span class="pre">too</span> <span class="pre">hard')</span></code></p></td>
+<td><p>These are sometimes used as other conditions that don’t fit any other category.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The key benefit of this language is providing details in a way that’s amenable to automatic computations.
+This handles the bookkeeping around the aspects which increase the difficulty, distinct from aspects which decrease difficulty.</p>
 </section>
 <section id="characters">
 <h3>Characters<a class="headerlink" href="#characters" title="Link to this heading">¶</a></h3>
-<p>The language uses Python to do computations and transformations on a Character definition.
-This also includes Creatures.</p>
-<p>Here’s an example.</p>
+<p>The DSL is based on Python, it defines a set of computations and transformations on a Character definition.
+Creatures can also be defined.</p>
+<p>Here’s an example Character.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.character</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
@@ -198,235 +262,453 @@ This also includes Creatures.</p>
 </div>
 <p>(Yes, there’s a wee bit of redundancy here. It’s actually helpful because it helps to pinpoint errors.)</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">budget_check()</span></code> method recapitulates the character’s budget for base attributes and specific skills.
-See <a class="reference internal" href="magic2.html#magic-module-implementation"><span class="std std-ref">Implementation</span></a> for the complete reference.
+See <a class="reference internal" href="reference/magic2.html#magic-module-implementation"><span class="std std-ref">Implementation</span></a> for the complete reference.
 The basis for comparison is the starting budget for typical characters.</p>
-<p>There are only a few essential Attributes.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Acumen</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Charisma</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Intellect</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Agility</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Coordination</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Physique</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Magic</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Miracles</span></code></p></li>
-</ul>
-<p>Each of these is identical in structure: <code class="docutils literal notranslate"><span class="pre">Attribute(dice_code,</span> <span class="pre">{'skill':</span> <span class="pre">dice_code,</span> <span class="pre">...})</span></code>.
-The <code class="docutils literal notranslate"><span class="pre">dice_code</span></code> is a small shift in syntax from something like <code class="docutils literal notranslate"><span class="pre">2D+2</span></code> to <code class="docutils literal notranslate"><span class="pre">2*D+2</span></code>. The skill names are those defined in the rules.</p>
+<p>There are only a few essential Attributes, defined in the <a class="reference internal" href="reference/character.html#module-opend6_tools.character" title="opend6_tools.character"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.character</span></code></a> package.</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Acumen" title="opend6_tools.character.features.Acumen"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Acumen</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Charisma" title="opend6_tools.character.features.Charisma"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Charisma</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Intellect" title="opend6_tools.character.features.Intellect"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Intellect</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Agility" title="opend6_tools.character.features.Agility"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Agility</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Coordination" title="opend6_tools.character.features.Coordination"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Coordination</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>Extranormal, either <a class="reference internal" href="reference/character.html#opend6_tools.character.features.Magic" title="opend6_tools.character.features.Magic"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Magic</span></code></a> or <a class="reference internal" href="reference/character.html#opend6_tools.character.features.Miracles" title="opend6_tools.character.features.Miracles"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Miracles</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+<p>Each of these uses the following pattern:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Attribute</span><span class="p">(</span><span class="n">dice_code</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;skill&#39;</span><span class="p">:</span> <span class="n">dice_code</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>For example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">physique</span><span class="o">=</span><span class="n">Physique</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;lifting&#39;</span><span class="p">:</span> <span class="o">+</span><span class="mi">2</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">dice_code</span></code> values use a small shift in syntax from the <code class="docutils literal notranslate"><span class="pre">2D+2</span></code> used in most rulebooks to to <code class="docutils literal notranslate"><span class="pre">2*D+2</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">*</span></code> is part of using Python syntax for the DSL.
+The skill names are those defined in the rules using all lower-case letters and surrounded by apostrophes (<code class="docutils literal notranslate"><span class="pre">'</span></code>) or quotes (<code class="docutils literal notranslate"><span class="pre">&quot;</span></code>).
+Consistency matters.</p>
 <p>Here are a large number of advantages, disadvantages, and special abilities.
-Here are the Advantages.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Authority</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Contacts</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Cultures</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Equipment</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Fame</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Patron</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Size</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">TrademarkSpecialization</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Wealth</span></code></p></li>
-</ul>
+Here are the <a class="reference internal" href="reference/character.html#opend6_tools.character.features.Advantage" title="opend6_tools.character.features.Advantage"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Advantage</span></code></a> subclasses:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Authority" title="opend6_tools.character.features.Authority"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Authority</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Contacts" title="opend6_tools.character.features.Contacts"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Contacts</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Cultures" title="opend6_tools.character.features.Cultures"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Cultures</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Equipment" title="opend6_tools.character.features.Equipment"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Equipment</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Fame" title="opend6_tools.character.features.Fame"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Fame</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Patron" title="opend6_tools.character.features.Patron"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Patron</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Size" title="opend6_tools.character.features.Size"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Size</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.TrademarkSpecialization" title="opend6_tools.character.features.TrademarkSpecialization"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.TrademarkSpecialization</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Wealth" title="opend6_tools.character.features.Wealth"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Wealth</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
 <p>Each of these has a rank, and any additional notes.
 For example, <code class="docutils literal notranslate"><span class="pre">Fame(2,</span> <span class="pre">&quot;famous</span> <span class="pre">divorce</span> <span class="pre">settlement&quot;)</span></code>.</p>
-<p>Here are the Disadvantages:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">AchillesHeel</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AdvantageFlaw</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MinorStigma</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Age</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">BadLuck</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">BurnOut</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CulturalUnfamiliarity</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Debt</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Devotion</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Employed</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Enemy</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Hindrance</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Infamy</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">LanguageProblems</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">LearningProblems</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Poverty</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Prejudice</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Price</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Quirk</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ReducedAttribute</span></code></p></li>
-</ul>
+<p>Here are the <a class="reference internal" href="reference/character.html#opend6_tools.character.features.Disadvantage" title="opend6_tools.character.features.Disadvantage"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Disadvantage</span></code></a> subclasses:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.AchillesHeel" title="opend6_tools.character.features.AchillesHeel"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.AchillesHeel</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.AdvantageFlaw" title="opend6_tools.character.features.AdvantageFlaw"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.AdvantageFlaw</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.MinorStigma" title="opend6_tools.character.features.MinorStigma"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.MinorStigma</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Age" title="opend6_tools.character.features.Age"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Age</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.BadLuck" title="opend6_tools.character.features.BadLuck"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.BadLuck</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.BurnOut" title="opend6_tools.character.features.BurnOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.BurnOut</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.CulturalUnfamiliarity" title="opend6_tools.character.features.CulturalUnfamiliarity"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.CulturalUnfamiliarity</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Debt" title="opend6_tools.character.features.Debt"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Debt</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Devotion" title="opend6_tools.character.features.Devotion"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Devotion</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Employed" title="opend6_tools.character.features.Employed"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Employed</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Enemy" title="opend6_tools.character.features.Enemy"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Enemy</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Hindrance" title="opend6_tools.character.features.Hindrance"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Hindrance</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Infamy" title="opend6_tools.character.features.Infamy"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Infamy</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.LanguageProblems" title="opend6_tools.character.features.LanguageProblems"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.LanguageProblems</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.LearningProblems" title="opend6_tools.character.features.LearningProblems"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.LearningProblems</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Poverty" title="opend6_tools.character.features.Poverty"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Poverty</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Prejudice" title="opend6_tools.character.features.Prejudice"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Prejudice</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Price" title="opend6_tools.character.features.Price"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Price</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Quirk" title="opend6_tools.character.features.Quirk"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Quirk</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.ReducedAttribute" title="opend6_tools.character.features.ReducedAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.ReducedAttribute</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
 <p>Each of these has a rank, and any additional notes.
 For example, <code class="docutils literal notranslate"><span class="pre">Quirk(2,</span> <span class="pre">&quot;Exaggerated</span> <span class="pre">gestures&quot;)</span></code>.</p>
-<p>Here are the Special Abilities. Each of these has a distinct cost for each rank.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">AcceleratedHealing</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Ambidextrous</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AnimalControl</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ArmorDefeatingAttack</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AtmosphericTolerance</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AttackResistance</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AttributeScramble</span></code>, 4</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Blur</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CombatSense</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Confusion</span></code>, 4</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Darkness</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Elasticity</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Endurance</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EnhancedSense</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">EnvironmentalResistance</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ExtraBodyPart</span></code>, 0</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ExtraSense</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FastReactions</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Fear</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Flight</span></code>, 6</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GliderWings</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Hardiness</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Hypermovement</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Immortality</span></code>, 7</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Immunity</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">IncreasedAttribute</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">InfravisionUltravision</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Intangibility</span></code>, 5</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Invisibility</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">IronWill</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">LifeDrain</span></code>, 5</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Longevity</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">LuckGood</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">LuckGreat</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MasterOfDisguise</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">MultipleAbilities</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NaturalArmor</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NaturalHandWeapon</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NaturalMagick</span></code>, 5</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">NaturalRangedWeapon</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Omnivorous</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">ParalyzingTouch</span></code>, 4</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PossessionLimited</span></code>, 8</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">PossessionFull</span></code>, 10</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">QuickStudy</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SenseOfDirection</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Shapeshifting</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Silence</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SkillBonus</span></code>, 1</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">SkillMinimum</span></code>, 4</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Teleportation</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Transmutation</span></code>, 5</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">UncannyAptitude</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Ventriloquism</span></code>, 3</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WaterBreathing</span></code>, 2</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">YouthfulAppearance</span></code>, 1</p></li>
-</ul>
-<p>These also, have a numeric rank value and notes. The cost, however, is a product of the desired rank and the rank cost for the given special ability.</p>
-<p>We can use these Python class defintions as a DSL to write Spell, Invocation, Character, Creature, and Item descriptions.
+<p>The Special Abilities each have a distinct cost for each rank.
+Here are the <a class="reference internal" href="reference/character.html#opend6_tools.character.features.SpecialAbility" title="opend6_tools.character.features.SpecialAbility"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.SpecialAbility</span></code></a> subclasses:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>SpecialAbility</p></th>
+<th class="head"><p>Rank Cost</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.AcceleratedHealing" title="opend6_tools.character.features.AcceleratedHealing"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.AcceleratedHealing</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Ambidextrous" title="opend6_tools.character.features.Ambidextrous"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Ambidextrous</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.AnimalControl" title="opend6_tools.character.features.AnimalControl"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.AnimalControl</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.ArmorDefeatingAttack" title="opend6_tools.character.features.ArmorDefeatingAttack"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.ArmorDefeatingAttack</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.AtmosphericTolerance" title="opend6_tools.character.features.AtmosphericTolerance"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.AtmosphericTolerance</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.AttackResistance" title="opend6_tools.character.features.AttackResistance"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.AttackResistance</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.AttributeScramble" title="opend6_tools.character.features.AttributeScramble"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.AttributeScramble</span></code></a></p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Blur" title="opend6_tools.character.features.Blur"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Blur</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.CombatSense" title="opend6_tools.character.features.CombatSense"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.CombatSense</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Confusion" title="opend6_tools.character.features.Confusion"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Confusion</span></code></a></p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Darkness" title="opend6_tools.character.features.Darkness"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Darkness</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Elasticity" title="opend6_tools.character.features.Elasticity"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Elasticity</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Endurance" title="opend6_tools.character.features.Endurance"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Endurance</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.EnhancedSense" title="opend6_tools.character.features.EnhancedSense"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.EnhancedSense</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.EnvironmentalResistance" title="opend6_tools.character.features.EnvironmentalResistance"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.EnvironmentalResistance</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.ExtraBodyPart" title="opend6_tools.character.features.ExtraBodyPart"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.ExtraBodyPart</span></code></a></p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.ExtraSense" title="opend6_tools.character.features.ExtraSense"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.ExtraSense</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.FastReactions" title="opend6_tools.character.features.FastReactions"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.FastReactions</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Fear" title="opend6_tools.character.features.Fear"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Fear</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Flight" title="opend6_tools.character.features.Flight"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Flight</span></code></a></p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.GliderWings" title="opend6_tools.character.features.GliderWings"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.GliderWings</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Hardiness" title="opend6_tools.character.features.Hardiness"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Hardiness</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Hypermovement" title="opend6_tools.character.features.Hypermovement"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Hypermovement</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Immortality" title="opend6_tools.character.features.Immortality"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Immortality</span></code></a></p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Immunity" title="opend6_tools.character.features.Immunity"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Immunity</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.IncreasedAttribute" title="opend6_tools.character.features.IncreasedAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.IncreasedAttribute</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.InfravisionUltravision" title="opend6_tools.character.features.InfravisionUltravision"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.InfravisionUltravision</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Intangibility" title="opend6_tools.character.features.Intangibility"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Intangibility</span></code></a></p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Invisibility" title="opend6_tools.character.features.Invisibility"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Invisibility</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.IronWill" title="opend6_tools.character.features.IronWill"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.IronWill</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.LifeDrain" title="opend6_tools.character.features.LifeDrain"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.LifeDrain</span></code></a></p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Longevity" title="opend6_tools.character.features.Longevity"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Longevity</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.LuckGood" title="opend6_tools.character.features.LuckGood"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.LuckGood</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.LuckGreat" title="opend6_tools.character.features.LuckGreat"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.LuckGreat</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.MasterOfDisguise" title="opend6_tools.character.features.MasterOfDisguise"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.MasterOfDisguise</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.MultipleAbilities" title="opend6_tools.character.features.MultipleAbilities"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.MultipleAbilities</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.NaturalArmor" title="opend6_tools.character.features.NaturalArmor"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.NaturalArmor</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.NaturalHandWeapon" title="opend6_tools.character.features.NaturalHandWeapon"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.NaturalHandWeapon</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.NaturalMagick" title="opend6_tools.character.features.NaturalMagick"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.NaturalMagick</span></code></a></p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.NaturalRangedWeapon" title="opend6_tools.character.features.NaturalRangedWeapon"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.NaturalRangedWeapon</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Omnivorous" title="opend6_tools.character.features.Omnivorous"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Omnivorous</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.ParalyzingTouch" title="opend6_tools.character.features.ParalyzingTouch"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.ParalyzingTouch</span></code></a></p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.PossessionLimited" title="opend6_tools.character.features.PossessionLimited"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.PossessionLimited</span></code></a></p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.PossessionFull" title="opend6_tools.character.features.PossessionFull"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.PossessionFull</span></code></a></p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.QuickStudy" title="opend6_tools.character.features.QuickStudy"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.QuickStudy</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.SenseOfDirection" title="opend6_tools.character.features.SenseOfDirection"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.SenseOfDirection</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Shapeshifting" title="opend6_tools.character.features.Shapeshifting"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Shapeshifting</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Silence" title="opend6_tools.character.features.Silence"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Silence</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.SkillBonus" title="opend6_tools.character.features.SkillBonus"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.SkillBonus</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.SkillMinimum" title="opend6_tools.character.features.SkillMinimum"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.SkillMinimum</span></code></a></p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Teleportation" title="opend6_tools.character.features.Teleportation"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Teleportation</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Transmutation" title="opend6_tools.character.features.Transmutation"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Transmutation</span></code></a></p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.UncannyAptitude" title="opend6_tools.character.features.UncannyAptitude"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.UncannyAptitude</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.Ventriloquism" title="opend6_tools.character.features.Ventriloquism"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Ventriloquism</span></code></a></p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.WaterBreathing" title="opend6_tools.character.features.WaterBreathing"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.WaterBreathing</span></code></a></p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="reference/character.html#opend6_tools.character.features.YouthfulAppearance" title="opend6_tools.character.features.YouthfulAppearance"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.YouthfulAppearance</span></code></a></p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+<p>When these are created, you must supply a numeric rank value and optional notes with details on the ability. The cost, however, is a product of the desired rank and the rank cost for the given special ability.</p>
+<p>We can use these Python class definitions as a DSL to write Spell, Invocation, Character, Creature, and Item descriptions.
 We can look at the dice budgets, make changes, and fine-tune the design.
 Because the DSL is tied to the rules, the resulting elements of a world, campaign, or encounter tend to be consistent.</p>
-<p>We can now turn to publishing these elements.</p>
+<p>There are a few tools we have to support processing Spells and Characters.</p>
+</section>
+<section id="supporting-functions">
+<h3>Supporting Functions<a class="headerlink" href="#supporting-functions" title="Link to this heading">¶</a></h3>
+<p>There are a few helpful functions that are part of these packages.
+For Spells (and Invocations and Items), there are two useful functions.</p>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="reference/magic2.html#opend6_tools.magic2.workbook.display" title="opend6_tools.magic2.workbook.display"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic2.workbook.display()</span></code></a> function shows some details of the spell and the difficulty computation.
+The <a class="reference internal" href="reference/character.html#opend6_tools.character.workbook.display" title="opend6_tools.character.workbook.display"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.character.workbook.display()</span></code></a> function, similarly, shows details of a character.</p></li>
+<li><p>The <a class="reference internal" href="reference/magic2.html#opend6_tools.magic2.workbook.debug" title="opend6_tools.magic2.workbook.debug"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic2.workbook.debug()</span></code></a> function shows more in-depth details of the spell and the difficulty computation.
+The <a class="reference internal" href="reference/character.html#opend6_tools.character.workbook.debug" title="opend6_tools.character.workbook.debug"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.character.workbook.debug()</span></code></a> function, similarly, shows details of a character.</p></li>
+<li><p>The <a class="reference internal" href="reference/magic2.html#opend6_tools.magic2.output.detail" title="opend6_tools.magic2.output.detail"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic2.output.detail()</span></code></a> function transforms spell definitions into RST for publication.
+The <a class="reference internal" href="reference/character.html#opend6_tools.character.output.detail" title="opend6_tools.character.output.detail"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.character.output.detail()</span></code></a> function creates a character sheet in one of three forms: a short form for publication, and detailed form for publication, and a form that can be given to players to use.</p></li>
+</ul>
+<p>The overall workflow, then, is this:</p>
+<ol class="arabic simple">
+<li><p>Define a <a class="reference internal" href="reference/magic2.html#opend6_tools.magic2.spells.Spell" title="opend6_tools.magic2.spells.Spell"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.magic2.spells.Spell</span></code></a> or <a class="reference internal" href="reference/character.html#opend6_tools.character.features.Character" title="opend6_tools.character.features.Character"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Character</span></code></a> object.</p></li>
+<li><p>Display it to be sure it has the right characteristics and difficulty.</p></li>
+<li><p>Then, use the publication tool-chain to create the final documents to be shared with game masters and players.</p></li>
+</ol>
 </section>
 </section>
 <section id="publication">
 <h2>Publication<a class="headerlink" href="#publication" title="Link to this heading">¶</a></h2>
-<p>Publication works with Sphinx. (Alternatives, like Hugo, work nicely because this too also uses ReStructured Text.)</p>
-<p>There is a multi-step transformation from idea to document.</p>
+<p>Publication works with Sphinx. (Alternative static content generating tools, like Hugo, also work. The core rule is the tool has to work with Restructured Text.)
+There is a multi-step transformation from idea to document.</p>
 <p class="plantuml">
-<img src="_images/plantuml-6108430d582a298e686d3b96f261ae69eede0f14.png" alt="&#64;startuml
-    'https://plantuml.com/activity-diagram-beta
+<img src="_images/plantuml-b5a2b1073a2cd94fa4a603b8f3371ca03a1f40b5.png" alt="&#64;startuml
+'https://plantuml.com/activity-diagram-beta
 
-    start;
-    :1. idea;
-    :2. create jupyter notebook &quot;&quot;.ipynb&quot;&quot;;
-    partition &quot;3. publish&quot; {
-    :3a: convert to python module &quot;&quot;.py&quot;&quot;;
-    :3b: create ReStructuredText &quot;&quot;.txt&quot;&quot;;
-    :3c: include into final document;
-    }
+title Spell Design Activities
+
+start;
+:1. Idea;
+:2. Create and Change jupyter notebook &quot;&quot;.ipynb&quot;&quot;;
+partition &quot;3. Publish&quot; {
+:3a: Extract a module &quot;&quot;.py&quot;&quot; from notebook &quot;&quot;.ipynb&quot;&quot;;
+:3b: Create ReStructuredText &quot;&quot;.txt&quot;&quot; from module &quot;&quot;.py&quot;&quot;;
+:3c: Include into final &quot;&quot;.rst&quot;&quot; document;
+:3d: Create &quot;&quot;.html&quot;&quot; or &quot;&quot;.tex&quot;&quot; for publication;
+}
 &#64;enduml"/>
 </p>
-<p>Here is a more detailed view of the various documents involved.</p>
+<p>The notebook is a good place to start because it supports interactive computation.
+The <strong>Change</strong>-<strong>Compute</strong>-<strong>Consider</strong> cycle works out well using notebooks.</p>
+<p>An extract from the notebook becomes a Python module.
+The module (which is an application) will emit ReStructured Text, RST, that’s used for publication.</p>
+<p>The conversion of RST to HTML or to a PDF is not something we want to look at in detail.
+This is something we’re trusting other tools to handle for us.
+Examples include <strong>Sphinx</strong> and <strong>docutils</strong>.
+The goal of a world designer to to have source material for publication in RST notation.</p>
+<p>Here is a very detailed view of the various documents – and extractions and conversions – involved in publication.</p>
 <p class="plantuml">
-<img src="_images/plantuml-e701962dcab38052e0e5824b1bf9fde613a18254.png" alt="&#64;startuml
-        'https://plantuml.com/component-diagram
-    skinparam actorStyle awesome
+<img src="_images/plantuml-fd0038aa14494034693f0bda3a6f8df07cd9470f.png" alt="&#64;startuml
+'https://plantuml.com/component-diagram
+skinparam actorStyle awesome
 
-    actor Designer
+title Final Publication
 
-    component &quot;Jupyter Lab&quot; as jupyter &lt;&lt;app&gt;&gt;
-    component Make &lt;&lt;app&gt;&gt;
+actor Designer
 
-    boundary Browser
-    boundary Terminal
+component &quot;Jupyter Lab&quot; as jupyter &lt;&lt;app&gt;&gt;
+component Make &lt;&lt;app&gt;&gt;
 
-    package book_source {
-        artifact &quot;element.ipynb&quot; as nb
-        artifact &quot;element.py&quot; as mod &lt;&lt;app&gt;&gt;
-        artifact &quot;element.txt&quot; as doc
-        artifact &quot;document.rst&quot; as book
+boundary Browser
+boundary Terminal
 
-        /'
-        note &quot;created by the designer&quot; as note_1
-        note_1 ..&gt; nb
-        note_1 ..&gt; book
+package book_source {
+    artifact &quot;element.ipynb&quot; as nb
+    artifact &quot;element.py&quot; as mod &lt;&lt;app&gt;&gt;
+    artifact &quot;element.txt&quot; as doc
+    artifact &quot;document.rst&quot; as book
 
-        note &quot;final output&quot; as note_2
-        note_2 ..&gt; web_page
-        '/
-    }
+    /'
+    note &quot;created by the designer&quot; as note_1
+    note_1 ..&gt; nb
+    note_1 ..&gt; book
 
-    package book_build {
-        artifact &quot;document.html&quot; as web_page
-    }
+    note &quot;final output&quot; as note_2
+    note_2 ..&gt; web_page
+    '/
+}
 
-    package opend6_tools {
-        component &quot;notebook_extract&quot; as converter &lt;&lt;app&gt;&gt;
-        component magic2
-        component character
-    }
+package book_build {
+    artifact &quot;document.html&quot; as web_page
+}
 
-    nb ..&gt; magic2
-    mod ..&gt; magic2
+package opend6_tools {
+    component &quot;notebook_extract&quot; as converter &lt;&lt;app&gt;&gt;
+    component magic2
+    component character
+}
 
-    Designer --&gt; Browser : &quot;2. Create Notebook&quot;
-    Designer --&gt; Terminal : &quot;3. Publish&quot;
+nb ..&gt; magic2
+mod ..&gt; magic2
 
-    Browser --&gt; jupyter
+Designer --&gt; Browser : &quot;2. Create Notebook&quot;
+Designer --&gt; Terminal : &quot;3. Publish&quot;
 
-    jupyter --&gt; nb
+Browser --&gt; jupyter
 
-    Terminal --&gt; [Make]
+jupyter --&gt; nb
 
-    [Make] --&gt; converter : &quot;3a. convert notebook&quot;
+Terminal --&gt; [Make]
 
-    converter &lt;-- nb : &quot;reads&quot;
+[Make] --&gt; converter : &quot;3a. convert notebook&quot;
 
-    converter --&gt; mod : &quot;writes&quot;
+converter &lt;-- nb : &quot;reads&quot;
 
-    [Make] --&gt; mod : &quot;3b. create RST&quot;
+converter --&gt; mod : &quot;writes&quot;
 
-    mod --&gt; doc : &quot;writes&quot;
+[Make] --&gt; mod : &quot;3b. create RST&quot;
 
-    component &quot;sphinx-build&quot; as sphinx &lt;&lt;app&gt;&gt;
+mod --&gt; doc : &quot;writes&quot;
 
-    [Make] --&gt; sphinx : &quot;3c. include in final document&quot;
+component &quot;sphinx-build&quot; as sphinx &lt;&lt;app&gt;&gt;
 
-    sphinx &lt;-- book : &quot;reads&quot;
-    sphinx &lt;-- doc : &quot;reads&quot;
+[Make] --&gt; sphinx : &quot;3c. include in final document&quot;
 
-    sphinx --&gt; web_page : &quot;writes&quot;
+sphinx &lt;-- book : &quot;reads&quot;
+sphinx &lt;-- doc : &quot;reads&quot;
+
+sphinx --&gt; web_page : &quot;3d. creates HTML&quot;
 
 &#64;enduml"/>
 </p>
-<p>This shows a number of transformations.</p>
+<p>While this is tangled, it’s a response to having two tasks with a profound conflict.
+(See the <a class="reference internal" href="tutorial/index.html#tutorial"><span class="std std-ref">Tutorial</span></a> for more background on this.)</p>
 <ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> app converts from <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> to <code class="docutils literal notranslate"><span class="pre">.py</span></code>. The notebook, which has few rules or boundaries is converted to an application module with a command-line interface.
+<li><p>Computing difficulty requires an interactive tool, responsive to user input, focused on the technical needs of conformance with the rules.</p></li>
+<li><p>Publication turns words, spells, items, and characters into a single, published document.
+This is focused on content, organization, and style considerations, separate from the technical conformance with the rules.</p></li>
+</ul>
+<p>The kind of tool that facilitates one task exacerbates the other.
+Specifically, the flexibility of a Jupyter Notebook doesn’t (readily) support publication.
+Extracting to a Python module provides a file that can be tested, used by any tool, and preserved as part of the source of the publications.
+The RST files are merely the first step in the publication chain.</p>
+<p>The <strong>Final Publication</strong> diagram shows a number of transformations.</p>
+<ul class="simple">
+<li><p>The <strong>notebook_extract</strong> app converts from <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> to <code class="docutils literal notranslate"><span class="pre">.py</span></code>.
+The notebook, which has few rules or boundaries, is converted to an application module with a command-line interface usable by tools like <strong>make</strong>.
 For a “spells” conversion, only the <code class="docutils literal notranslate"><span class="pre">Spell</span></code> and <code class="docutils literal notranslate"><span class="pre">Invocation</span></code> cells are preserved.
 For a “characters” conversion, the <code class="docutils literal notranslate"><span class="pre">Character</span></code> and <code class="docutils literal notranslate"><span class="pre">Creature</span></code> cells are preserved.</p></li>
-<li><p>The application module creates an RST-format file. This often has a suffix of <code class="docutils literal notranslate"><span class="pre">.txt</span></code> to distinguish it from the manually-created RST files. The module can also produce debugging output as well as the RST for publication.</p></li>
-<li><p>The Sphinx tool converts the collection of <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files to the final publication form.
-This includes HTML, PDF, and EPUB.</p></li>
+<li><p>The application modules extracted from notebooks will create RST-format files.
+These files generally have a suffix of <code class="docutils literal notranslate"><span class="pre">.txt</span></code> to distinguish it from the manually-created RST files.
+The module can also produce debugging output as well as the RST for publication.</p></li>
+<li><p>The Sphinx tool converts the collection of <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files to any of the final publication forms.
+These forms include HTML, PDF, and EPUB, among others.</p></li>
 </ul>
-<p>This also shows two distinct interfaces to these tools:</p>
+<p>The diagram also shows two distinct interfaces to these tools:</p>
 <ul class="simple">
 <li><p>An interactive Jupyter Lab session (in a browser) to create (and update) a notebook.</p></li>
-<li><p>A terminal window to run the <code class="docutils literal notranslate"><span class="pre">make</span></code> command to create the final HTML web page (or PDF or EPUB). This can also be run via the browser from within the Jupyter Lab environment.</p></li>
+<li><p>A terminal window to run the <code class="docutils literal notranslate"><span class="pre">make</span></code> command to create the final HTML web page (or PDF or EPUB).
+This can also be run via the browser from within the Jupyter Lab environment.</p></li>
 </ul>
-<p>There are other apps (including <a class="reference internal" href="notebook_extract.html#module-opend6_tools.notebook_extract" title="opend6_tools.notebook_extract"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.notebook_extract</span></code></a> and the module created from a notebook), but these are not often used directly by a designer.</p>
+<p>There are other apps (including <a class="reference internal" href="reference/notebook_extract.html#module-opend6_tools.notebook_extract" title="opend6_tools.notebook_extract"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.notebook_extract</span></code></a> and the module created from a notebook), but these are not often used directly by a designer.
+These are part of the publication processing stream controlled by the <strong>make</strong> tool.</p>
 <p>The notebook as a starting place is convenient, but not required.
-A skilled Python developer can comfortably build a module directly.
+A skilled Python developer can comfortably build the Python module directly.
+Using the <code class="docutils literal notranslate"><span class="pre">debug</span></code> and <code class="docutils literal notranslate"><span class="pre">display</span></code> command-line options, they can edit and check their results from the terminal window.
 The module’s CLI can display debugging information allowing a designer to change a module and compute the difficulties (or character budgets) entirely using command-line tools.</p>
 <section id="files-and-structure">
 <h3>Files and structure<a class="headerlink" href="#files-and-structure" title="Link to this heading">¶</a></h3>
@@ -446,25 +728,110 @@ These rules are not complicated, and are helpful to optimize the workflow.</p>
 <p>Here’s how a spell’s RST might be included into a document.</p>
 <div class="highlight-rst notranslate"><div class="highlight"><pre><span></span>Here&#39;s the <span class="gs">**Quality Assurance**</span> spell.
 
-<span class="p">..</span>  <span class="ow">include</span><span class="p">::</span> spells/qa.rst
+<span class="p">..</span>  <span class="ow">include</span><span class="p">::</span> spells/qa.txt
 
 Maybe some more description of this spell.
 An <span class="gs">**example**</span> can be helpful.
 </pre></div>
 </div>
-<p>This presumes there will be a <code class="docutils literal notranslate"><span class="pre">qa.rst</span></code> file created from the <code class="docutils literal notranslate"><span class="pre">qa.py</span></code> module.</p>
-<p>Here’s the Makefile line that makes this happen.</p>
-<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nf">%.txt </span><span class="o">:</span><span class="w"> </span>%.<span class="n">py</span>
+<p>The details of how the file gets included are part of <strong>Sphinx</strong>.
+It’s the job of the writer to make sure the reference is in place.</p>
+<p>For the include of <code class="docutils literal notranslate"><span class="pre">qa.txt</span></code> to work, we must be sure that the <code class="docutils literal notranslate"><span class="pre">qa.py</span></code> app was run and created the file.
+This is generally a question of processing and control.</p>
+</section>
+<section id="processing-and-control">
+<h3>Processing and control<a class="headerlink" href="#processing-and-control" title="Link to this heading">¶</a></h3>
+<p>Control of the publication pipeline is delegated to the <strong>make</strong> tool.
+The <strong>make</strong> tool understands file dependencies, and the recipe that will create new file when the sources on which it depends change.</p>
+<p>The essential command is this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>%<span class="w"> </span>make<span class="w"> </span>html
+</pre></div>
+</div>
+<p>The assumption is that the book’s top-level directory
+has the book’s <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> and <code class="docutils literal notranslate"><span class="pre">index.rst</span></code>, created by the <code class="docutils literal notranslate"><span class="pre">sphinx-quickstart</span></code> command.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> will then process the entire rules document.
+The document is rarely written entirely in the <code class="docutils literal notranslate"><span class="pre">index.rst</span></code>.
+Instead, the <code class="docutils literal notranslate"><span class="pre">index.rst</span></code> depends on many files, often one per chapter.
+One of these files is often <code class="docutils literal notranslate"><span class="pre">spells.rst</span></code>.  The <code class="docutils literal notranslate"><span class="pre">spells.rst</span></code> has an <code class="docutils literal notranslate"><span class="pre">..</span>&#160; <span class="pre">include::</span></code> directive to gather content from the <code class="docutils literal notranslate"><span class="pre">qa.txt</span></code> file.</p>
+<p>These two dependencies – document on a section and section on an included file – are handled by the <strong>Sphinx</strong> tool. If the dependency changes, the spells section must change and the overall document must change.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">qa.txt</span></code> file depends on a <code class="docutils literal notranslate"><span class="pre">qa.py</span></code> module.
+The module may, in turn, depend on a <code class="docutils literal notranslate"><span class="pre">qa.ipynb</span></code> file in a separate <code class="docutils literal notranslate"><span class="pre">notebooks</span></code> directory.</p>
+<p>These dependencies are <strong>not</strong> visible to tools like <strong>Sphinx</strong>.
+These files are created by dependency and recipe rules in separate <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>s in the <code class="docutils literal notranslate"><span class="pre">spells</span></code> and <code class="docutils literal notranslate"><span class="pre">characters</span></code> directories.</p>
+<p>A project will often have three distinct Makefiles:</p>
+<ul>
+<li><p>The overall document <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>.
+This is generated by the <code class="docutils literal notranslate"><span class="pre">sphinx-quickstart</span></code> application.
+The <code class="docutils literal notranslate"><span class="pre">opend6_tools</span></code> require two modifications to this file.</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span class="nf">%</span><span class="o">:</span><span class="w"> </span><span class="n">Makefile</span>
+<span class="hll"><span class="w">        </span>%<span class="o">(</span>MAKE<span class="o">)</span><span class="w"> </span>-C<span class="w"> </span>spells
+</span><span class="hll"><span class="w">        </span>%<span class="o">(</span>MAKE<span class="o">)</span><span class="w"> </span>-C<span class="w"> </span>characters
+</span><span class="w">        </span>@<span class="k">$(</span>SPHINXBUILD<span class="k">)</span><span class="w"> </span>-M<span class="w"> </span><span class="nv">$@</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>SOURCEDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>BUILDDIR<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">$(</span>SPHINXOPTS<span class="k">)</span><span class="w"> </span><span class="k">$(</span>O<span class="k">)</span>
+</pre></div>
+</div>
+<p>We’ve highlighted the two new lines
+used to invoke the <strong>make</strong> tool to update the spells and characters prior to publication.</p>
+<p>The first new commands looks for a <code class="docutils literal notranslate"><span class="pre">spells/Makefile</span></code> and uses this to update the spells.
+The second new command looks for a <code class="docutils literal notranslate"><span class="pre">characters/Makefile</span></code>.</p>
+<p>These commands needs to reflect the overall structure of the document.</p>
+</li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">spells/Makefile</span></code> will update the RST files for spells and invocations. It looks like this:</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span class="c"># Spells Makefile</span>
+<span class="nf">.phony</span><span class="o">:</span><span class="w"> </span><span class="n">spells</span>
+
+<span class="cp">vpath %.ipynb ../../notebooks</span>
+
+<span class="c"># Create a Python Spell module from a Jupyter Notebook with the same name.</span>
+<span class="nf">%.py </span><span class="o">:</span><span class="w"> </span>%.<span class="n">ipynb</span>
+<span class="w">    </span>python<span class="w"> </span>-m<span class="w"> </span>opend6_tools.notebook_extract<span class="w"> </span>spells<span class="w"> </span>$&lt;<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+
+<span class="c"># Create an RST text file from a Python Spell module with the same name.</span>
+<span class="nf">%.txt </span><span class="o">:</span><span class="w"> </span>%.<span class="n">py</span>
 <span class="w">    </span>python<span class="w"> </span>$&lt;<span class="w"> </span>display<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
-</pre></div>
+
+<span class="hll"><span class="nf">spells </span><span class="o">:</span><span class="w"> </span><span class="n">spell_</span>1.<span class="n">txt</span> <span class="n">spell_</span>2.<span class="n">txt</span><span class="p">,</span> <span class="n">etc</span>.
+</span></pre></div>
 </div>
-<p>This will display the spells in the module file, and writing the output to STDOUT. This is redirected to the <code class="docutils literal notranslate"><span class="pre">qa.rst</span></code> file, replacing the previous content.</p>
-<p>The module has a <code class="docutils literal notranslate"><span class="pre">debug</span></code> command, also.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>$&lt;<span class="w"> </span>debug<span class="w"> </span><span class="s1">&#39;Quality Assurance&#39;</span>
-</pre></div>
+<p>The core recipes are provided.
+What’s requires is the definition of the <code class="docutils literal notranslate"><span class="pre">spells</span></code> target.
+This lists all files that must be converted for the final documentation.
+The source files are implied by the recipes.</p>
+</li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">characters/Makefile</span></code> will emit RST files for characters and creatures. It looks like this:</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span class="c"># Characters and Creatures Makefile</span>
+<span class="nf">.phony</span><span class="o">:</span><span class="w"> </span><span class="n">characters</span>
+
+<span class="cp">vpath %.ipynb ../../notebooks</span>
+
+<span class="c"># Create a Python Character or Creature module from a Jupyter Notebook with the same name.</span>
+<span class="nf">%.py </span><span class="o">:</span><span class="w"> </span>%.<span class="n">ipynb</span>
+<span class="w">    </span>python<span class="w"> </span>-m<span class="w"> </span>opend6_tools.notebook_extract<span class="w"> </span>characters<span class="w"> </span>$&lt;<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+
+<span class="c"># Create an RST text file from a Python Character or Creature module with the same name.</span>
+<span class="nf">%.txt </span><span class="o">:</span><span class="w"> </span>%.<span class="n">py</span>
+<span class="w">    </span>python<span class="w"> </span>$&lt;<span class="w"> </span>display<span class="w"> </span>--format<span class="w"> </span>SHORT<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$@</span>
+
+<span class="hll"><span class="nf">characters </span><span class="o">:</span><span class="w"> </span><span class="n">characters</span>.<span class="n">txt</span> <span class="n">creatures</span>.<span class="n">txt</span>
+</span></pre></div>
 </div>
-<p>This will display details of the spell with the name given.
-The name uses shell name matching rules, so``’*’`` will display all cells.</p>
+<p>The core recipes are provided.
+What’s requires is the definition of the <code class="docutils literal notranslate"><span class="pre">characters</span></code> target.
+This lists all files that must be converted for the final documentation.
+The source files are implied by the two recipes.</p>
+</li>
+</ul>
+<p>Note that there are a number of character formats.
+The <code class="docutils literal notranslate"><span class="pre">SHORT</span></code> format is used for most descriptions of characters and creatures.
+There are however, some longer formats available.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LONG</span></code> Very detailed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LONG2</span></code> Less detailed, often used for non-human races.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SHORT</span></code> The kind of summary shown in the Adventure Tips chapter.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TABLE</span></code> A full character sheet using HTML table constructs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LITERAL</span></code> A full character sheet using RST literal constructs.</p></li>
+</ul>
+<p>The need for some <code class="docutils literal notranslate"><span class="pre">LONG2</span></code> characters for the non-human races,
+and <code class="docutils literal notranslate"><span class="pre">TABLE</span></code> for the character templates will make the characters <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> somewhat more complicated.</p>
 </section>
 </section>
 </section>
@@ -489,8 +856,8 @@ The name uses shell name matching rules, so``’*’`` will display all cells.</
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="tutorial/define_characters.html" title="previous chapter">Define Characters</a></li>
-      <li>Next: <a href="architecture.html" title="next chapter">Architecture</a></li>
+      <li>Previous: <a href="tutorial/define_characters.html" title="previous chapter">The Character DSL</a></li>
+      <li>Next: <a href="applications.html" title="next chapter">Applications</a></li>
   </ul></li>
 </ul>
 </div>
@@ -505,26 +872,26 @@ The name uses shell name matching rules, so``’*’`` will display all cells.</
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Using the OpenD6 Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#creation">Creation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#spells">Spells</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spells-invocations-and-items">Spells, Invocations, and Items</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#characters">Characters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#supporting-functions">Supporting Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#publication">Publication</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#files-and-structure">Files and structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#processing-and-control">Processing and control</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="applications.html">Applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
-<li class="toctree-l1"><a class="reference internal" href="computations.html">Miscellaneous Computations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notes.html">Notes on DSL Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/index.html">Notes</a></li>
 </ul>
 
 
@@ -536,7 +903,7 @@ The name uses shell name matching rules, so``’*’`` will display all cells.</
       &#169;2025, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

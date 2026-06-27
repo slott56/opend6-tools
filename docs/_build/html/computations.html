@@ -5,18 +5,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Miscellaneous Computations &#8212; OpenD6 Tools 1.0 documentation</title>
+    <title>Miscellaneous Computations &#8212; OpenD6 Tools 2026.6.22.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
-    <script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/documentation_options.js?v=5ec510d0"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Notes on DSL Design" href="notes.html" />
-    <link rel="prev" title="The notebook_extract application" href="notebook_extract.html" />
+    <link rel="prev" title="notebook_extract app" href="notebook_extract.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -184,7 +184,7 @@ The published table has 35 rows, therefore, this is the default.</p></li>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="notebook_extract.html" title="previous chapter">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
+      <li>Previous: <a href="notebook_extract.html" title="previous chapter"><code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> app</a></li>
       <li>Next: <a href="notes.html" title="next chapter">Notes on DSL Design</a></li>
   </ul></li>
 </ul>
@@ -200,29 +200,21 @@ The published table has 35 rows, therefore, this is the default.</p></li>
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using the OpenD6 Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
+<li class="toctree-l1"><a class="reference internal" href="magic2.html"><code class="docutils literal notranslate"><span class="pre">magic2</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="character.html"><code class="docutils literal notranslate"><span class="pre">character</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook_extract.html"><code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> app</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Miscellaneous Computations</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-opend6_tools.die_simplification">die_simplification</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#alternate">Alternate</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#implementation">Implementation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opend6_tools.die_simplification.die_code"><code class="docutils literal notranslate"><span class="pre">die_code()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opend6_tools.die_simplification.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#implementation">Implementation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-opend6_tools.spell_measure">spell_measure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Implementation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#opend6_tools.spell_measure.value_measure"><code class="docutils literal notranslate"><span class="pre">value_measure()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#opend6_tools.spell_measure.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Implementation</a></li>
 </ul>
 </li>
 </ul>
@@ -239,7 +231,7 @@ The published table has 35 rows, therefore, this is the default.</p></li>
       &#169;2025, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

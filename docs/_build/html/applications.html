@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Applications &#8212; OpenD6 Tools 2026.6.26.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=4e5c487b"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Architecture" href="architecture.html" />
+    <link rel="prev" title="Using the OpenD6 Tools" href="usage.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="applications">
+<h1>Applications<a class="headerlink" href="#applications" title="Link to this heading">¶</a></h1>
+<p>When installing opend6-tools, a number of additional command-line interface (CLI) applications are created in the virtual environment:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#dice">dice</a>. This application uses the <code class="docutils literal notranslate"><span class="pre">DieCode</span></code> DSL to define and roll dice. It applies the OpenD6 “Wild Die” rules.</p></li>
+<li><p><a class="reference internal" href="#character-sheet">character_sheet</a>. This generates empty character sheets that can be converted to PDF’s and printed for in-person TTRPG play.</p></li>
+<li><p><a class="reference internal" href="#notebook-extract">notebook_extract</a>. This application extracts Spell (and Item) definitions or Character (and Creature) definitions from a Jupyter Lab Notebook, and creates a Python module that’s used by the publication pipeline.</p></li>
+<li><p><a class="reference internal" href="#die-simplification">die_simplification</a> reproduces the Die Simplification table from the OpenD6 rules.  This provides a clear statement of the underlying rules behind the time.</p></li>
+<li><p><a class="reference internal" href="#spell-measure">spell_measure</a> reproduces the Spell Measure table from the OpenD6 rules. This, too, provides a clear statement of the underlying rules behind the time.</p></li>
+</ul>
+<section id="dice">
+<h2>dice<a class="headerlink" href="#dice" title="Link to this heading">¶</a></h2>
+<section id="synopsis">
+<h3>Synopsis<a class="headerlink" href="#synopsis" title="Link to this heading">¶</a></h3>
+<pre class="literal-block"><strong>dice</strong> [<em>options</em>] <em>expression</em></pre>
+</section>
+<section id="description">
+<h3>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h3>
+<p>Rolls dice matching the given dice expression used for OpenD6.
+The dice expression <strong>must</strong> be enclosed in apostrophes (single quotes): <code class="docutils literal notranslate"><span class="pre">'</span></code>. Otherwise, the shell will try to expand the <code class="docutils literal notranslate"><span class="pre">*</span></code> into a list of file names.</p>
+<p>The <em>expression</em> uses numbers, <code class="docutils literal notranslate"><span class="pre">D</span></code>, <code class="docutils literal notranslate"><span class="pre">*</span></code>, and <code class="docutils literal notranslate"><span class="pre">+</span></code> to define
+a rule for rolling dice. This follows OpenD6 Wild Die rules.</p>
+<p>Given a rule statement like <code class="docutils literal notranslate"><span class="pre">3D+2</span></code>, translate this to <code class="docutils literal notranslate"><span class="pre">'3*D+2'</span></code>.
+Insert <code class="docutils literal notranslate"><span class="pre">*</span></code> as an explicit multiplication operator between the number of dice and the letter <code class="docutils literal notranslate"><span class="pre">D</span></code>.
+Wrap it in apostrophes.</p>
+<p>The output is a list of one or more rolls. There are three formats:</p>
+<ul class="simple">
+<li><p>number. An ordinary roll of the dice; no “wild die” rules were applied.</p></li>
+<li><p>number! The Wild Die was 6, a success, and the roll continued.</p></li>
+<li><p>number? (number) The Wild Die was 1, a failure. The first number is the total excluding the maximum die. The second number is the total including the maximum die rolled.</p></li>
+</ul>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dice<span class="w"> </span><span class="s1">&#39;3*D+2&#39;</span>
+<span class="m">16</span>
+
+dice<span class="w"> </span>--count<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="s1">&#39;3*D&#39;</span>
+<span class="m">12</span>!
+<span class="m">6</span>?<span class="w"> </span><span class="o">(</span><span class="m">12</span><span class="o">)</span>
+<span class="m">6</span>?<span class="w"> </span><span class="o">(</span><span class="m">11</span><span class="o">)</span>
+<span class="m">15</span>!
+<span class="m">14</span>!
+</pre></div>
+</div>
+</section>
+<section id="options">
+<h3>Options<a class="headerlink" href="#options" title="Link to this heading">¶</a></h3>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dice-count">
+<span class="sig-name descname"><span class="pre">--count</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-dice-count" title="Link to this definition">¶</a></dt>
+<dd><p>The number of times to roll the given expression.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-dice-help">
+<span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-dice-help" title="Link to this definition">¶</a></dt>
+<dd><p>Provide detailed help.</p>
+</dd></dl>
+
+</section>
+<section id="environment">
+<h3>Environment<a class="headerlink" href="#environment" title="Link to this heading">¶</a></h3>
+<dl class="std envvar">
+<dt class="sig sig-object std" id="envvar-OPEND6_SEED">
+<span class="sig-name descname"><span class="pre">OPEND6_SEED</span></span><a class="headerlink" href="#envvar-OPEND6_SEED" title="Link to this definition">¶</a></dt>
+<dd><p>Force a specific seed for <code class="docutils literal notranslate"><span class="pre">random.seed()</span></code> to provide a
+reproducible sequence of numbers.</p>
+</dd></dl>
+
+</section>
+<section id="exit-status">
+<h3>Exit Status<a class="headerlink" href="#exit-status" title="Link to this heading">¶</a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">0<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Successful roll.</p>
+</dd>
+<dt class="field-even">2<span class="colon">:</span></dt>
+<dd class="field-even"><p>Invalid dice expression.</p>
+</dd>
+</dl>
+</section>
+<section id="see-also">
+<h3>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h3>
+<p>See <code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.dice.dice_app()</span></code></p>
+</section>
+</section>
+<section id="character-sheet">
+<h2>character_sheet<a class="headerlink" href="#character-sheet" title="Link to this heading">¶</a></h2>
+<section id="id1">
+<h3>Synopsis<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<pre class="literal-block"><strong>character_sheet</strong> [<em>options</em>]</pre>
+</section>
+<section id="id2">
+<h3>Description<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<p>Writes the source for a character sheet to standard output.
+This can then be processed by another application to be converted into a proper PDF for use by players (or the GM.)</p>
+<p>Common choices for tools to emit a final PDF include</p>
+<ul class="simple">
+<li><p><strong>xhtml2pdf</strong>. Converts HTML files to PDF.
+See <a class="reference external" href="https://xhtml2pdf.readthedocs.io/en/latest/">https://xhtml2pdf.readthedocs.io/en/latest/</a>.</p></li>
+<li><p><strong>pdflatex</strong>. Converts LaTeX files to PDF.
+See <a class="reference external" href="https://tug.org/mactex/">https://tug.org/mactex/</a> for MacOS and <a class="reference external" href="https://tug.org/texlive/">https://tug.org/texlive/</a> for Windows and other Linux.</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Examples<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>character_sheet<span class="w"> </span>--format<span class="w"> </span>html<span class="w"> </span><span class="p">|</span><span class="w"> </span>xhtml2pdf<span class="w"> </span>-b<span class="w"> </span>demo
+</pre></div>
+</div>
+<p>Creates a blank character sheet called <code class="docutils literal notranslate"><span class="pre">demo.pdf</span></code> in the current directory.</p>
+</section>
+<section id="id4">
+<h3>Options<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-character_sheet-format">
+<span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-character_sheet-format" title="Link to this definition">¶</a></dt>
+<dd><p>The intermediate format to use. Choices include
+some that are for publication in books, and some that are for distribution to in-person players.</p>
+<p>Player-centric formats:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">html</span></code>. An HTML table that can be converted to PDF using a tool like <strong>xhtml2pdf</strong>. This is the front page, often used for GM’s.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">player</span></code>. An HTML table that can be converted to PDF using a tool like <strong>xhtml2pdf</strong>. This is both the front and back pages, often used by players.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">latex</span></code>. A LaTeX document that can be converted to PDF using a tool like <strong>pdflatex</strong>.</p></li>
+</ul>
+<p>For publication, the application can produce RST-formatted output.
+The RST files require a tool like <strong>docutils</strong> or <strong>sphinx</strong> to create HTML or LaTeX, from which a PDF can be created.
+Here are the publicateion-centeric formats:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">table</span></code>. An RST table format that is an approximate match to some published character sheets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">long</span></code>. An RST file that produces a vertical arrangement of details including a tabular identification block.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">long2</span></code>. An RST file with a vertical arrangement without the identification block.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">short</span></code>. A brief RST-format file, used for inclusion in books.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">literal</span></code>. An RST-format where the table format will not be converted to HTML or LaTeX, but left as ASCII art.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-character_sheet-help">
+<span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-character_sheet-help" title="Link to this definition">¶</a></dt>
+<dd><p>Provide detailed help.</p>
+</dd></dl>
+
+</section>
+<section id="id5">
+<h3>Exit Status<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">0<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Successful creation of the blank sheet.</p>
+</dd>
+<dt class="field-even">2<span class="colon">:</span></dt>
+<dd class="field-even"><p>Invalid format choice.</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h3>See Also<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<p>See <code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.character.cli.app()</span></code></p>
+</section>
+</section>
+<section id="notebook-extract">
+<h2>notebook_extract<a class="headerlink" href="#notebook-extract" title="Link to this heading">¶</a></h2>
+<section id="id7">
+<h3>Synopsis<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<p>There are two, related sub-commands:</p>
+<pre class="literal-block"><strong>notebook_extract</strong> <strong>spells</strong> [<em>options</em>] <em>source</em>
+
+<strong>notebook_extract</strong> <strong>characters</strong> [<em>options</em>] <em>source</em></pre>
+</section>
+<section id="id8">
+<h3>Description<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<p>The <strong>notebook_extract spells</strong> application extracts Spells, Invocations, and Items from a Jupyter Lab notebook.
+A valid Spell or Invocation definition must have one of the following forms:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">variable</span> <span class="o">=</span> <span class="n">Spell</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">variable</span> <span class="o">=</span> <span class="n">Invocation</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <strong>notebook_extract characters</strong> application
+extracts the Character (or Creature) definitions from a Jupyter Lab Notebook.</p>
+<p>A valid Character or Creature definition must have one of the following forms:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">variable</span> <span class="o">=</span> <span class="n">Character</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">variable</span> <span class="o">=</span> <span class="n">Creature</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">variable</span> <span class="pre">=</span></code> assignment statment is required.
+The variable names <strong>should</strong> be unique.
+It is <strong>not</strong> the name of the Spell or Character, those are provided inside the <code class="docutils literal notranslate"><span class="pre">Spell()</span></code> or <code class="docutils literal notranslate"><span class="pre">Character()</span></code> definitions.
+It helps if it is related to the name.
+It is a unique identifier that will be used internally by the conversion process.</p>
+</section>
+<section id="id9">
+<h3>Examples<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<p>This will create an invocations.py module in the local directory.
+The modules will have the spell definitions, and can be used
+to create RST files for publication.</p>
+</section>
+<section id="id10">
+<h3>Options<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<p>For <strong>extract_notebook spells</strong>:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-output">
+<span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">PATH</span></span><a class="headerlink" href="#cmdoption-notebook_extract-output" title="Link to this definition">¶</a></dt>
+<dd><p>Base directory for output files.
+The file stem will match the notebook name.
+The suffix will be <code class="docutils literal notranslate"><span class="pre">.py</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-book-variable">
+<span class="sig-name descname"><span class="pre">--book-variable</span></span><span class="sig-prename descclassname"> <span class="pre">TEXT</span></span><a class="headerlink" href="#cmdoption-notebook_extract-book-variable" title="Link to this definition">¶</a></dt>
+<dd><p>The global variable to create with a list of characters or creatures.
+The default name is <code class="docutils literal notranslate"><span class="pre">characters</span></code>.
+Any valid Python name can be used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-ranked">
+<span class="sig-name descname"><span class="pre">--ranked</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-notebook_extract-ranked" title="Link to this definition">¶</a></dt>
+<dd><p>Emit a module for each distinct “rank” of spells within the notebook.
+Difficulty ranks are defined by the <a class="reference internal" href="reference/magic2.html#opend6_tools.magic2.workbook.workbook_rank" title="opend6_tools.magic2.workbook.workbook_rank"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic2.workbook.workbook_rank()</span></code></a> function.</p>
+<p>The rank of a spell, <span class="math notranslate nohighlight">\(S\)</span>, is based on the difficulty <span class="math notranslate nohighlight">\(d(S)\)</span>. It is a 5-point range around a target, <span class="math notranslate nohighlight">\(T\)</span>: <span class="math notranslate nohighlight">\(-2 \leq d(S) - T &lt; +3\)</span>.
+The targets are 5, 10, 15, etc.
+This means cantrips have difficulties less than 8.
+From 8 to 12 is Rank 1.
+From 13 to 22 is Rank 2, etc.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-verbose">
+<span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-notebook_extract-verbose" title="Link to this definition">¶</a></dt>
+<dd><p>Shows a verbose log of the processing.
+This can be helpful when diagnosing why a notebook can’t be processed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-help">
+<span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-notebook_extract-help" title="Link to this definition">¶</a></dt>
+<dd><p>Provide detailed help.</p>
+</dd></dl>
+
+<p>For <strong>extract_notebook characters</strong>:</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-0">
+<span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">PATH</span></span><a class="headerlink" href="#cmdoption-notebook_extract-0" title="Link to this definition">¶</a></dt>
+<dd><p>Base directory for output files.
+The file stem will match the notebook name.
+The suffix will be <code class="docutils literal notranslate"><span class="pre">.py</span></code>.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-1">
+<span class="sig-name descname"><span class="pre">--book-variable</span></span><span class="sig-prename descclassname"> <span class="pre">TEXT</span></span><a class="headerlink" href="#cmdoption-notebook_extract-1" title="Link to this definition">¶</a></dt>
+<dd><p>The global variable to create with a list of characters or creatures.
+The default name is <code class="docutils literal notranslate"><span class="pre">characters</span></code>.
+Any valid Python name can be used.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-groupby">
+<span class="sig-name descname"><span class="pre">--groupby</span></span><span class="sig-prename descclassname"> <span class="pre">TEXT</span></span><a class="headerlink" href="#cmdoption-notebook_extract-groupby" title="Link to this definition">¶</a></dt>
+<dd><p>An attribute used to group the resulting characters or creatures.
+For example <code class="docutils literal notranslate"><span class="pre">realm</span></code>. This will lead to a number of output files, each with the realm name appended to the original notebook name.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-2">
+<span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-notebook_extract-2" title="Link to this definition">¶</a></dt>
+<dd><p>Shows a verbose log of the processing.
+This can be helpful when diagnosing why a notebook can’t be processed.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-notebook_extract-3">
+<span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-notebook_extract-3" title="Link to this definition">¶</a></dt>
+<dd><p>Provide detailed help.</p>
+</dd></dl>
+
+</section>
+<section id="id11">
+<h3>Exit Status<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<dl class="field-list simple">
+<dt class="field-odd">0<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Successful creation of the module(s).</p>
+</dd>
+<dt class="field-even">2<span class="colon">:</span></dt>
+<dd class="field-even"><p>Invalid option values or the notebook file couldn’t be read.</p>
+</dd>
+</dl>
+</section>
+<section id="id12">
+<h3>See Also<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<p>See <a class="reference internal" href="reference/notebook_extract.html#opend6_tools.notebook_extract.spells" title="opend6_tools.notebook_extract.spells"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.notebook_extract.spells()</span></code></a>
+And  <a class="reference internal" href="reference/notebook_extract.html#opend6_tools.notebook_extract.characters" title="opend6_tools.notebook_extract.characters"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.notebook_extract.characters()</span></code></a>.</p>
+</section>
+</section>
+<section id="other-applications">
+<h2>Other Applications<a class="headerlink" href="#other-applications" title="Link to this heading">¶</a></h2>
+<section id="die-simplification">
+<h3>die_simplification<a class="headerlink" href="#die-simplification" title="Link to this heading">¶</a></h3>
+<section id="id13">
+<h4>Synopsis<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h4>
+<pre class="literal-block"><strong>die_simplification</strong> [<em>options</em>]</pre>
+</section>
+<section id="id14">
+<h4>Description<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h4>
+<p>Writes the Die Simplification table to standard output.</p>
+</section>
+<section id="id15">
+<h4>Examples<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>die_simplification<span class="w"> </span>&gt;die_simplification.csv
+</pre></div>
+</div>
+<p>This will produce the Die Simplification table, creating a local <code class="docutils literal notranslate"><span class="pre">die_simplification.csv</span></code> file.
+This file can then be included in a rule publication.</p>
+</section>
+<section id="id16">
+<h4>Options<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h4>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-die_simplification-start">
+<span class="sig-name descname"><span class="pre">--start</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-die_simplification-start" title="Link to this definition">¶</a></dt>
+<dd><p>The first value to display, default is 1.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-die_simplification-stop">
+<span class="sig-name descname"><span class="pre">--stop</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-die_simplification-stop" title="Link to this definition">¶</a></dt>
+<dd><p>One more than the last value to display, default is 51.
+(This matches the Python symantics of the <code class="docutils literal notranslate"><span class="pre">range()</span></code> function.
+The first value is included the last value is excluded.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-die_simplification-help">
+<span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-die_simplification-help" title="Link to this definition">¶</a></dt>
+<dd><p>Provide detailed help.</p>
+</dd></dl>
+
+</section>
+<section id="id17">
+<h4>Exit Status<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h4>
+<dl class="field-list simple">
+<dt class="field-odd">0<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Successful completion.</p>
+</dd>
+</dl>
+</section>
+<section id="id18">
+<h4>See Also<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h4>
+<p>See <a class="reference internal" href="reference/computations.html#module-opend6_tools.die_simplification" title="opend6_tools.die_simplification"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.die_simplification</span></code></a></p>
+</section>
+</section>
+<section id="spell-measure">
+<h3>spell_measure<a class="headerlink" href="#spell-measure" title="Link to this heading">¶</a></h3>
+<section id="id19">
+<h4>Synopsis<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h4>
+<pre class="literal-block"><strong>spell_measure</strong> [<em>options</em>]</pre>
+</section>
+<section id="id20">
+<h4>Description<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h4>
+<p>Writes the Spell Measures table to standard output.</p>
+</section>
+<section id="id21">
+<h4>Examples<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>spell_measure
+</pre></div>
+</div>
+<p>This writes the spell measures table to standard output.
+The table is generally published as three parallel sets of columns,
+wrapping around so the top row shows values 0, 35, and 70.
+Here are the first few rows of output.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Val</span><span class="o">.</span><span class="p">,</span><span class="n">Measure</span><span class="p">,</span><span class="n">Val</span><span class="o">.</span><span class="p">,</span><span class="n">Measure</span><span class="p">,</span><span class="n">Val</span><span class="o">.</span><span class="p">,</span><span class="n">Measure</span>
+<span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mf">10.0</span> <span class="n">million</span><span class="p">,</span><span class="mi">70</span><span class="p">,</span><span class="mf">100.0</span> <span class="n">trillion</span>
+<span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mf">15.0</span> <span class="n">million</span><span class="p">,</span><span class="mi">71</span><span class="p">,</span><span class="mf">150.0</span> <span class="n">trillion</span>
+<span class="mi">2</span><span class="p">,</span><span class="mf">2.5</span><span class="p">,</span><span class="mi">37</span><span class="p">,</span><span class="mf">25.0</span> <span class="n">million</span><span class="p">,</span><span class="mi">72</span><span class="p">,</span><span class="mf">250.0</span> <span class="n">trillion</span>
+</pre></div>
+</div>
+</section>
+<section id="id22">
+<h4>Options<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h4>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-spell_measure-rows">
+<span class="sig-name descname"><span class="pre">--rows</span></span><span class="sig-prename descclassname"> <span class="pre">INTEGER</span></span><a class="headerlink" href="#cmdoption-spell_measure-rows" title="Link to this definition">¶</a></dt>
+<dd><p>The number of rows before wrapping.
+The default is 35</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-spell_measure-help">
+<span class="sig-name descname"><span class="pre">--help</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-spell_measure-help" title="Link to this definition">¶</a></dt>
+<dd><p>Provide detailed help.</p>
+</dd></dl>
+
+</section>
+<section id="id23">
+<h4>Exit Status<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h4>
+<dl class="field-list simple">
+<dt class="field-odd">0<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Successful completion.</p>
+</dd>
+</dl>
+</section>
+<section id="id24">
+<h4>See Also<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h4>
+<p>See <a class="reference internal" href="reference/computations.html#module-opend6_tools.spell_measure" title="opend6_tools.spell_measure"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.spell_measure</span></code></a></p>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">OpenD6 Tools</a></h1>
+
+
+
+
+
+
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage.html" title="previous chapter">Using the OpenD6 Tools</a></li>
+      <li>Next: <a href="architecture.html" title="next chapter">Architecture</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dice">dice</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#synopsis">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#options">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#environment">Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exit-status">Exit Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#character-sheet">character_sheet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Exit Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#notebook-extract">notebook_extract</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Exit Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#other-applications">Other Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#die-simplification">die_simplification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spell-measure">spell_measure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/index.html">Notes</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, S.Lott.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/applications.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

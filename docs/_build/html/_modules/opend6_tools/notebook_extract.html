@@ -4,13 +4,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>opend6_tools.notebook_extract &#8212; OpenD6 Tools 1.0 documentation</title>
+    <title>opend6_tools.notebook_extract &#8212; OpenD6 Tools 2026.6.22.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
-    <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=5ec510d0"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -80,72 +80,6 @@
 <span class="sd">The ``vpath`` directive is used because notebooks are often kept separate from the source directories for</span>
 <span class="sd">the final document.</span>
 
-<span class="sd">Help</span>
-<span class="sd">====</span>
-
-<span class="sd">Here&#39;s the help from the application:</span>
-
-<span class="sd">..  code-block:: bash</span>
-
-<span class="sd">    % python -m opend6_tools.notebook_extract --help</span>
-
-<span class="sd">     Usage: python -m opend6_tools.notebook_extract [OPTIONS] COMMAND [ARGS]...</span>
-
-<span class="sd">    ╭─ Options ─────────────────────────────────────────────────────────────────╮</span>
-<span class="sd">    │ --install-completion          Install completion for the current shell.   │</span>
-<span class="sd">    │ --show-completion             Show completion for the current shell, to   │</span>
-<span class="sd">    │                               copy it or customize the installation.      │</span>
-<span class="sd">    │ --help                        Show this message and exit.                 │</span>
-<span class="sd">    ╰───────────────────────────────────────────────────────────────────────────╯</span>
-<span class="sd">    ╭─ Commands ────────────────────────────────────────────────────────────────╮</span>
-<span class="sd">    │ spells       Converts a notebook of spells to a Python module for         │</span>
-<span class="sd">    │              publication. For ranked output, the target will have a       │</span>
-<span class="sd">    │              &quot;_rank_xx&quot; suffix appended to the filename stem.             │</span>
-<span class="sd">    │ characters   Converts a notebook of characters or creatures to a Python   │</span>
-<span class="sd">    │              module for publication.                                      │</span>
-<span class="sd">    ╰───────────────────────────────────────────────────────────────────────────╯</span>
-
-<span class="sd">For the ``spells`` sub-command, the help looks like this::</span>
-
-<span class="sd">     Usage: python -m opend6_tools.notebook_extract spells [OPTIONS] SOURCE</span>
-
-<span class="sd">     Converts a notebook of spells to a Python module for publication. For</span>
-<span class="sd">     ranked output, the target will have a &quot;_rank_xx&quot; suffix appended to the</span>
-<span class="sd">     filename stem.</span>
-
-<span class="sd">    ╭─ Arguments ───────────────────────────────────────────────────────────────╮</span>
-<span class="sd">    │ *    source      PATH  notebook to convert [required]                     │</span>
-<span class="sd">    ╰───────────────────────────────────────────────────────────────────────────╯</span>
-<span class="sd">    ╭─ Options ─────────────────────────────────────────────────────────────────╮</span>
-<span class="sd">    │ --output                          PATH  output file base name             │</span>
-<span class="sd">    │ --book-variable                   TEXT  global variable to create with    │</span>
-<span class="sd">    │                                         the list of spells/invocations    │</span>
-<span class="sd">    │                                         [default: spells]                 │</span>
-<span class="sd">    │ --ranked           --no-ranked          Organize by difficulty and rank   │</span>
-<span class="sd">    │                                         [default: no-ranked]              │</span>
-<span class="sd">    │ --help                                  Show this message and exit.       │</span>
-<span class="sd">    ╰───────────────────────────────────────────────────────────────────────────╯</span>
-
-<span class="sd">For the ``characters`` sub-command, here&#39;s the help output::</span>
-
-<span class="sd">     Usage: python -m opend6_tools.notebook_extract characters</span>
-<span class="sd">                [OPTIONS] SOURCE</span>
-
-<span class="sd">     Converts a notebook of characters or creatures to a Python module for</span>
-<span class="sd">     publication.</span>
-
-<span class="sd">    ╭─ Arguments ───────────────────────────────────────────────────────────────╮</span>
-<span class="sd">    │ *    source      PATH  notebook to convert [required]                     │</span>
-<span class="sd">    ╰───────────────────────────────────────────────────────────────────────────╯</span>
-<span class="sd">    ╭─ Options ─────────────────────────────────────────────────────────────────╮</span>
-<span class="sd">    │ --output               PATH  output file base name                        │</span>
-<span class="sd">    │ --book-variable        TEXT  global variable to create with the list of   │</span>
-<span class="sd">    │                              characters/creatures                         │</span>
-<span class="sd">    │                              [default: characters]                        │</span>
-<span class="sd">    │ --groupby              TEXT  named attribute, e.g. realm                  │</span>
-<span class="sd">    │ --help                       Show this message and exit.                  │</span>
-<span class="sd">    ╰───────────────────────────────────────────────────────────────────────────╯</span>
-
 
 <span class="sd">API Reference</span>
 <span class="sd">=============</span>
@@ -160,6 +94,7 @@
 <span class="sd">The :py:func:`spells` function is an application that extracts Characters and Creatures from a Notebook.</span>
 
 <span class="sd">..  autofunction:: spells</span>
+
 
 <span class="sd">Components</span>
 <span class="sd">-----------</span>
@@ -194,9 +129,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">redirect_stdout</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">textwrap</span><span class="w"> </span><span class="kn">import</span> <span class="n">dedent</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotated</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">importlib.metadata</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">jinja2</span>
@@ -207,7 +143,7 @@
 
 
 <div class="viewcode-block" id="ModuleWriter">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.ModuleWriter">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.ModuleWriter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ModuleWriter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines the templates for creating a Python module from a Jupyter Notebook extract.</span>
 
@@ -217,54 +153,55 @@
 <span class="sd">    This template injects the CLI application and unit test suites into the spell module.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">spell_template</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;\</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-<span class="sd">        Extract {{book_type}} from ``{{ title }}``.</span>
-<span class="sd">        Created by V{{version}} of ``opend6_tools.notebook_extract`` </span>
+    <span class="n">spell_template</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s1">        &quot;&quot;&quot;</span>
+<span class="s1">        Extract {{book_type}} from ``{{ title }}``.</span>
+<span class="s1">        Created by V{{version}} opend6-tools, ``{{app_name}}`` </span>
+<span class="s1">        </span>
+<span class="s1">        {% block comment %}</span>
+<span class="s1">        When run as app with &quot;display&quot; argument, generates .RST-formatted details of all the {{book_type}}.</span>
+<span class="s1">        </span>
+<span class="s1">        With &quot;debug&quot; argument, prints debugging details for selected {{book_type}}.</span>
+<span class="s1">        </span>
+<span class="s1">        With &quot;test&quot; argument, runs doctest, which uses the __test__ examples.</span>
+<span class="s1">        {</span><span class="si">% e</span><span class="s1">ndblock %}</span>
+<span class="s1">        &quot;&quot;&quot;</span>
+<span class="s1">        {% block import %}</span>
+<span class="s1">        from opend6_tools.magic2 import *</span>
+<span class="s1">        {</span><span class="si">% e</span><span class="s1">ndblock %}</span>
+<span class="s1">        </span>
+<span class="s1">        {</span><span class="si">% f</span><span class="s1">or name, stmt in definitions %}</span>
+<span class="s1">        {{ stmt }}</span>
+<span class="s1">        {</span><span class="si">% e</span><span class="s1">ndfor -%}</span>
+<span class="s1">        </span>
+<span class="s1">        {{ book_variable }} = [ </span>
+<span class="s1">            {</span><span class="si">% f</span><span class="s1">or name, stmt in definitions %}{{ name }}, {</span><span class="si">% e</span><span class="s1">ndfor %}</span>
+<span class="s1">        ]</span>
+<span class="s1">        </span>
+<span class="s1">        __test__ = {</span>
+<span class="s1">            {</span><span class="si">% i</span><span class="s1">f tests -%}</span>
+<span class="s1">            {</span><span class="si">% f</span><span class="s1">or name, body in tests.items() %}</span>
+<span class="s1">            {{ &quot;</span><span class="si">{!r}</span><span class="s1">&quot;.format(name) }}: {{ &quot;</span><span class="si">{!r}</span><span class="s1">&quot;.format(body) }},</span>
+<span class="s1">            {</span><span class="si">% e</span><span class="s1">ndfor %}</span>
+<span class="s1">            {</span><span class="si">% e</span><span class="s1">lse %}</span>
+<span class="s1">            &#39;todo&#39;: &quot;&quot;&quot;&gt;&gt;&gt; note = &#39;Run the module with ``tests --make`` to create a template.&#39;</span><span class="se">\\</span><span class="s1">n&gt;&gt;&gt; pass&quot;&quot;&quot;</span>
+<span class="s1">            {</span><span class="si">% e</span><span class="s1">ndif %}</span>
+<span class="s1">        }</span>
+<span class="s1">        </span>
+<span class="s1">        {% block apps %}</span>
+<span class="s1">        if __name__ == &quot;__main__&quot;:</span>
+<span class="s1">            app = build_app({{ book_variable }})</span>
+<span class="s1">            app()</span>
+<span class="s1">        {</span><span class="si">% e</span><span class="s1">ndblock %}</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
 
-<span class="sd">        {% block comment %}</span>
-<span class="sd">        When run as app with &quot;display&quot; argument, generates .RST-formatted details of all the {{book_type}}.</span>
-<span class="sd">        </span>
-<span class="sd">        With &quot;debug&quot; argument, prints debugging details for selected {{book_type}}.</span>
-<span class="sd">        {% endblock %}</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-<span class="sd">        {% block import %}</span>
-<span class="sd">        from opend6_tools.magic2 import *</span>
-<span class="sd">        {% endblock %}</span>
-
-<span class="sd">        {% for name, stmt in definitions %}</span>
-<span class="sd">        {{ stmt }}</span>
-<span class="sd">        {% endfor -%}</span>
-<span class="sd">        </span>
-<span class="sd">        {{ book_variable }} = [ </span>
-<span class="sd">            {% for name, stmt in definitions %}{{ name }}, {% endfor %}</span>
-<span class="sd">        ]</span>
-
-<span class="sd">        {% block apps %}</span>
-<span class="sd">        if __name__ == &quot;__main__&quot;:</span>
-<span class="sd">            app = build_app({{ book_variable }})</span>
-<span class="sd">            app()</span>
-<span class="sd">        {% endblock %}</span>
-
-<span class="sd">        __test__ = {</span>
-<span class="sd">            {% if tests -%}</span>
-<span class="sd">            {% for name, body in tests.items() %}</span>
-<span class="sd">            {{ &quot;{!r}&quot;.format(name) }}: {{ &quot;{!r}&quot;.format(body) }},</span>
-<span class="sd">            {% endfor %}</span>
-<span class="sd">            {% else %}</span>
-<span class="sd">            &quot;placeholder&quot;: &quot;&gt;&gt;&gt; pass\\n\\n&quot;</span>
-<span class="sd">            {% endif %}</span>
-<span class="sd">        }</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-    <span class="p">)</span>
     <span class="n">character_template</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">        {</span><span class="si">% e</span><span class="s2">xtends &quot;spells.py&quot; %}</span>
 <span class="s2">        {% block import %}</span>
 <span class="s2">        from opend6_tools.character import *</span>
 <span class="s2">        {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
 <span class="s2">        {% block comment %}</span>
-<span class="s2">        When run as app with &quot;sheet&quot; argument, generates .RST-formmat player character sheets for all the {{book_type}}.</span>
+<span class="s2">        When run as app with &quot;sheet&quot; argument, generates .RST-format player character sheets for all the {{book_type}}.</span>
 <span class="s2">        </span>
 <span class="s2">        With &quot;display&quot; argument, generates .RST-formatted short-form of all the {{book_type}}.</span>
 <span class="s2">        </span>
@@ -273,7 +210,7 @@
 <span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ModuleWriter.book_slug">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.ModuleWriter.book_slug">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.ModuleWriter.book_slug">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">book_slug</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the book title to a slug without spaces.</span>
@@ -284,11 +221,13 @@
         <span class="k">return</span> <span class="n">title</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_name</span><span class="o">=</span><span class="s2">&quot;opend6_tools.notebook_extract&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initalize a ModuleWriter instance.</span>
+<span class="sd">        Initialize a ModuleWriter by configuring the Jinja2 Environment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">version</span><span class="p">(</span><span class="s2">&quot;opend6-tools&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app_name</span> <span class="o">=</span> <span class="n">app_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="s2">&quot;slug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">book_slug</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">DictLoader</span><span class="p">(</span>
@@ -299,7 +238,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="ModuleWriter.write_book">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.ModuleWriter.write_book">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.ModuleWriter.write_book">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_book</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -319,10 +258,19 @@
 
 <span class="sd">        :returns: The string to write.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;write_book(</span><span class="si">%r</span><span class="s2">, </span><span class="si">%r</span><span class="s2">, </span><span class="si">%r</span><span class="s2">, </span><span class="si">%r</span><span class="s2">, </span><span class="si">%r</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="n">book_type</span><span class="p">,</span>
+            <span class="n">title</span><span class="p">,</span>
+            <span class="n">definitions</span><span class="p">,</span>
+            <span class="n">book_variable_name</span><span class="p">,</span>
+            <span class="n">tests</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">book_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.py&quot;</span><span class="p">)</span>
         <span class="c1"># Render the module as Python code.</span>
         <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
             <span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+            <span class="n">app_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app_name</span><span class="p">,</span>
             <span class="n">definitions</span><span class="o">=</span><span class="n">definitions</span><span class="p">,</span>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
             <span class="n">tests</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span>
@@ -334,9 +282,12 @@
 
 
 <div class="viewcode-block" id="subclass_iter">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.subclass_iter">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.subclass_iter">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">subclass_iter</span><span class="p">(</span><span class="n">some_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">type</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Emit a class and all it&#39;s defined subclasses.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Emit a class and all it&#39;s defined subclasses.</span>
+
+<span class="sd">    This is used to find all subclasses of ``Spell`` or ``Character``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">yield</span> <span class="n">some_class</span>
     <span class="k">for</span> <span class="n">sub_class</span> <span class="ow">in</span> <span class="n">some_class</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
         <span class="k">yield from</span> <span class="n">subclass_iter</span><span class="p">(</span><span class="n">sub_class</span><span class="p">)</span></div>
@@ -344,7 +295,7 @@
 
 
 <div class="viewcode-block" id="AssignmentVisitor">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.AssignmentVisitor">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.AssignmentVisitor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AssignmentVisitor</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">NodeVisitor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save the assignment statements from the various cells in the notebook.</span>
@@ -355,34 +306,55 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_class</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialie an AssignmentVisitor instance.</span>
+<span class="sd">        Initialize an ``AssignmentVisitor`` instance.</span>
 
 <span class="sd">        :param source: The source text for the Python module.</span>
-<span class="sd">        :param base_class: The base class to filter on.</span>
+<span class="sd">        :param base_class: The base class to filter on; all subclasses of this class will be found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">Assign</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">expr</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">sc</span> <span class="ow">in</span> <span class="n">subclass_iter</span><span class="p">(</span><span class="n">base_class</span><span class="p">))</span>
 
 <div class="viewcode-block" id="AssignmentVisitor.name_definition_iter">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.AssignmentVisitor.name_definition_iter">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.AssignmentVisitor.name_definition_iter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">name_definition_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterates over names and definitions found in the source code.</span>
 
 <span class="sd">        :returns: sequence of tuple (variable, code block)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;names from </span><span class="si">%s</span><span class="s2"> statements&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">statements</span><span class="p">:</span>
             <span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">stmt</span><span class="o">.</span><span class="n">targets</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)]</span>
             <span class="k">yield</span> <span class="p">(</span><span class="n">targets</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ast</span><span class="o">.</span><span class="n">get_source_segment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">stmt</span><span class="p">))</span></div>
 
 
+<div class="viewcode-block" id="AssignmentVisitor.test_condition_iter">
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.AssignmentVisitor.test_condition_iter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_condition_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterates over the assert conditions of the form expr == literal,</span>
+
+<span class="sd">        :returns: sequence of tuple[expr, expr]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;tests from </span><span class="si">%s</span><span class="s2"> statements&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">get_source_segment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">left</span><span class="p">),</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">get_source_segment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">right</span><span class="p">),</span>
+            <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="AssignmentVisitor.visit_Assign">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.AssignmentVisitor.visit_Assign">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.AssignmentVisitor.visit_Assign">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_Assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">Assign</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visits :py:class:`ast.Assign` statements.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visits :py:class:`ast.Assign` statements in the given module.</span>
+
+<span class="sd">        Retains all ``variable = Class()`` for one of the target classes.</span>
 
 <span class="sd">        :param node: the node to visit.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Assignment </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
         <span class="k">match</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="k">case</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">()</span> <span class="k">as</span> <span class="n">call</span> <span class="k">if</span> <span class="p">(</span>
                 <span class="nb">isinstance</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">call</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_classes</span>
@@ -391,12 +363,36 @@
                 <span class="k">return</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                 <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AssignmentVisitor.visit_Assert">
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.AssignmentVisitor.visit_Assert">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_Assert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">Assert</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Visits :py:class:`ast.Assert` statements in the given module.</span>
+
+<span class="sd">        Assertions of the form ``object.attribute == literal`` become doctest cases:</span>
+
+<span class="sd">        ``&gt;&gt;&gt; object.attribute\\nliteral``</span>
+
+<span class="sd">        :param node: the node to visit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Assert </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="k">match</span> <span class="n">node</span><span class="o">.</span><span class="n">test</span><span class="p">:</span>
+            <span class="k">case</span> <span class="n">ast</span><span class="o">.</span><span class="n">Compare</span><span class="p">(</span><span class="n">ops</span><span class="o">=</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">Eq</span><span class="p">()])</span> <span class="k">as</span> <span class="n">compare</span><span class="p">:</span>
+                <span class="c1"># node.left == node.comparators: makes a doctest example.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">compare</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">compare</span><span class="o">.</span><span class="n">comparators</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="p">)</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="c1"># Can&#39;t turn the expression into a simple doctest.</span>
+                <span class="c1"># Might want to write a warning about this assertion.</span>
+                <span class="k">pass</span></div>
 </div>
 
 
 
 <div class="viewcode-block" id="Extractor">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.Extractor">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.Extractor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Extractor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the code cells and extract the sequence of assignment statements.</span>
@@ -406,17 +402,24 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_type</span> <span class="o">=</span> <span class="n">target_type</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="k">as</span> <span class="n">nb_file</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">notebook</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">nb_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cell_analysis_iter</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Extractor </span><span class="si">%s</span><span class="s2">: </span><span class="si">%d</span><span class="s2"> code cell analyzers&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="p">)</span>
+        <span class="p">)</span>
 
-<div class="viewcode-block" id="Extractor.definition_iter">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.Extractor.definition_iter">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">definition_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the DSL definition statements from an IPYNB notebook file.</span>
-<span class="sd">        Iterates over tuples of the form ``(&quot;name&quot;, &quot;name = Spell()&quot;)`` for each Spell found.</span>
-<span class="sd">        The ``AssignmentVisitor`` filters to be sure these are the DSL definitions based on Spells and Characters.</span>
+<div class="viewcode-block" id="Extractor.cell_analysis_iter">
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.Extractor.cell_analysis_iter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cell_analysis_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">AssignmentVisitor</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Examine the notebook, creating ``AssignmentVisitor`` objects for each code cell.</span>
+<span class="sd">        These will produce assignment statements and test assertions.</span>
+<span class="sd">        The ``AssignmentVisitor`` filters the code cell to be locate DSL definitions</span>
+<span class="sd">        based on target classes like ``Spell`` or ``Character``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">code_cells</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span>
@@ -428,7 +431,28 @@
             <span class="n">code</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source_text</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">number</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">)</span>
             <span class="n">asn_visitor</span> <span class="o">=</span> <span class="n">AssignmentVisitor</span><span class="p">(</span><span class="n">source_text</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_type</span><span class="p">)</span>
             <span class="n">asn_visitor</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">asn_visitor</span></div>
+
+
+<div class="viewcode-block" id="Extractor.definition_iter">
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.Extractor.definition_iter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">definition_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the DSL definition statements from an IPYNB notebook file.</span>
+<span class="sd">        Iterates over tuples of the form ``(&quot;name&quot;, &quot;name = Class()&quot;)`` for each assignment</span>
+<span class="sd">        with the appropriate target class of ``Spell`` or ``Character``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">asn_visitor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="p">:</span>
             <span class="k">yield from</span> <span class="n">asn_visitor</span><span class="o">.</span><span class="n">name_definition_iter</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Extractor.test_case_iter">
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.Extractor.test_case_iter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_case_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the DSL test cases from an IPYNB notebook file.</span>
+<span class="sd">        Iterates over tuples of the form ``(&quot;expr&quot;, &quot;literal&quot;)`` for each ``assert`` statement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">asn_visitor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">asn_visitor</span><span class="o">.</span><span class="n">test_condition_iter</span><span class="p">()</span></div>
 </div>
 
 
@@ -439,40 +463,42 @@
 
 
 <div class="viewcode-block" id="eval_cell">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.eval_cell">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.eval_cell">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">eval_cell</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">assignment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">variety</span><span class="p">:</span> <span class="n">EvalContext</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span> <span class="o">|</span> <span class="n">character</span><span class="o">.</span><span class="n">Character</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate an assignment statement to a ``Spell`` (or ``Character``) object.</span>
-<span class="sd">    This uses an explicit filter rule to check for ``Spell`` creation.</span>
-<span class="sd">    The default rule is ``isinstance(obj, Spell)``</span>
 
 <span class="sd">    :param name: variable name from the source</span>
 <span class="sd">    :param assignment: Full assignment statement ``name = Spell()``.</span>
 <span class="sd">    :param variety: One of the :py:class:`EvalContext` values: MAGIC or CHARACTERS.</span>
+<span class="sd">        This defines an ``import`` required to evaluate the expression.</span>
 <span class="sd">    :returns: tuple of (name, object)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">global_defs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">local_vars</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># print(&quot;Eval&quot;, name)</span>
     <span class="n">exec</span><span class="p">(</span><span class="n">variety</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">global_defs</span><span class="p">,</span> <span class="n">local_vars</span><span class="p">)</span>
     <span class="n">exec</span><span class="p">(</span><span class="n">assignment</span><span class="p">,</span> <span class="n">global_defs</span><span class="p">,</span> <span class="n">local_vars</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">local_vars</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span><span class="p">):</span>
-        <span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.finalize()&quot;</span><span class="p">,</span> <span class="n">global_defs</span><span class="p">,</span> <span class="n">local_vars</span><span class="p">)</span>
+    <span class="c1"># Magic V2 needed this.</span>
+    <span class="c1"># if isinstance(local_vars[name], magic2.Spell):</span>
+    <span class="c1">#     exec(f&quot;{name}.finalize()&quot;, global_defs, local_vars)</span>
     <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">local_vars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
 
 
 <div class="viewcode-block" id="write_spells_ranked">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.write_spells_ranked">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.write_spells_ranked">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write_spells_ranked</span><span class="p">(</span>
     <span class="n">book_variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">source_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">spell_source</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]],</span>
+    <span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]],</span>
     <span class="n">writer</span><span class="p">:</span> <span class="n">ModuleWriter</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ranks spells and write multiple files.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ranks spells and writes multiple files with spells extracted from a single source Notebook.</span>
 
 <span class="sd">    :param book_variable: global variable name to use</span>
 <span class="sd">    :param output: output Path or None to write to stdout</span>
@@ -494,15 +520,16 @@
     <span class="n">ranked</span> <span class="o">=</span> <span class="n">magic2</span><span class="o">.</span><span class="n">workbook_rank</span><span class="p">(</span><span class="n">spell_context</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">rank</span><span class="p">,</span> <span class="n">spell_list</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ranked</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
         <span class="n">rank_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">spell_name_to_source</span><span class="p">[</span><span class="n">spell</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">spell</span> <span class="ow">in</span> <span class="n">spell_list</span><span class="p">]</span>
-        <span class="n">tests</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">name</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&gt;&gt;&gt; -2 &lt;= </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.difficulty - </span><span class="si">{</span><span class="n">rank</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="si">}</span><span class="s2"> &lt; +3</span><span class="se">\n</span><span class="s2">True</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">rank_list</span>
+        <span class="n">doctests</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&gt;&gt;&gt; -2 &lt;= </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.difficulty - </span><span class="si">{</span><span class="n">rank</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="si">}</span><span class="s2"> &lt; +3</span><span class="se">\n</span><span class="s2">True</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">rank_list</span>
         <span class="p">}</span>
         <span class="n">book_body</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">write_book</span><span class="p">(</span>
             <span class="n">book_type</span><span class="o">=</span><span class="s2">&quot;Spells&quot;</span><span class="p">,</span>
             <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source_name</span><span class="si">}</span><span class="s2"> rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">book_variable</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">definitions</span><span class="o">=</span><span class="n">rank_list</span><span class="p">,</span>
             <span class="n">book_variable_name</span><span class="o">=</span><span class="n">book_variable</span><span class="p">,</span>
-            <span class="n">tests</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span>
+            <span class="n">tests</span><span class="o">=</span><span class="n">doctests</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
             <span class="n">rank_name</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">with_stem</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_Rank</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -518,15 +545,16 @@
 
 
 <div class="viewcode-block" id="write_spells_unranked">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.write_spells_unranked">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.write_spells_unranked">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write_spells_unranked</span><span class="p">(</span>
     <span class="n">book_variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">source_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">spell_source</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]],</span>
+    <span class="n">tests</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]],</span>
     <span class="n">writer</span><span class="p">:</span> <span class="n">ModuleWriter</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Writes extracted spells to a single file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Writes extracted spells from a single source Notebook to a single target module file.</span>
 
 <span class="sd">    :param book_variable: global variable name to use</span>
 <span class="sd">    :param output: output Path or None to write to stdout</span>
@@ -534,12 +562,15 @@
 <span class="sd">    :param spell_source: list of tuple[str, str] with spell name and assignment statement</span>
 <span class="sd">    :param writer: ModuleWriter instance to write.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">doctests</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span> <span class="sa">f</span><span class="s2">&quot;&gt;&gt;&gt; </span><span class="si">{</span><span class="n">left</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">right</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="ow">in</span> <span class="n">tests</span>
+    <span class="p">}</span>
     <span class="n">book_body</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">write_book</span><span class="p">(</span>
         <span class="n">book_type</span><span class="o">=</span><span class="s2">&quot;Spells&quot;</span><span class="p">,</span>
         <span class="n">title</span><span class="o">=</span><span class="n">source_name</span><span class="p">,</span>
         <span class="n">definitions</span><span class="o">=</span><span class="n">spell_source</span><span class="p">,</span>
         <span class="n">book_variable_name</span><span class="o">=</span><span class="n">book_variable</span><span class="p">,</span>
-        <span class="n">tests</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">tests</span><span class="o">=</span><span class="n">doctests</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">target</span><span class="p">:</span>
@@ -551,7 +582,7 @@
 
 
 <div class="viewcode-block" id="write_characters">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.write_characters">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.write_characters">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write_characters</span><span class="p">(</span>
     <span class="n">book_variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
@@ -584,7 +615,7 @@
 
 
 <div class="viewcode-block" id="slug">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.slug">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.slug">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">slug</span><span class="p">(</span><span class="n">group_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a section title of a Character workbook into a summary slug.</span>
 
@@ -596,7 +627,7 @@
 
 
 <div class="viewcode-block" id="write_characters_byRealm">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.write_characters_byRealm">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.write_characters_byRealm">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">write_characters_byRealm</span><span class="p">(</span>
     <span class="n">book_variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
@@ -604,7 +635,7 @@
     <span class="n">character_source</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]],</span>
     <span class="n">writer</span><span class="p">:</span> <span class="n">ModuleWriter</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Groups Characters by realm attribute and write multiple files.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Groups Characters by realm attribute and write multiple files from a single Notebook source.</span>
 
 <span class="sd">    :param book_variable: global variable name to use</span>
 <span class="sd">    :param output: output Path or None to write to stdout</span>
@@ -623,7 +654,9 @@
         <span class="k">for</span> <span class="n">variable</span><span class="p">,</span> <span class="n">spell</span> <span class="ow">in</span> <span class="n">char_context</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">spell</span>
     <span class="p">}</span>  <span class="c1"># map Spell name -&gt; (variable, statement) source</span>
-    <span class="n">grouped</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">workbook_groupBy</span><span class="p">(</span><span class="n">char_context</span><span class="p">,</span> <span class="n">group_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="n">char</span><span class="p">:</span> <span class="n">char</span><span class="o">.</span><span class="n">realm</span><span class="p">)</span>
+    <span class="n">grouped</span> <span class="o">=</span> <span class="n">character</span><span class="o">.</span><span class="n">workbook_groupBy</span><span class="p">(</span>
+        <span class="n">char_context</span><span class="p">,</span> <span class="n">group_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="n">char</span><span class="p">:</span> <span class="n">char</span><span class="o">.</span><span class="n">realm</span>
+    <span class="p">)</span>
     <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">char_list</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">grouped</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
         <span class="n">group_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">char_name_to_source</span><span class="p">[</span><span class="n">char</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">char_list</span><span class="p">]</span>
         <span class="n">book_body</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">write_book</span><span class="p">(</span>
@@ -649,56 +682,97 @@
 
 
 <div class="viewcode-block" id="spells">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.spells">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.spells">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;spells&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">spells</span><span class="p">(</span>
     <span class="n">source</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;notebook to convert&quot;</span><span class="p">)],</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;output file base name&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">book_variable</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
-        <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;global variable to create with the list of spells/invocations&quot;</span><span class="p">),</span>
+        <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;global variable to create with the list of spells/invocations&quot;</span>
+        <span class="p">),</span>
     <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;spells&quot;</span><span class="p">,</span>
-    <span class="n">ranked</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;Organize by difficulty and rank&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">ranked</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">bool</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;Organize by difficulty and rank&quot;</span><span class="p">)</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;show verbose output&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a notebook of spells to a Python module for publication.</span>
 <span class="sd">    For ranked output, the target will have a &quot;_rank_xx&quot; suffix appended to the filename stem.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">writer</span> <span class="o">=</span> <span class="n">ModuleWriter</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;spells&quot;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;source </span><span class="si">%r</span><span class="s2">, output </span><span class="si">%r</span><span class="s2">, book_variable </span><span class="si">%r</span><span class="s2">, ranked </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">,</span>
+        <span class="n">book_variable</span><span class="p">,</span>
+        <span class="n">ranked</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">extractor</span> <span class="o">=</span> <span class="n">Extractor</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target_type</span><span class="o">=</span><span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span><span class="p">)</span>
     <span class="n">spell_source</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">extractor</span><span class="o">.</span><span class="n">definition_iter</span><span class="p">())</span>
+    <span class="n">tests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">extractor</span><span class="o">.</span><span class="n">test_case_iter</span><span class="p">())</span>
 
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">ModuleWriter</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">ranked</span><span class="p">:</span>
-        <span class="n">write_spells_ranked</span><span class="p">(</span><span class="n">book_variable</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">spell_source</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="n">write_spells_ranked</span><span class="p">(</span>
+            <span class="n">book_variable</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">spell_source</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">writer</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">write_spells_unranked</span><span class="p">(</span><span class="n">book_variable</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">spell_source</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span></div>
+        <span class="n">write_spells_unranked</span><span class="p">(</span>
+            <span class="n">book_variable</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">spell_source</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">writer</span>
+        <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Wrote </span><span class="si">%d</span><span class="s2"> spells&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spell_source</span><span class="p">))</span></div>
 
 
 
 <div class="viewcode-block" id="characters">
-<a class="viewcode-back" href="../../notebook_extract.html#opend6_tools.notebook_extract.characters">[docs]</a>
+<a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.characters">[docs]</a>
 <span class="nd">@app</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;characters&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">characters</span><span class="p">(</span>
     <span class="n">source</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Argument</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;notebook to convert&quot;</span><span class="p">)],</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;output file base name&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">book_variable</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
         <span class="nb">str</span><span class="p">,</span>
-        <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;global variable to create with the list of characters/creatures&quot;</span><span class="p">),</span>
+        <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;global variable to create with the list of characters/creatures&quot;</span>
+        <span class="p">),</span>
     <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;characters&quot;</span><span class="p">,</span>
     <span class="n">groupby</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;named attribute, e.g. realm&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&quot;show verbose output&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a notebook of characters or creatures to a Python module for publication.&quot;&quot;&quot;</span>
-    <span class="n">writer</span> <span class="o">=</span> <span class="n">ModuleWriter</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;characters&quot;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;source </span><span class="si">%r</span><span class="s2">, output </span><span class="si">%r</span><span class="s2">, book_variable </span><span class="si">%r</span><span class="s2">, groupby </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">,</span>
+        <span class="n">book_variable</span><span class="p">,</span>
+        <span class="n">groupby</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">extractor</span> <span class="o">=</span> <span class="n">Extractor</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target_type</span><span class="o">=</span><span class="n">character</span><span class="o">.</span><span class="n">Character</span><span class="p">)</span>
     <span class="n">character_source</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">extractor</span><span class="o">.</span><span class="n">definition_iter</span><span class="p">())</span>
 
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">ModuleWriter</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">groupby</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;realm&quot;</span><span class="p">:</span>
-        <span class="n">write_characters_byRealm</span><span class="p">(</span><span class="n">book_variable</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">character_source</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+        <span class="n">write_characters_byRealm</span><span class="p">(</span>
+            <span class="n">book_variable</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">character_source</span><span class="p">,</span> <span class="n">writer</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">write_characters</span><span class="p">(</span><span class="n">book_variable</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">character_source</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span></div>
+        <span class="n">write_characters</span><span class="p">(</span><span class="n">book_variable</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">source</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">character_source</span><span class="p">,</span> <span class="n">writer</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Wrote </span><span class="si">%d</span><span class="s2"> characters&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">character_source</span><span class="p">))</span></div>
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
     <span class="n">app</span><span class="p">()</span>
 </pre></div>
 
@@ -737,14 +811,12 @@
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation and Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../applications.html">Applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../computations.html">Miscellaneous Computations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notes.html">Notes on DSL Design</a></li>
 </ul>
 
@@ -757,7 +829,7 @@
       &#169;2025, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
     </div>

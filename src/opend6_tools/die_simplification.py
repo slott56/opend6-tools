@@ -42,7 +42,7 @@ Any given die roll of :math:`n` die has two components: Ordinary Die and Wild Di
         Contribution to the total is about 2.3.
 
     Total: :math:`\frac{31}{6} \approx 5.16`.
-
+    This is too small a difference to justify the more complicated computation.
     Rolling :math:`n` die seems to be :math:`(n-1) \times 3.5 + \frac{31}{6}`.
 
 Implementation
@@ -61,7 +61,9 @@ import sys
 import typer
 
 
-def die_code(start: int = 1, stop: int = 51, step: int = 1) -> Iterator[tuple[str, str, str]]:
+def die_code(
+    start: int = 1, stop: int = 51, step: int = 1
+) -> Iterator[tuple[str, str, str]]:
     """Emits the sequence of die code simplifications as triples.
     (Die code, 5D, Wild Die).
 
@@ -88,5 +90,8 @@ def main(start: int = 1, stop: int = 51) -> None:
     target.writerows(die_code(start, stop))
 
 
-if __name__ == "__main__":
-    typer.run(main)
+app = typer.Typer()
+app.command()(main)
+
+if __name__ == "__main__":  # pragma: no cover
+    app()

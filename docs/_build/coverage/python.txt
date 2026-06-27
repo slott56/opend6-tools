@@ -7,28 +7,32 @@ Statistics
 +---------------------------------+----------+--------------+
 | Module                          | Coverage | Undocumented |
 +=================================+==========+==============+
-| opend6_tools.character          | 100.00%  | 0            |
+| opend6_tools.character          | 89.47%   | 2            |
 +---------------------------------+----------+--------------+
 | opend6_tools.die_simplification | 100.00%  | 0            |
 +---------------------------------+----------+--------------+
-| opend6_tools.magic2             | 92.86%   | 3            |
+| opend6_tools.magic2             | 100.00%  | 0            |
 +---------------------------------+----------+--------------+
 | opend6_tools.notebook_extract   | 100.00%  | 0            |
 +---------------------------------+----------+--------------+
 | opend6_tools.spell_measure      | 100.00%  | 0            |
 +---------------------------------+----------+--------------+
-| TOTAL                           | 96.20%   | 3            |
+| TOTAL                           | 94.59%   | 2            |
 +---------------------------------+----------+--------------+
 
-opend6_tools.magic2
--------------------
+opend6_tools.character
+----------------------
 
 Functions:
- * demo_detail
- * example_spell
+ * build_app
+ * debug
 
 Classes:
- * Cantrip -- missing methods:
+ * CharacterWriter_Long2
 
-   - finalize
+opend6_tools.notebook_extract
+-----------------------------
+
+Classes:
+ * EvalContext
 

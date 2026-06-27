@@ -1,0 +1,477 @@
+################
+  Applications
+################
+
+When installing opend6-tools, a number of additional command-line interface (CLI) applications are created in the virtual environment:
+
+-   `dice`_. This application uses the ``DieCode`` DSL to define and roll dice. It applies the OpenD6 "Wild Die" rules.
+
+-   `character_sheet`_. This generates empty character sheets that can be converted to PDF's and printed for in-person TTRPG play.
+
+-   `notebook_extract`_. This application extracts Spell (and Item) definitions or Character (and Creature) definitions from a Jupyter Lab Notebook, and creates a Python module that's used by the publication pipeline.
+
+-   `die_simplification`_ reproduces the Die Simplification table from the OpenD6 rules.  This provides a clear statement of the underlying rules behind the time.
+
+-   `spell_measure`_ reproduces the Spell Measure table from the OpenD6 rules. This, too, provides a clear statement of the underlying rules behind the time.
+
+..  outline:
+
+    Synopsis
+    --------
+
+    Description
+    -----------
+
+    Examples
+    --------
+
+    Options
+    -------
+
+    Environment
+    -----------
+
+    Exit Status
+    -----------
+
+    Files
+    -----
+
+    See Also
+    --------
+
+..  program:: dice
+
+dice
+====
+
+Synopsis
+--------
+
+..  parsed-literal::
+
+    **dice** [*options*] *expression*
+
+Description
+-----------
+
+Rolls dice matching the given dice expression used for OpenD6.
+The dice expression **must** be enclosed in apostrophes (single quotes): ``'``. Otherwise, the shell will try to expand the ``*`` into a list of file names.
+
+The *expression* uses numbers, ``D``, ``*``, and ``+`` to define
+a rule for rolling dice. This follows OpenD6 Wild Die rules.
+
+Given a rule statement like ``3D+2``, translate this to ``'3*D+2'``.
+Insert ``*`` as an explicit multiplication operator between the number of dice and the letter ``D``.
+Wrap it in apostrophes.
+
+The output is a list of one or more rolls. There are three formats:
+
+-   number. An ordinary roll of the dice; no "wild die" rules were applied.
+
+-   number! The Wild Die was 6, a success, and the roll continued.
+
+-   number? (number) The Wild Die was 1, a failure. The first number is the total excluding the maximum die. The second number is the total including the maximum die rolled.
+
+Examples
+--------
+
+..  code-block:: bash
+
+    dice '3*D+2'
+    16
+
+    dice --count 5 '3*D'
+    12!
+    6? (12)
+    6? (11)
+    15!
+    14!
+
+Options
+-------
+
+..  option:: --count
+
+    The number of times to roll the given expression.
+
+..  option:: --help
+
+    Provide detailed help.
+
+Environment
+-----------
+
+..  envvar:: OPEND6_SEED
+
+    Force a specific seed for ``random.seed()`` to provide a
+    reproducible sequence of numbers.
+
+Exit Status
+-----------
+
+:0:
+    Successful roll.
+
+:2:
+    Invalid dice expression.
+
+See Also
+--------
+
+See :py:func:`opend6_tools.dice.dice_app`
+
+
+
+..  program:: character_sheet
+
+character_sheet
+===============
+
+
+Synopsis
+--------
+
+
+..  parsed-literal::
+
+    **character_sheet** [*options*]
+
+Description
+-----------
+
+Writes the source for a character sheet to standard output.
+This can then be processed by another application to be converted into a proper PDF for use by players (or the GM.)
+
+Common choices for tools to emit a final PDF include
+
+-   **xhtml2pdf**. Converts HTML files to PDF.
+    See https://xhtml2pdf.readthedocs.io/en/latest/.
+
+-   **pdflatex**. Converts LaTeX files to PDF.
+    See https://tug.org/mactex/ for MacOS and https://tug.org/texlive/ for Windows and other Linux.
+
+Examples
+--------
+
+..  code-block:: bash
+
+    character_sheet --format html | xhtml2pdf -b demo
+
+Creates a blank character sheet called ``demo.pdf`` in the current directory.
+
+Options
+-------
+
+..  option:: --format
+
+    The intermediate format to use. Choices include
+    some that are for publication in books, and some that are for distribution to in-person players.
+
+    Player-centric formats:
+
+    -   ``html``. An HTML table that can be converted to PDF using a tool like **xhtml2pdf**. This is the front page, often used for GM's.
+    -   ``player``. An HTML table that can be converted to PDF using a tool like **xhtml2pdf**. This is both the front and back pages, often used by players.
+    -   ``latex``. A LaTeX document that can be converted to PDF using a tool like **pdflatex**.
+
+    For publication, the application can produce RST-formatted output.
+    The RST files require a tool like **docutils** or **sphinx** to create HTML or LaTeX, from which a PDF can be created.
+    Here are the publicateion-centeric formats:
+
+    -   ``table``. An RST table format that is an approximate match to some published character sheets.
+    -   ``long``. An RST file that produces a vertical arrangement of details including a tabular identification block.
+    -   ``long2``. An RST file with a vertical arrangement without the identification block.
+    -   ``short``. A brief RST-format file, used for inclusion in books.
+    -   ``literal``. An RST-format where the table format will not be converted to HTML or LaTeX, but left as ASCII art.
+
+..  option:: --help
+
+    Provide detailed help.
+
+Exit Status
+-----------
+
+
+:0:
+    Successful creation of the blank sheet.
+
+:2:
+    Invalid format choice.
+
+See Also
+--------
+
+See :py:func:`opend6_tools.character.cli.app`
+
+
+..  program:: notebook_extract
+
+notebook_extract
+================
+
+
+Synopsis
+--------
+
+There are two, related sub-commands:
+
+..  parsed-literal::
+
+    **notebook_extract** **spells** [*options*] *source*
+
+    **notebook_extract** **characters** [*options*] *source*
+
+
+Description
+-----------
+
+The **notebook_extract spells** application extracts Spells, Invocations, and Items from a Jupyter Lab notebook.
+A valid Spell or Invocation definition must have one of the following forms:
+
+::
+
+    variable = Spell(...)
+
+or
+
+::
+
+    variable = Invocation(...)
+
+
+The **notebook_extract characters** application
+extracts the Character (or Creature) definitions from a Jupyter Lab Notebook.
+
+A valid Character or Creature definition must have one of the following forms:
+
+::
+
+    variable = Character(...)
+
+or
+
+::
+
+    variable = Creature(...)
+
+The ``variable =`` assignment statment is required.
+The variable names **should** be unique.
+It is **not** the name of the Spell or Character, those are provided inside the ``Spell()`` or ``Character()`` definitions.
+It helps if it is related to the name.
+It is a unique identifier that will be used internally by the conversion process.
+
+Examples
+--------
+
+..  code-block::bash
+
+    notebook_extract spells ../notebooks/invocations.ipynb
+
+This will create an invocations.py module in the local directory.
+The modules will have the spell definitions, and can be used
+to create RST files for publication.
+
+Options
+-------
+
+For **extract_notebook spells**:
+
+
+..  option:: --output PATH
+
+    Base directory for output files.
+    The file stem will match the notebook name.
+    The suffix will be ``.py``.
+
+..  option:: --book-variable TEXT
+
+    The global variable to create with a list of characters or creatures.
+    The default name is ``characters``.
+    Any valid Python name can be used.
+
+..  option:: --ranked
+
+    Emit a module for each distinct "rank" of spells within the notebook.
+    Difficulty ranks are defined by the :py:func:`opend6_tools.magic2.workbook.workbook_rank` function.
+
+    The rank of a spell, :math:`S`, is based on the difficulty :math:`d(S)`. It is a 5-point range around a target, :math:`T`: :math:`-2 \leq d(S) - T < +3`.
+    The targets are 5, 10, 15, etc.
+    This means cantrips have difficulties less than 8.
+    From 8 to 12 is Rank 1.
+    From 13 to 22 is Rank 2, etc.
+
+..  option:: --verbose
+
+    Shows a verbose log of the processing.
+    This can be helpful when diagnosing why a notebook can't be processed.
+
+..  option:: --help
+
+    Provide detailed help.
+
+
+For **extract_notebook characters**:
+
+..  option:: --output PATH
+
+    Base directory for output files.
+    The file stem will match the notebook name.
+    The suffix will be ``.py``.
+
+..  option:: --book-variable TEXT
+
+    The global variable to create with a list of characters or creatures.
+    The default name is ``characters``.
+    Any valid Python name can be used.
+
+..  option:: --groupby TEXT
+
+    An attribute used to group the resulting characters or creatures.
+    For example ``realm``. This will lead to a number of output files, each with the realm name appended to the original notebook name.
+
+..  option:: --verbose
+
+    Shows a verbose log of the processing.
+    This can be helpful when diagnosing why a notebook can't be processed.
+
+..  option:: --help
+
+    Provide detailed help.
+
+Exit Status
+-----------
+
+
+:0:
+    Successful creation of the module(s).
+
+:2:
+    Invalid option values or the notebook file couldn't be read.
+
+
+See Also
+--------
+
+See :py:func:`opend6_tools.notebook_extract.spells`
+And  :py:func:`opend6_tools.notebook_extract.characters`.
+
+Other Applications
+==================
+
+..  program:: die_simplification
+
+die_simplification
+------------------
+
+Synopsis
+~~~~~~~~
+
+..  parsed-literal::
+
+    **die_simplification** [*options*]
+
+Description
+~~~~~~~~~~~
+
+Writes the Die Simplification table to standard output.
+
+Examples
+~~~~~~~~
+
+..  code-block:: bash
+
+    die_simplification >die_simplification.csv
+
+This will produce the Die Simplification table, creating a local ``die_simplification.csv`` file.
+This file can then be included in a rule publication.
+
+Options
+~~~~~~~
+
+..  option:: --start
+
+    The first value to display, default is 1.
+
+..  option:: --stop
+
+    One more than the last value to display, default is 51.
+    (This matches the Python symantics of the ``range()`` function.
+    The first value is included the last value is excluded.
+
+..  option:: --help
+
+    Provide detailed help.
+
+Exit Status
+~~~~~~~~~~~
+
+:0:
+    Successful completion.
+
+See Also
+~~~~~~~~
+
+See :py:mod:`opend6_tools.die_simplification`
+
+
+..  program:: spell_measure
+
+spell_measure
+-------------
+
+Synopsis
+~~~~~~~~
+
+..  parsed-literal::
+
+    **spell_measure** [*options*]
+
+Description
+~~~~~~~~~~~
+
+Writes the Spell Measures table to standard output.
+
+
+Examples
+~~~~~~~~
+
+..  code-block:: bash
+
+    spell_measure
+
+This writes the spell measures table to standard output.
+The table is generally published as three parallel sets of columns,
+wrapping around so the top row shows values 0, 35, and 70.
+Here are the first few rows of output.
+
+::
+
+    Val.,Measure,Val.,Measure,Val.,Measure
+    0,1,35,10.0 million,70,100.0 trillion
+    1,1.5,36,15.0 million,71,150.0 trillion
+    2,2.5,37,25.0 million,72,250.0 trillion
+
+Options
+~~~~~~~
+
+..  option:: --rows INTEGER
+
+    The number of rows before wrapping.
+    The default is 35
+
+
+..  option:: --help
+
+    Provide detailed help.
+
+Exit Status
+~~~~~~~~~~~
+
+:0:
+    Successful completion.
+
+See Also
+~~~~~~~~
+See :py:mod:`opend6_tools.spell_measure`
+
+

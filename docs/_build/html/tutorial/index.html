@@ -5,17 +5,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorial &#8212; OpenD6 Tools 1.0 documentation</title>
+    <title>Tutorial &#8212; OpenD6 Tools 2026.6.26.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
-    <script src="../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=4e5c487b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Installing Software" href="installing_software.html" />
-    <link rel="prev" title="Installation" href="../installation.html" />
+    <link rel="prev" title="Installation and Quickstart" href="../installation.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -35,37 +35,37 @@
             
   <section id="tutorial">
 <span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Link to this heading">¶</a></h1>
-<p>The point of the <strong>OpenD6</strong> tools project is to help designers (as well as game masters) create consistent definitions of spells and characters.
+<p>The point of the <code class="docutils literal notranslate"><span class="pre">opend6_tools</span></code> project is to help designers (as well as game masters) create consistent definitions of spells and characters.
 These tools handle the accounting details for spell difficulty and character dice allocations.</p>
 <section id="background">
 <h2>Background<a class="headerlink" href="#background" title="Link to this heading">¶</a></h2>
-<p>The immediate focus is publishing documents.
-Glancing up at the bigger picture, these documents may be intended for sale, or to be shared with interested readers and players.</p>
-<p>The publication process is centered around a chain of tools to allow anyone to write some text and get a slick, professionally-formatted result in a number of distinct publication formats.
-This also means being able to perform these two important tasks:</p>
+<p>The immediate focus of the tools is to publish documents.
+The publication process is centered around a chain of tools to write some text and get a slick, professional result in a number of distinct publication formats.
+This also means being able to perform two important tasks:</p>
 <ul class="simple">
 <li><p>Compute the difficulty for a Spell. (Or the dice budget for a Character or Creature.)</p></li>
 <li><p>Publish the Spell. (Or Character or Creature.)</p></li>
 </ul>
 <p>These tasks – interestingly – suffer from a deep conflict.
-The kind of tool that facilitates one task exacerbates the other task.</p>
-<p>Consider using WYSIAYG (“What You See Is All You Get”) tools: a word processor and a spreadsheet.
+The kind of tool that facilitates one task exacerbates the other.</p>
+<p>Consider using WYSIAYG (“What You See Is All You Get”) tools like a word processor and a spreadsheet.
 We can make a spreadsheet to automatate the computation – and recomputation – of difficulty for a spell.
 However, we don’t want to publish the spreadsheet; we need some kind of nicely-formatted summary.
 If, on the other hand, we focus on the published description of a spell – a blob of words – we are forced to do manual computations when changes are made.</p>
 <p>Bottom-line: Automated computations and nice formatting for publication are incompatible.
-This conflict between computing and publishing makes design exploration difficult.</p>
-<p>(Copy and Paste from a spreadsheet to a book is off the table as a choice. It’s too error-prone.)</p>
-<p>It is very helpful to have tooling to support a <strong>Change-Compute-Consider</strong> cycle.</p>
+This conflict between computing and publishing makes exploration of design alternatives difficult. It can lead to rule books with errors: omissions and inconsistencies.</p>
+<p>(Copy and paste from a spreadsheet to a book is off the table as a choice.
+This is too error-prone.
+Who can be <strong>sure</strong> all of the spreadsheet changes were properly copied into the rule books?)</p>
+<p>The <strong>Change-Compute-Consider</strong> cycle is important here.</p>
 <ol class="arabic simple">
-<li><p>Change the definition of a spell (or character or creature.)</p></li>
-<li><p>Compute the consequences – spell difficulty or dice budget.</p></li>
-<li><p>Consider the change in the larger context of a world design, campaign design, or in the  details of a scenario.</p></li>
+<li><p><strong>Change</strong> the definition of a spell (or character or creature.)</p></li>
+<li><p><strong>Compute</strong> the consequences, the spell difficulty or dice budget for the character.</p></li>
+<li><p><strong>Consider</strong> the change in the larger context of a world design, campaign design, or in the  details of a scenario.</p></li>
 </ol>
-<p>This needs to happen at the click of a mouse, permitting the designer to consider multiple alternatives.</p>
-<p>To support simple <strong>Change-Compute-Consider</strong> cycle, we are forced to step away from the limitations of WYSIAYG tools.
-we need to switch to a Publishing Pipeline.
-The pipeline is a sequence of transformation stages.
+<p>This needs to happen at the click of a mouse, permitting the designer to consider multiple alternatives quickly and easily.</p>
+<p>To support <strong>Change-Compute-Consider</strong>, we are forced to step away from the limitations of WYSIAYG tools.
+We need to switch to a more sophisticated Publishing Pipeline: a sequence of transformation stages.
 The content will flow through these transformations to create the final, published form of the book (or web site, or printed hand-out for players.)</p>
 <p>The general approach to working with a Publishing Pipeline is this:</p>
 <ol class="arabic simple">
@@ -77,28 +77,31 @@ Similarly, <em>italic</em> text looks like this: <code class="docutils literal n
 Headings are underlined. List items are indented.</p></li>
 <li><p>Write details of Spells, Invocations, Characters, Creatures, etc., in external files.
 These are <strong>not</strong> in RST format.
-The publishing pipeline tools will convert our working ideas from a computation-friendly form into RST.</p></li>
+The publishing pipeline tools will convert the working ideas from a computation-friendly form into the publication-friendly RST form.</p></li>
 <li><p>Edit the various external files in a rapid <strong>Change-Compute-Consider</strong> cycle until things look good.</p></li>
-<li><p>Use the <strong>Publishing Pipeline</strong> to convert the RST into HTML (or PDF or EPUB) products.
-This will include RST we wrote plus RST made from our Spells, Invocations, etc.
+<li><p>Use the <strong>Publishing Pipeline</strong> to convert everthing into RST, and from there into HTML (or PDF or EPUB) products.
+The idea is to seamlessly integrate RST we wrote plus RST made from our Spells, Invocations, Characters, Items, etc.
 Consistent editorial styling is part of the final conversion.</p></li>
 </ol>
-<p>For advanced document designers, HTML styles can be added to alter the look, enforcing consistent styling.
-The HTML templates can be changed to alter the structure of the resulting pages.</p>
-<p>Changes are always made to the source RST; the target documents are generated from these.
+<p>For advanced document designers, CSS styles can be added to alter the look.
+Additionally, the HTML templates used the pipeline can be changed to alter the structure of the resulting pages.</p>
+<p>Changes are always made to the source documents; the target documents are generated from these.
 The target HTML, PDF, and EPUB are <strong>never</strong> touched manually, they’re simply distributed to the target audience.</p>
 </section>
 <section id="the-big-picture">
 <h2>The Big Picture<a class="headerlink" href="#the-big-picture" title="Link to this heading">¶</a></h2>
 <p>The goal is to create the <code class="docutils literal notranslate"><span class="pre">book.html</span></code> (or PDF or EPUB).
 Getting there requires creating a number of files in the <code class="docutils literal notranslate"><span class="pre">book</span></code> folder.
-Often, there’s at least one file per chapter; the diagram only shows a two files: <code class="docutils literal notranslate"><span class="pre">magic.rst</span></code> and <code class="docutils literal notranslate"><span class="pre">index.rst</span></code>.</p>
+Often, there’s at least one file per chapter.
+To keep the diagram simple, there are only two files: <code class="docutils literal notranslate"><span class="pre">magic.rst</span></code> and <code class="docutils literal notranslate"><span class="pre">index.rst</span></code>.</p>
 <p>In order to allow a flexible, fast <strong>Change-Compute-Consider</strong> cycle, Jupyter Lab is used to create notebooks.
 The diagram shows one notebook with the unhelpful name of <code class="docutils literal notranslate"><span class="pre">example_1.ipynb</span></code>.
 Any more mreaningful name can be used; we strongly encourage using lower-case letters, digits, and <code class="docutils literal notranslate"><span class="pre">_</span></code>’s as the stem for the name. The suffix has to be <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>.</p>
 <p class="plantuml">
-<img src="../_images/plantuml-64a939987f871698a51b085d8182eda34730748d.png" alt="&#64;startuml
+<img src="../_images/plantuml-ea91bc88439a42bb818ea9103e6c82ed3a0b430c.png" alt="&#64;startuml
     'https://plantuml.com/deployment-diagram
+
+title Using the OpenD6 Tools
 
 &lt;style&gt;
 artifact {
@@ -121,7 +124,7 @@ folder notebooks {
 lab --&gt; example_1.ipynb
 
 boundary &quot;Spyder&quot; as editor
-Designer &lt;-&gt; editor : &quot;**Create**\n**Content**&quot;
+Designer &lt;--&gt; editor : &quot;**Create**\n**Content**&quot;
 
 editor --&gt; book
 folder book {
@@ -138,8 +141,8 @@ component make {
     component sphinx
 }
 
-example_1.ipynb --&gt; opend6_tools
-opend6_tools --&gt; example_1.txt
+example_1.ipynb ...&gt; opend6_tools : import
+example_1.txt ...&gt; opend6_tools : import
 
 component sphinx
 artifact &quot;book.html&quot; &lt;&lt;&lt;target&gt;&gt;&gt;
@@ -163,8 +166,8 @@ The Spyder Integrated Development Environment is helpful.
 Really, any programming editor can be used, even Jupyter Lab.</p></li>
 <li><p>The more complicated <strong>Change-Compute-Consider</strong> part of the work is done with Jupyter Lab.
 This will do rapid computations on the Spell and Character definitions.</p></li>
-<li><p>The final production will be done with the <strong>make</strong> program run from a Terminal window.
-This makes use the <code class="docutils literal notranslate"><span class="pre">opend6_tools</span></code> project and Sphinx to do the real work.
+<li><p>The final production will be done with the <code class="docutils literal notranslate"><span class="pre">make</span></code> command run from a Terminal window.
+This makes use the <code class="docutils literal notranslate"><span class="pre">opend6_tools</span></code> project and <strong>Sphinx</strong> to do the real work.
 It creates the final <code class="docutils literal notranslate"><span class="pre">book.html</span></code> from the <code class="docutils literal notranslate"><span class="pre">book</span></code> folder of files.</p></li>
 </ol>
 <p>Yes, there are a lot of files.
@@ -181,9 +184,9 @@ Splitting the overall job into pieces helps create more complex documents, like 
 <li><p><a class="reference internal" href="installing_software.html#tutorial-installing-software"><span class="std std-ref">Installing Software</span></a> covers the basics of getting started working with advanced software tools for writing. For folks new to Python or new to programming, this is essential.</p></li>
 <li><p><a class="reference internal" href="start_writing.html#tutorial-start-writing"><span class="std std-ref">Start Writing</span></a> dips into the world of ReStructuredText (RST) and how simple text files using plain-text markup are transformed into elegant HTML documents.</p></li>
 <li><p><a class="reference internal" href="opend6_tools.html#tutorial-opend6-tools"><span class="std std-ref">OpenD6 Tools</span></a> shows how to install the <code class="docutils literal notranslate"><span class="pre">opend6-tools</span></code> library in a working Python virtual environment. This will show some aspects of the <strong>Change-Compute-Consider</strong> cycle</p></li>
-<li><p><a class="reference internal" href="define_spells.html#tutorial-define-spells"><span class="std std-ref">Define Spells</span></a> looks closely at the Domain-Specific Language (DSL) for spells and how to incorporate a spell definition into an RST document.
+<li><p><a class="reference internal" href="define_spells.html#tutorial-spell-dsl"><span class="std std-ref">The Spell DSL</span></a> looks closely at the Domain-Specific Language (DSL) for spells and how to incorporate a spell definition into an RST document.
 This section will look deeply at the <strong>Change-Compute-Consider</strong> cycle.</p></li>
-<li><p><a class="reference internal" href="define_characters.html#tutorial-define-characters"><span class="std std-ref">Define Characters</span></a> covers some features of the Domain-Specific Language (DSL) for characters and creatures and how to incorporate a creature definition into an RST document.
+<li><p><a class="reference internal" href="define_characters.html#tutorial-define-characters"><span class="std std-ref">The Character DSL</span></a> covers some features of the Domain-Specific Language (DSL) for characters and creatures and how to incorporate a creature definition into an RST document.
 This section also looks deeply at the <strong>Change-Compute-Consider</strong> cycle.</p></li>
 </ol>
 </section>
@@ -209,7 +212,7 @@ This section also looks deeply at the <strong>Change-Compute-Consider</strong> c
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../installation.html" title="previous chapter">Installation</a></li>
+      <li>Previous: <a href="../installation.html" title="previous chapter">Installation and Quickstart</a></li>
       <li>Next: <a href="installing_software.html" title="next chapter">Installing Software</a></li>
   </ul></li>
 </ul>
@@ -225,7 +228,7 @@ This section also looks deeply at the <strong>Change-Compute-Consider</strong> c
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation and Quickstart</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-big-picture">The Big Picture</a></li>
@@ -233,19 +236,17 @@ This section also looks deeply at the <strong>Change-Compute-Consider</strong> c
 <li class="toctree-l3"><a class="reference internal" href="installing_software.html">Installing Software</a></li>
 <li class="toctree-l3"><a class="reference internal" href="start_writing.html">Start Writing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="opend6_tools.html">OpenD6 Tools</a></li>
-<li class="toctree-l3"><a class="reference internal" href="define_spells.html">Define Spells</a></li>
-<li class="toctree-l3"><a class="reference internal" href="define_characters.html">Define Characters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="define_spells.html">The Spell DSL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="define_characters.html">The Character DSL</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../applications.html">Applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../computations.html">Miscellaneous Computations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notes.html">Notes on DSL Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/index.html">Notes</a></li>
 </ul>
 
 
@@ -257,7 +258,7 @@ This section also looks deeply at the <strong>Change-Compute-Consider</strong> c
       &#169;2025, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

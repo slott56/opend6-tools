@@ -16,33 +16,33 @@ Each writing session reflects the **Change-Compute-Consider** cycle.
 Step 1: Activate the virtual environment
 ----------------------------------------
 
-Each time we sit down to a fresh, new Terminal window (or Powershell prompt) we'll need to make sure our virtual environment is active.
-The OS prompt provides a little hint.
+Each time we sit down to a Terminal window (or Powershell prompt) we'll need to make sure our virtual environment is active.
+The OS prompt should provide hints as to what environment is active.
+There are two parts to this:
 
-- If the prompt starts with ``(my-book)`` then the virtual environment is active. Nothing more needs to be done.
-    Skip the rest of this step.
+-   The current working directory. The book directory, ``campaign_book`` needs to be current.
+    If the prompt doesn't show the directory, there are OS commands to print the working directory: ``pwd`` (or **Windows** ``cd``).
 
-- Otherwise, the virtual environment is not active, and needs to be activated.
+    If the directory isn't correct, use the ``cd`` (or ``chdir``) command to navigate to the correct working directory.
 
-In order to run ``make``, the virtual environment needs to be active.
-Here's the command to activate the virtual environment.
+-   The virtual environment. If the prompt starts with ``(my-book)`` then the virtual environment is active. Nothing more needs to be done.
 
-..  code-block:: bash
+    If the virtual environment isn't active, use one of the following commands to activate it.
 
-    source .venv/bin/activate
+    ..  code-block:: bash
 
-For **Windows** the command is slightly simpler.
+        source .venv/bin/activate
 
-..  code-block:: bash
+    For **Windows** the command is slightly different.
 
-    .venv\Scripts\Activate.ps1
+    ..  code-block:: bash
 
-This will make all the Python scripts and tools into first-class parts of the current working environment.
+        .venv\Scripts\Activate.ps1
 
-The prompt will change to include ``(my-book)`` as a reminder that the virtual environment is now active.
+The prompt will have a prefix of ``(my-book)`` as a reminder that the virtual environment is now active.
 
-Step 2: Write
--------------
+Step 2: Write Some Content
+--------------------------
 
 Open Spyder.
 
@@ -76,7 +76,7 @@ This shows a number of RST features.
 
 -   The title is ``my_book documentation``.
     We know this is some kind of heading because it is followed by an underline that has the same length as the line above it.
-    A heading **must** have this two-line structure.
+    A heading **must** have this two-line structure: a title and a matching underline.
 
     RST headings are underlined using any of a variety of characters.
     We suggest the following pattern:
@@ -86,17 +86,23 @@ This shows a number of RST features.
     -   Section titles have ``-`` as the underline.
     -   Subsections can have ``~`` as the underline.
 
-    If you need subsubsections, use ``*``.
+    If you need subsubsections, use ``*`` to underline the title.
 
-    Consistency matters.
+    These are suggestions, feel free to use other patterns.
+    Consistency is what matters.
+    The RST processing tools will deduce your pattern if it's consistent.
+    If it's inconsistent, it will stop processing at the inconsistent heading underline.
 
--   The use of the `````` character pairs to surround text that's shown in "terminal" font.
-    The ``index.rst`` example doesn't show using ``**`` for strong emphasis, and ``*`` for emphasis. Strong emphasis often uses a **bold** style. Emphasis often uses an *italic* style.
+-   The  `````` and `````` character pairs are used to surround text that's shown in "terminal" font.
+    There are other pattens for text highlighting.
+    Surround text with ``**`` for strong emphasis, and ``*`` for emphasis.
+    Strong emphasis often uses a **bold** style.
+    Emphasis often uses an *italic* style.
 
 -   There's a two-part hyperlink: ```text <URL>`_``.
     Note the use of single ````` characters to surround the hyperlink, and the use of ``_`` at the end to show that this link leads away from this document to another site on the internet.
-    The text is what the reader will see.
-    The part in ``<`` ... ``>`` is the Uniform Resource Locator (URL) to which they can be directed if they click.
+    The initial text is what the reader will see.
+    The trailing text -- in ``<`` ... ``>`` -- is the Uniform Resource Locator (URL) to which they can be directed if they click on the link.
 
 -   The ``.. toctree::`` is a "directive".
     A directive is not part of the text, but is an instruction to Sphinx to do something here.
@@ -116,9 +122,9 @@ Two changes are important here:
     -   Character Options
     -   Improving Characters
 
-What's involved in adding a chapter?
+What's involved in adding a chapter? There are three steps for each of these chapters:
 
-1.  Create a new ``.rst`` file for the chapter.
+1.  Use Spyder to create a new ``.rst`` file for the chapter.
     We might create a file named ``introduction.rst``.
 
 2.  Put the title in the chapter.
@@ -131,7 +137,10 @@ What's involved in adding a chapter?
 
     Feel free to leave a blank line after the underline and write anything that looks interesting as part of this chapter.
 
-3.  Update the ``.. toctree::`` directive in ``index.rst`` to include the stem of the new file's name. Use ``introduction``, because the suffix (``.rst``) is part of the default configuration, and doesn't need to be included in the the ``.. toctree::`` directive's content.
+3.  Update the ``.. toctree::`` directive in ``index.rst`` to include the stem of the new file's name. For example, if you created ``introduction.rst``, then put ``introduction`` as a separate, indented line under the ``.. toctree::`` directive.
+
+    The file suffix (``.rst``) is part of the default configuration.
+    You don't include this in the the ``.. toctree::`` directive's content.
 
     It might look like this:
 
@@ -141,9 +150,9 @@ What's involved in adding a chapter?
            :maxdepth: 2
            :caption: Contents:
 
-            introduction
+           introduction
 
-    What's important is the file name is **indented** within the ``.. toctree::`` directive's content.
+    What's important is (1) the file name is **indented** within the ``.. toctree::`` directive's content, and (2) it's separated from the ``:maxdepth:`` and ``:caption:`` lines with one blank line.
 
 These three steps should be repeated for each of the five new chapters.
 This will add five new files.
@@ -181,7 +190,7 @@ We can write and publish complex TTRPG material with (relative) ease.
 We can decompose the book into multiple files.
 We can easily have several files open at once to make sure sections are consistent.
 
-We've seen the **Change-Compute-Consider** cycle up close.
+We've taken a first look at the **Change-Compute-Consider** cycle:
 
 -      Change an ``.rst`` (and other) files in the project directory.
 
@@ -189,4 +198,4 @@ We've seen the **Change-Compute-Consider** cycle up close.
 
 -      Consider the resulting web site.
 
-To move onto the complicated parts -- Spells and Characters -- we need a few more tools. In the next part of the tutorial, :ref:`tutorial.opend6_tools`, we'll add the ``opend6-tools`` package to our working virtual environment. We'll also pause to explore Jupyter Lab as a kind of IDE for working with code.
+To move onto the complicated parts -- Spells and Characters -- we need a few more tools. In the next part of the tutorial, :ref:`tutorial.opend6_tools`. We'll also pause to explore Jupyter Lab as a kind of IDE for working with code.

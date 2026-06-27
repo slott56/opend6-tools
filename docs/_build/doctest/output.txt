@@ -1,33 +1,41 @@
-Results of doctest builder run on 2026-01-10 16:29:17
+Results of doctest builder run on 2026-06-27 16:28:33
 =====================================================
 
-Document: character
--------------------
+Document: reference/character
+-----------------------------
 1 item passed all tests:
-  29 tests in default
-29 tests in 1 item.
-29 passed.
+  23 tests in default
+23 tests in 1 item.
+23 passed.
 Test passed.
 
-Document: magic2
-----------------
+Document: reference/dice
+------------------------
 1 item passed all tests:
- 364 tests in default
-364 tests in 1 item.
-364 passed.
+  15 tests in default
+15 tests in 1 item.
+15 passed.
+Test passed.
+
+Document: reference/magic2
+--------------------------
+1 item passed all tests:
+ 392 tests in default
+392 tests in 1 item.
+392 passed.
 Test passed.
 
 Document: usage
 ---------------
 1 item passed all tests:
-   6 tests in default
-6 tests in 1 item.
-6 passed.
+   7 tests in default
+7 tests in 1 item.
+7 passed.
 Test passed.
 
 Doctest summary
 ===============
-  399 tests
+  437 tests
     0 failures in tests
     0 failures in setup code
     0 failures in cleanup code

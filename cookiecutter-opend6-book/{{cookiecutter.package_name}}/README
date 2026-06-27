@@ -1,0 +1,6 @@
+# {{ cookiecutter.project_name }}
+
+{{ cookiecutter.project_short_description }}
+Version {{ cookiecutter.calver_version }}
+
+# A place to keep notes on how this book is created and extended.

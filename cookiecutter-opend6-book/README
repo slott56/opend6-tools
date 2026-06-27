@@ -1,0 +1,42 @@
+# Cookie Cutter template for a book using OpenD6 Tools.
+
+This will create a directory for creating a new book.
+
+Life is simplest if you start with the Astral **uv** tool. (https://docs.astral.sh/uv/)
+
+Then use the following command to seed the project's files:
+
+```bash
+uvx cookiecutter cookiecutter-opend6-book
+```
+
+Here are the essential directory contents that will be created:
+
+-   `conf.py` Configuration for Sphinx to generate HTML or PDF.
+-   `index.rst` Root of the document. This has the all-important `..  toctree::` directive to identify the chapters to include.
+-   `index.html` A little redirector to point to the `_build` directory, making it slightly easier to publish the HTML content.
+-   `Makefile` Configuration to make it easier to use **make** to run the Sphinx tool.
+-   `OGL.rst` The Open Game License file.
+-   `README` A file into which notes on rebuilding the documentation can be kept.
+-   `characters` A directory with character and creature files.
+    -  `Makefile` A configuration to create modules from notebooks, and RST include files from modules.
+-   `items` A directory with items files.
+    -  `Makefile` A configuration to create modules from notebooks, and RST include files from modules.
+-   `notebooks` A place to keep Jupyter Lab notebooks with characters, creatures, items, spells, and invocations.
+-   `spells` A directory with spells and invocations files.
+    -  `Makefile` A configuration to create modules from notebooks, and RST include files from modules.
+
+Each chapter will be an `.rst` file that's named in the `..  toctree::` directive  of the `index.rst` file.
+
+Here are the prompts that will be provided by the CookieCutter application.
+
+..  code-block::
+
+  [1/7] full_name (S. Lott): 
+  [2/7] email (slott@example.com): 
+  [3/7] project_name (OpenD6 Book): 
+  [4/7] package_name (OpenD6-Book): 
+  [5/7] project_short_description (OpenD6 Campaign OpenD6 Book): 
+  [6/7] year (2026): 
+  [7/7] calver_version (2026.06.16): 
+

@@ -5,13 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Installation &#8212; OpenD6 Tools 1.0 documentation</title>
+    <title>Installation and Quickstart &#8212; OpenD6 Tools 2026.6.26.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
-    <script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/documentation_options.js?v=4e5c487b"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorial" href="tutorial/index.html" />
@@ -33,19 +33,170 @@
 
           <div class="body" role="main">
             
-  <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+  <section id="installation-and-quickstart">
+<h1>Installation and Quickstart<a class="headerlink" href="#installation-and-quickstart" title="Link to this heading">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">OpenD6_tools</span></code> project is a library to help build OpenD6 characters.</p>
 <p>If you are unfamiliar with <a class="reference external" href="https://python.org">Python</a> or the <a class="reference external" href="https://www.sphinx-doc.org">Sphinx tools</a>, skip to the <a class="reference internal" href="tutorial/index.html#tutorial"><span class="std std-ref">Tutorial</span></a> section.
-We suggest doing some planning and preparation before installing these tools.</p>
-<p>If you are familiar with Python (and Sphinx), then you’ll use <strong>pip</strong> or <strong>uv</strong> (or whatever) to install these tools.</p>
+We suggest following those more detailed instructions for installation.</p>
+<p>If you are familiar with Python (and Sphinx), then you’ll use <strong>pip</strong> or <strong>uv</strong> (or whatever) to install these tools.
+There are some OS package dependencies: <strong>make</strong>, <strong>pkg-config</strong>, <strong>cairo</strong>, and <strong>pdflatex</strong>.</p>
+<ul>
+<li><p>For <strong>Macos</strong>, install these with <strong>homebrew</strong>. See <a class="reference external" href="https://brew.sh">https://brew.sh</a> to install this.</p>
+<p>Install the required OS packages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>make<span class="w"> </span>pkg-config<span class="w"> </span>cairo
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://tug.org/mactex/">https://tug.org/mactex/</a> for instructions on installing <strong>pdflatex</strong>.</p>
+</li>
+<li><p>Some <strong>Linux</strong> distributions include <strong>make</strong>, and <strong>pkg-config</strong>.
+Use the distribution’s appropriate tools to install <strong>make</strong>, <strong>pkg-config</strong>, <strong>cairo</strong>.
+For details on this, see
+<a class="reference external" href="https://pycairo.readthedocs.io/en/latest/getting_started.html">https://pycairo.readthedocs.io/en/latest/getting_started.html</a>.</p>
+<p>See <a class="reference external" href="https://tug.org/texlive/">https://tug.org/texlive/</a> for instructions on installing <strong>pdflatex</strong>.</p>
+</li>
+<li><p>For <strong>Windows</strong>, consider using WSL to install the Linux components required.
+See <a class="reference external" href="https://learn.microsoft.com/en-us/windows/wsl/install">https://learn.microsoft.com/en-us/windows/wsl/install</a>.</p></li>
+</ul>
+<p>If necessary, start a project and create a virtual environment.
+Using tools like <strong>uv</strong>, the following commands would be appropriate:</p>
+<p>To manage Python packages and virtual environments, it helps to start with the Astral <strong>uv</strong> tool. (<a class="reference external" href="https://docs.astral.sh/uv/">https://docs.astral.sh/uv/</a>)
+Install <strong>uv</strong> first: <a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation/">https://docs.astral.sh/uv/getting-started/installation/</a>.</p>
+<p>With <strong>uv</strong>, create a project and a virtual environment, and install the <code class="docutils literal notranslate"><span class="pre">opend6-tools</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>Activate the working virtual environment with a command similar to this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</pre></div>
+</div>
+<p>Install the tools:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>%<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>opend6_tools
 </pre></div>
 </div>
-<p>Or</p>
+<p>Or:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>%<span class="w"> </span>uv<span class="w"> </span>add<span class="w"> </span>opend6_tools
 </pre></div>
 </div>
+</section>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
+<p>A collection of spell definitions, items, characters, or creatures can be written in a Python module or a Jupyter Lab Notebook.
+The Python module can help with computations and can emit files in RST format suitable for publication.
+A Jupyter Lab notebook is an easy-to-use interactive environment.
+One of the OpenD6 tools can build a useful Python module from the notebook to support publication.</p>
+<p>A spell-book module will be a file with the following pattern:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.magic2</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">some_spell</span> <span class="o">=</span> <span class="n">Spell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Some Cool Name&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">another_spell</span> <span class="o">=</span> <span class="n">Spell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Another Name&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="o">...</span>
+
+<span class="n">spells</span> <span class="o">=</span> <span class="p">[</span><span class="n">some_spell</span><span class="p">,</span> <span class="n">another_spell</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="n">__test__</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">build_app</span><span class="p">(</span><span class="n">spells</span><span class="p">)</span>
+    <span class="n">app</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We expect this file to be named <code class="docutils literal notranslate"><span class="pre">first_spell.py</span></code>.
+What’s important is to make sure the spell book module has a name
+that’s a valid Python symbol: letters, digits, and _’s, starting with a letter.
+This means no spaces in the spell book module name.
+The <code class="docutils literal notranslate"><span class="pre">.py</span></code> is the required suffix for a Python module.</p>
+<p>The interesting parts of the definitions have been replaced with <code class="docutils literal notranslate"><span class="pre">...</span></code>.</p>
+<p>A module can have any number of spells. The Python variable names, <code class="docutils literal notranslate"><span class="pre">some_spell</span></code>, <code class="docutils literal notranslate"><span class="pre">another_spell</span></code> are only visible within the module.
+These are not the published names of the spell; the published names come from the
+<code class="docutils literal notranslate"><span class="pre">name='...'</span></code> attribute of the <code class="docutils literal notranslate"><span class="pre">Spell</span></code> definition.</p>
+<p>It’s entirely possible to use a structure like the following, also.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">spells</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Spell</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+    <span class="n">Spell</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>This avoids using Python variable names for the <code class="docutils literal notranslate"><span class="pre">Spell</span></code> objects.</p>
+<p>The <strong>OpenD6</strong> rules require a number of characteristics for a spell.
+Here’s an example spell definition.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">charm</span> <span class="o">=</span> <span class="n">Spell</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Charm&quot;</span><span class="p">,</span>
+    <span class="n">skill</span><span class="o">=</span><span class="s2">&quot;Temperamental Alteration&quot;</span><span class="p">,</span>
+    <span class="n">notes</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;With a smile and a friendly gesture, the caster improves his charm skill by for one minute. (If he no charm skill, add the bonus to the character’s Charisma attribute.) As this is an illusory spell, if the intended target of the charm disbelieves it, any effect the charm attempt had wears off immediately.&quot;</span>
+    <span class="p">],</span>
+    <span class="n">effect</span><span class="o">=</span><span class="n">SkillEffect</span><span class="p">(</span><span class="s2">&quot;charm skill&quot;</span><span class="p">,</span> <span class="s2">&quot;+4D&quot;</span><span class="p">),</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">DurationAspect</span><span class="p">(</span><span class="n">measure</span><span class="o">=</span><span class="s2">&quot;1 minute&quot;</span><span class="p">),</span>
+    <span class="nb">range</span><span class="o">=</span><span class="n">RangeAspect</span><span class="p">(</span><span class="n">measure</span><span class="o">=</span><span class="s2">&quot;self&quot;</span><span class="p">),</span>
+    <span class="n">casting_time</span><span class="o">=</span><span class="n">CastingTimeAspect</span><span class="p">(</span><span class="n">measure</span><span class="o">=</span><span class="s2">&quot;1 round&quot;</span><span class="p">),</span>
+    <span class="n">speed</span><span class="o">=</span><span class="n">SpeedAspect</span><span class="o">.</span><span class="n">based_on</span><span class="p">((</span><span class="s2">&quot;range&quot;</span><span class="p">,),</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+    <span class="n">other_aspects</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;gesture&quot;</span><span class="p">:</span> <span class="n">GesturesAspect</span><span class="p">(</span>
+            <span class="s2">&quot;Smile and make a gesture of welcome or admiration&quot;</span><span class="p">,</span> <span class="s2">&quot;simple&quot;</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;unreal_effect&quot;</span><span class="p">:</span> <span class="n">UnrealEffectAspect</span><span class="o">.</span><span class="n">based_on</span><span class="p">((</span><span class="s2">&quot;effect&quot;</span><span class="p">,),</span>
+                                                     <span class="s2">&quot;difficulty 13&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="n">other_conditions</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">GenericAspect</span><span class="p">(</span>
+            <span class="n">difficulty</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;May only be used on humanoids who understand the caster’s language and can hear the caster&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This defines tne core characteristics of a spell.
+For more about spell definitions, see the <em>OpenD6 Fantasy</em> rulebook.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">__test__</span> <span class="pre">=</span> <span class="pre">{...}</span></code> is helpful, but not required.
+It allows you to define a difficulty budget for each spell, and then run a check to be sure the spell definitions meet their budget goals.</p>
+<p>The module will be an application program with a command-line interface (CLI).
+The <code class="docutils literal notranslate"><span class="pre">app</span> <span class="pre">=</span> <span class="pre">build_app()</span></code> creates this application, and the <code class="docutils literal notranslate"><span class="pre">app()</span></code> runs the app.</p>
+<p>We’ll assume the module was called <code class="docutils literal notranslate"><span class="pre">first_spell.py</span></code>.
+To run the module from the command line, use a command like this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>first_spell.py<span class="w"> </span>--help
+</pre></div>
+</div>
+<p>The output will show all the available commands.
+These commands include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">display</span></code> to display the spell in a form suitable for publication with tools like <strong>Sphinx</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug</span></code> to display details about the spell to help correct problems.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">test</span></code> will use the <code class="docutils literal notranslate"><span class="pre">__test__</span></code> structure to run a test case to be sure the spell has a correct, consistent definition.</p></li>
+</ul>
+<p>Here’s how to get debugging output:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>first_spell.py<span class="w"> </span>debug
+</pre></div>
+</div>
+<p>Here’s what the output looks like.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>## Charm
+  name                : &#39;Charm&#39;
+  notes               : [&#39;With a smile and a friendly gesture, the caster improves his charm skill by for one minute. (If he no charm skill, add the bonus to the character’s Charisma attribute.) As this is an illusory spell, if the intended target of the charm disbelieves it, any effect the charm attempt had wears off immediately.&#39;]
+  skill               : &#39;Temperamental Alteration&#39;
+  effect              : +12 SkillEffect(&#39;charm skill&#39;, &#39;+4D&#39;)
+  duration            :  +9 DurationAspect(&#39;1 minute&#39;)
+  range               :  +0 RangeAspect(&#39;self&#39;)
+  casting_time        :  -4 CastingTimeAspect(&#39;1 round&#39;)
+  speed               :  +0 SpeedAspect.based_on(&#39;range&#39;, *(&#39;&#39;,), **{})
+  other_aspects       :
+  - gesture           :  -2 GesturesAspect(&#39;Smile and make a gesture of welcome or admiration&#39;, &#39;simple&#39;)
+  - unreal_effect     :  -3 UnrealEffectAspect.based_on(&#39;effect&#39;, *(&#39;difficulty 13&#39;,), **{})
+  other_conditions    :
+  - May only be [...] :  +2 GenericAspect(-2, &#39;May only be used on humanoids who understand the caster’s language and can hear the caster&#39;)
+Effect Details        : SkillEffect based on DiceUnit [Modifier(difficulty=Decimal(&#39;12&#39;), description=&#39;+4D&#39;)]
+Spell Total           : {&#39;effect&#39;: 12, &#39;duration&#39;: 9, &#39;range&#39;: 0, &#39;speed&#39;: 0} = 21
+Negative Modifiers    : {&#39;casting_time&#39;: 4, &#39;gesture&#39;: 2, &#39;unreal_effect&#39;: 3, &#39;condition: May only be used [...]&#39;: 2} = 11
+Difficulty            : ⎡(21 - 11) ÷ 2⎤ = 5
+</pre></div>
+</div>
+<p>The last four lines provide details on how the overall difficulty was computed from the effect and the individual aspects.
+This computation detail can be very helpful when designing new campaigns and worlds.</p>
+</section>
 </section>
 
 
@@ -84,15 +235,17 @@ We suggest doing some planning and preparation before installing these tools.</p
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick Start</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="applications.html">Applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
-<li class="toctree-l1"><a class="reference internal" href="computations.html">Miscellaneous Computations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notes.html">Notes on DSL Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/index.html">Notes</a></li>
 </ul>
 
 
@@ -104,7 +257,7 @@ We suggest doing some planning and preparation before installing these tools.</p
       &#169;2025, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

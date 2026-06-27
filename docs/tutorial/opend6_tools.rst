@@ -3,24 +3,24 @@
 OpenD6 Tools
 ==============
 
-We need two more tools to tackle the complicated problems of spells and characters (as well as creatures and items.)
+We need to tackle the complicated problems of spells and characters (as well as creatures and items.)
 
 We're going to extend the **Change-Compute-Consider** cycle.
 Here's one aspect:
 
--      It will involve changing the Spell definition (or Character definition) files in the project directory.
+-      Change the Spell definition (or Character definition) files.
 
--      Compute new values for the dice budget or the difficulty.
+-      Compute new values for the character dice budget or the spell difficulty.
 
 -      Consider the resulting Spell or Character or Creature.
 
-This cycle of changes is really the first **Change** for the rest of the cycle:
+This cycle of changes is followed by the **Publish** operation:
 
 -   Compute revised RST from the revised Spell (or Character) definition files.
 
 -   Compute revised HTML from the revised RST.
 
--   Consider the resulting target document.
+-   Consider (or Share) the resulting target document.
 
 The detailed computations depend on the ``opend6-tools`` project.
 This project provides two Domain-Specific Languages (DSLs).
@@ -37,61 +37,72 @@ It supports an almost instantaneous **Change-Compute-Consider** cycle.
        The Spyder "preferences" editor (a wrench icon) has a ``Python Interpreter`` panel.
        On this panel, select the Selected Interpreter option and fill in the path to the ``Python`` run-time installed in the earlier part of the tutorial.
 
-Step 1: Install OpenD6-Tools
------------------------------
 
-We install the OpenD6 tools with a **uv** command:
+Step 1: Activate the virtual environment
+----------------------------------------
 
-..  code-block::
+Each time we sit down to a Terminal window (or Powershell prompt) we'll need to make sure our virtual environment is active.
+The OS prompt should provide hints as to what environment is active.
+There are two parts to this:
 
-    uv add opend6-tools
+-   The current working directory. The book directory, ``campaign_book`` needs to be current.
+    If the prompt doesn't show the directory, there are OS commands to print the working directory: ``pwd`` (or **Windows** ``cd``).
 
-That's about it for the installation.
-We'll test it by starting Jupyter Lab and creating a Spell notebook.
+    If the directory isn't correct, use the ``cd`` (or ``chdir``) command to navigate to the correct working directory.
+
+-   The virtual environment. If the prompt starts with ``(my-book)`` then the virtual environment is active. Nothing more needs to be done.
+
+    If the virtual environment isn't active, use one of the following commands to activate it.
+
+    ..  code-block:: bash
+
+        source .venv/bin/activate
+
+    For **Windows** the command is slightly different.
+
+    ..  code-block:: bash
+
+        .venv\Scripts\Activate.ps1
+
+The prompt will have a prefix of ``(my-book)`` as a reminder that the virtual environment is now active.
 
 Step 2: Start Jupyter Lab
 --------------------------
 
-We don't really **need** to install Jupyter Lab.
-This is because the **uv** tools can handle this detail for us, if we have a working internet connection.
-
-For folks who sometimes work offline (or live off the grid) it can help to install Jupyter Lab once to avoid network traffic when using **uv**.
-
-(Install it with ``uv add jupyter-lab``.)
-
-Before we show the command, it's important to note that
+Before we show the command to start the lab environment, it's important to note that
 Jupyter Lab has two active ingredients:
 
--   A "jupyter lab" service, simmering slowly on a back-burner.
+-   The "jupyter lab" service, simmering slowly on a back-burner.
 
 -   A browser window that the designer uses to create Spells and Characters. This will interacts with the service.
 
 Here's a picture of what will be going on:
 
 ..  uml::
-    :scale: 66%
 
     @startuml
-
+    scale 2/3
     skinparam actorStyle awesome
+
+    title Using Jupyter Lab
 
     actor "Designer"
     node "Computer" {
         boundary Browser
         component "jupyter lab" as svc
-        Browser <--> svc
+        Browser <--> svc : "3. Presents"
         boundary Terminal
-        svc <-- Terminal : "starts"
+        svc <-- Terminal : "2. Starts"
 
         folder "my_book" {
         folder "notebooks" {
             artifact spells_1.ipynb
         }
         }
-        svc -> spells_1.ipynb
+        svc -> spells_1.ipynb : "Change & Compute"
     }
-    Designer <-> Browser
-    Designer <--> Terminal
+    Designer <--> Terminal : "1. Initially"
+    Designer <-> Browser : "4. Everything else"
     @enduml
 
 Because there is both a browser **and** a service, we need to have two windows open:
@@ -111,11 +122,11 @@ We've belabored this to make it clear why starting Jupyter Lab involves the foll
     These commands are typical for **macos** and **Linux**.
     These are not for **Windows**.
 
-    1.  Change to the ``my_book`` working directory.
+    1.  Change to the ``campaign_book`` working directory.
 
         ..  code-block:: bash
 
-            cd ~/Documents/my_book
+            cd ~/Documents/campaign_book
 
     2.  Activate your virtual environment.
 
@@ -123,23 +134,11 @@ We've belabored this to make it clear why starting Jupyter Lab involves the foll
 
             source .venv/bin/activate
 
-To run Jupyter Lab with an automatic download and install, use this command.
+To start Jupyter Lab, use this command.
 
 ..  code-block:: bash
 
-    uv tool run --from jupyter-core jupyter lab
-
-This is kind of complicated-looking, but it has several parts.
-
--   We're using the **uv tool** command. Specifically, the ``uv tool run`` sub-command.
-
--   We need to tell **uv tool** to download and install the ``jupyter-core`` project, if needed.
-    This ``--from`` option is required because the project's name and the command we want to run don't align exactly.
-    Sometimes, the project name and the command name are the same, and the ``--from`` option is not needed.
-    This is not one of those cases.
-
--   The ``jupyter-core`` project defines a ``jupyter`` command we want to run.
-    This command is given the ``lab`` argument value.
+    jupyter lab
 
 When Jupyter lab starts, it sprays a ton of information into the Terminal window.
 
@@ -152,23 +151,17 @@ More importantly, it **also** launches a browser window that looks like this:
 Yes. Jupyter Lab is an IDE. Double click on the ``index.rst`` or ``conf.py`` files and edit them here.
 Or use **Spyder** to edit them.
 
+Yes. You can do **all** of your writing and editing in Jupyter Lab.
 Here's the comparison between Jupyter and Spyder.
 
 ..  csv-table::
     :header: Tool, Text Edit, Edit Notebooks, Startup
 
-    Jupyter Lab, Yes, Yes, Annoying to Start
-    Spyder, Yes, No, Easy to Start
+    Jupyter Lab, Primitive, Wow!, Annoying to Start
+    Spyder, Power-tool, With a plug-in, Easy to Start
 
-
-We can do **everything** in Jupyter Lab.
-It takes a bit of work to start it up.
-
-Or, we can do **almost** everything in Spyder except create Notebooks.
-Since Spell design is a specialized activity, perhaps we can use Spyder for most things, and only start Jupyter Lab when needed.
-
-Interestingly, we can do **everything** in a tool like PyCharm.
-It will edit notebooks as well as edit text documents.
+There are numerous other IDE's, some of which can do both: edit files and edit notebooks.
+We need to focus on OpenD6 tools, however, not the innumerable alternative development environments.
 
 We'll finish this part of the tutorial by creating a simple Notebook.
 
@@ -256,7 +249,7 @@ Or click the ▶︎ button to execute the Python code in the cell.
 
 The results of this Python expression are displayed below the cell.
 This is about all the computer programming we're going to do.
-In the next section, :ref:`tutorial.define_spells`, we'll look closely at the Spell DSL.
+In the next section, :ref:`tutorial.spell_dsl`, we'll look closely at the Spell DSL.
 
 Step 4: Experiment with the notebook
 ------------------------------------
@@ -392,12 +385,12 @@ Pick a more useful name.
 
 ..  important::
 
-    In the long run, the name needs to be one word composed of letters, digits, and ``_``.
+    In the long run, the name needs to be one word composed of letters, digits, and ``_``'s, starting with a letter.
 
-    The OS allows more complex names, but they can present complications when working with other tools.
+    The OS allows more complex names, but they can present obscure difficulties when working with other tools.
 
-    It helps to think about the book, and the place the spells will occupy.
-    There may be multiple collections of spells and incanations.
+    It helps to think about the book being written, and the place the spells will occupy in that book.
+    There may be multiple collections of spells and incantations.
     The collections may be organized by skill or rank.
 
     Perhaps a name like ``spells_alteration`` or ``spells_rank2`` would clearly identify the contents of the file.
@@ -405,7 +398,7 @@ Pick a more useful name.
 When we're done with Notebooks, look at the ``File`` menu.
 The last item is ``Shut Down``.
 
-This will stop the service, currently running in a Terminal window.
+Use this menu item to stop the service. After the service stops, the browser window can be closed.
 
 Conclusion
 -----------
@@ -424,4 +417,5 @@ These tools support the **Change-Compute-Consider** cycle on two scales.
 
 -   The document as a whole scale: Use Terminal command ``make html`` to rebuild the web page (or PDF or EPUB) with revised content.
 
-It's time to learn the Spell DSL.
+In order to define spells, there's a Domain-Specific Language (DSL) that formalizes what's permitted in a spell.
+It's time to learn :ref:`tutorial.spell_dsl` so we can define new spells.

@@ -1,0 +1,294 @@
+################
+  Applications
+################
+
+When installing opend6-tools, a number of additional command-line interface (CLI) applications are created in the virtual environment:
+
+-   `dice`_. This application uses the ``DieCode`` DSL to define and roll dice. It applies the OpenD6 "Wild Die" rules.
+
+-   `character_sheet`_. This generates empty character sheets that can be converted to PDF's and printed for in-person TTRPG play.
+
+-   `notebook_extract`_. This application extracts Spell (and Item) definitions or Character (and Creature) definitions from a Jupyter Lab Notebook, and creates a Python module that's used by the publication pipeline.
+
+-   `die_simplification`_ reproduces the Die Simplification table from the OpenD6 rules.  This provides a clear statement of the underlying rules behind the time.
+
+-   `spell_measure`_ reproduces the Spell Measure table from the OpenD6 rules. This, too, provides a clear statement of the underlying rules behind the time.
+
+..  outline:
+
+    Synopsis
+    --------
+
+    Description
+    -----------
+
+    Examples
+    --------
+
+    Options
+    -------
+
+    Environment
+    -----------
+
+    Exit Status
+    -----------
+
+    Files
+    -----
+
+    See Also
+    --------
+
+..  program:: dice
+
+dice
+====
+
+Synopsis
+--------
+
+..  parsed-literal::
+
+    **dice** [*options*] *expression*
+
+Description
+-----------
+
+Rolls dice matching the given dice expression used for OpenD6.
+The dice expression **must** be enclosed in apostrophes (single quotes): ``'``. Otherwise, the shell will try to expand the ``*`` into a list of file names.
+
+The *expression* uses numbers, ``D``, ``*``, and ``+`` to define
+a rule for rolling dice. This follows OpenD6 Wild Die rules.
+
+Given a rule statement like ``3D+2``, translate this to ``'3*D+2'``.
+Insert ``*`` as an explicit multiplication operator between the number of dice and the letter ``D``.
+Wrap it in apostrophes.
+
+The output is a list of one or more rolls. There are three formats:
+
+-   number. An ordinary roll of the dice; no "wild die" rules were applied.
+
+-   number! The Wild Die was 6, a success, and the roll continued.
+
+-   number? (number) The Wild Die was 1, a failure. The first number is the total excluding the maximum die. The second number is the total including the maximum die rolled.
+
+Examples
+--------
+
+..  code-block:: bash
+
+    dice '3*D+2'
+    16
+
+    dice --count 5 '3*D'
+    12!
+    6? (12)
+    6? (11)
+    15!
+    14!
+
+Options
+-------
+
+..  option:: --count
+
+    The number of times to roll the given expression.
+
+..  option:: --help
+
+    Provide detailed help.
+
+Environment
+-----------
+
+..  envvar:: OPEND6_SEED
+
+    Force a specific seed for ``random.seed()`` to provide a
+    reproducible sequence of numbers.
+
+Exit Status
+-----------
+
+:0:
+    Successful roll.
+
+:1:
+    Invalid dice expression.
+
+See Also
+--------
+
+See :py:func:`opend6_tools.dice.dice_app`
+
+..  program:: character_sheet
+
+character_sheet
+===============
+
+
+Synopsis
+--------
+
+
+..  parsed-literal::
+
+    **character_sheet** [*options*] *expression*
+
+Description
+-----------
+
+Writes the source for a character sheet to standard output.
+This can then be processed by another application to be converted into a proper PDF for use by players (or the GM.)
+
+Common choices for tools to emit a final PDF include
+
+-   **xhtml2pdf**. Converts HTML files to PDF.
+    See https://xhtml2pdf.readthedocs.io/en/latest/.
+
+-   **pdflatex**. Converts LaTeX files to PDF.
+    See https://tug.org/mactex/ for MacOS and https://tug.org/texlive/ for Windows and other Linux.
+
+Examples
+--------
+
+..  code-block:: bash
+
+    character_sheet --format html | xhtml2pdf -b demo
+
+Options
+-------
+
+..  option:: --format
+
+    The intermediate format to use. Choices include
+    some that are for publication in books, and some that are for distribution to in-person players.
+
+    Player-centric formats:
+
+    -   ``html``. An HTML table that can be converted to PDF using a tool like **xhtml2pdf**. This is the front page, often used for GM's.
+    -   ``player``. An HTML table that can be converted to PDF using a tool like **xhtml2pdf**. This is both the front and back pages, often used by players.
+    -   ``latex``. A LaTeX document that can be converted to PDF using a tool like **pdflatex**.
+
+    For publication, the application can produce RST-formatted output.
+    The RST files require a tool like **docutils** or **sphinx** to create HTML or LaTeX, from which a PDF can be created.
+    Here are the publicateion-centeric formats:
+
+    -   ``table``. An RST table format that is an approximate match to some published character sheets.
+    -   ``long``. An RST file that produces a vertical arrangement of details including a tabular identification block.
+    -   ``long2``. An RST file with a vertical arrangement without the identification block.
+    -   ``short``. A brief RST-format file, used for inclusion in books.
+    -   ``literal``. An RST-format where the table format will not be converted to HTML or LaTeX, but left as ASCII art.
+
+..  option:: --help
+
+    Provide detailed help.
+
+Exit Status
+-----------
+
+
+:0:
+    Successful creation of the blank sheet.
+
+:2:
+    Invalid format choice.
+
+See Also
+--------
+
+See :py:func:`opend6_tools.character.cli.app`
+
+
+notebook_extract
+================
+
+
+Synopsis
+--------
+
+Description
+-----------
+
+Examples
+--------
+
+Options
+-------
+
+Environment
+-----------
+
+Exit Status
+-----------
+
+Files
+-----
+
+See Also
+--------
+
+See :py:func:`opend6_tools.notebook_extract.app`
+
+Other Applications
+==================
+
+die_simplification
+------------------
+
+Synopsis
+~~~~~~~~
+
+Description
+~~~~~~~~~~~
+
+Examples
+~~~~~~~~
+
+Options
+~~~~~~~
+
+Environment
+~~~~~~~~~~~
+
+Exit Status
+~~~~~~~~~~~
+
+Files
+~~~~~
+
+See Also
+~~~~~~~~
+
+See :py:mod:`opend6_tools.die_simplification`
+
+spell_measure
+-------------
+
+
+Synopsis
+~~~~~~~~
+
+Description
+~~~~~~~~~~~
+
+Examples
+~~~~~~~~
+
+Options
+~~~~~~~
+
+Environment
+~~~~~~~~~~~
+
+Exit Status
+~~~~~~~~~~~
+
+Files
+~~~~~
+
+See Also
+~~~~~~~~
+See :py:mod:`opend6_tools.spell_measure`
+
+

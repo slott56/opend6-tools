@@ -3,7 +3,7 @@
 Installing Software
 ===================
 
-Using the *OpenD6 tools* project is adjacent to computer programming.
+Using the **OpenD6 Tools** project is adjacent to computer programming.
 No, we won't be writing algorithms and if-statements and that kind of thing.
 We will, however, be using software tools and the syntax of the Python programming language to create Spells and Characters.
 
@@ -22,10 +22,10 @@ This collection of tools, applications, and library modules is vast, published o
 We'll be using some of these add-on components to produce our **OpenD6** documents.
 
 Because we're using Python, it helps to understand what Python folks call a "virtual" environment.
-The qualifier -- *virtual* -- is necessary because the operating system defines the real environment.
-The environment applies every time we start an application or open a terminal window.
+The qualifier -- *virtual* -- is necessary because the operating system defines one real environment.
+This one environment applies every time we start an application or open a terminal window.
 It includes the user information (which implies certain permissions), and the user's current working directory, as well as the user's collection of available applications and libraries.
-Over the decades, Python developers have learned it's best not to try to touch the real OS environment. (Why? Partly because Windows, Linux and macos have too many unique features.)
+Over the decades, Python developers have learned it's best not to try to touch the real OS environment. (Why? Partly because Windows, Linux and macOS have too many unique features.)
 Instead, Python folks use tools to create virtual environments.
 
 ..  important::
@@ -67,13 +67,77 @@ Most desktop environments will open a terminal window by default.
 Finding a Terminal window (or Powershell) window is essential.
 We'll do software installation and run the publication tools from the terminal window.
 
-In order to manage Python's ecosystem and our computer's virtual environments, we'll start by installing a handy tool, called **uv**.
-See https://docs.astral.sh/uv/.
+Step 1: Missing Pieces
+----------------------
 
-Step 1: Install uv
+The popular consumer desktop operating systems, **Macos** and **Windows** don't often include a wide variety of open source tools.
+They tend to focus on tools supplied by the vendor.
+These components are not part of the Python ecosystem, and need to be added separately.
+
+A number of additional OS components are required, specifically:  **make**, **pkg-config**, **cairo**, and **pdflatex**.
+
+Depending on the OS, there are three different ways to proceed.
+
+Macos
+~~~~~
+
+For **Macos**, start by installing **homebrew**. See https://brew.sh for the instructions.
+
+Install the required OS packages:
+
+..  code-block:: bash
+
+    brew install make pkg-config cairo
+
+Then, install **pdflatex**.
+See https://tug.org/mactex/ for the instructions.
+
+Linux
+~~~~~
+
+Some **Linux** distributions include **make**, **pkg-config**; it's not uncommon to find **cairo** installed, also.
+
+It's important to work out the specific tools used by a Linux distribution to do package installs and upgrades. Here's the tool associated with a few of the more popular Linux distributions.
+
+..  csv-table::
+
+    Distribution, Tool
+    "Ubuntu/Debian", **apt**
+    "Arch Linux", **pacman**
+    "Fedora/RHEL/CentOS", **dnf**
+    "openSUSE", **zypper**
+
+Use the distribution's appropriate package install and update tool to install **make**, **pkg-config**, **cairo**.
+
+For more information in installing **cairo**, specifically, see
+https://pycairo.readthedocs.io/en/latest/getting_started.html.
+Skip over the ``pip3 install pycairo`` (that's going to be done later.)
+Instead, focus on the choices between Ubuntu, Arch Linux, Fedora, and openSUSE.
+
+Then, install **pdflatex**.
+See https://tug.org/texlive/ for the instructions.
+
+Windows
+~~~~~~~
+
+For **Windows**, consider using WSL to install the Linux components required.
+See https://learn.microsoft.com/en-us/windows/wsl/install.
+
+This provides an Ubuntu Linux, which uses **apt** for installs:
+The following command should work in the Ubuntu distribution:
+
+..  code-block:: bash
+
+    sudo apt install make libcairo2-dev pkg-config python3-dev
+
+
+Step 2: Install uv
 --------------------
 
-Using **uv** helps because it can install Python, install add-on packages, and create multiple virtual environments for folks who have multiple proceects in progress at one time.
+In order to manage Python's ecosystem and our virtual environments, we'll start by installing a handy tool, called **uv**.
+See https://docs.astral.sh/uv/.
+
+Using **uv** helps because it can install Python, install add-on packages, and create multiple virtual environments for folks who have multiple projects in progress at one time.
 
 See https://docs.astral.sh/uv/getting-started/installation/.
 
@@ -100,7 +164,7 @@ At this point, the **uv** tool is available.
 We'll use this to install other tools.
 Before we do that, however, it helps to install a programming editor or IDE.
 
-Step 2: Install a programming editor or IDE
+Step 3: Install a programming editor or IDE
 -------------------------------------------
 
 As noted above, we're avoiding the limitations of word processors.
@@ -127,21 +191,21 @@ These have similar install procedures:
 -   Download the installer from the web site.
 
 -   Run the installer by double-clicking it.
-    Under **macos**, the Safari browser will launch the installer automatically, saving the two clicks.
+    Under **macOS**, the Safari browser will launch the installer automatically, saving the two clicks.
 
 -   In the case of Spyder, when the the installer is finished, Spyder will start, and offer a number of tours and tutorials. These are highly recommended.
 
-Step 3: Use uv to install Python
+Step 4: Use uv to install Python
 --------------------------------
 
 We'll use **uv** to install Python.
-Enter this ``uv`` command in the Terminal (or Powershell) window.
+Enter this **uv** command in the Terminal (or Powershell) window.
 
 ..  code-block:: bash
 
     uv python install 3.14
 
-This is the same on all platforms -- **macos**, **Windows**, or **Linux**. That's one of the reasons why installing **uv** is so helpful.
+This is the same on all platforms -- **macOS**, **Windows**, or **Linux**. That's one of the reasons why installing **uv** is so helpful.
 
 It might look like this:
 
@@ -167,141 +231,145 @@ Enter ``exit`` at the ``>>>`` prompt and hit return to leave Python.
 
 We don't want to be looking at the Python ``>>>`` prompt.
 We want to be looking at the Terminal prompt ending with ``%`` (or ``>`` for Windows.)
-For **macos**, the prompt character will have a prefix like ``writer@MacBook-Pro-M4 my_book`` which is the username, ``writer``,, the machine name, ``MacBook-Pro-M4``, and the current directory, ``my_book``. This helps provide context for the ``%`` prompt.
+For **macOS**, the prompt string often has a prefix like ``writer@MacBook-Pro-M4 Documents`` which is the username, ``writer``,, the machine name, ``MacBook-Pro-M4``, and the current directory, ``Documents``. This helps provide context for the ``%`` prompt.
 
 For **Windows**, the prefix may be ``C:\`` or something equally terse.
 
 What's important is there's no ``(my-book)`` prefix to the prompt.
 This prefix will be inserted when we've activated a virtual environment.
 
-Step 4: Use uv to start a project
+Step 5: Use uv to start a project
 -----------------------------------
 
 Let's say we're going to create a campaign document.
-We're going call it ``my_book``.
-(It's a working title; we'll change it later.)
+We're going call it ``campaign_book``.
+(It's a folder name, not the title for the book.)
 
-We'll start by using ``uv`` to create the project directory.
-Then we'll change to the newly-created ``my_book`` directory.
+We'll start by using the **uv** tool to create the project directory.
+Then we'll change to the newly-created ``campaign_book`` directory.
 
-Enter this ``uv`` commands in the Terminal (or Powershell) window.
+Enter these commands in the Terminal (or Powershell) window.
 
 ..  code-block:: bash
 
-    uv init --app --python 3.14 my_book
+    uv init --bare --python 3.14 campaign_book
     cd my_book
 
-A few files have been created in this directory by the **uv init** command.
+A file will be created in this directory by the **uv init** command.
 We can use the ``ls`` (or **Windows** ``dir``) command to list the contents of this directory.
 
-It might look like this:
+The installation might look like this:
 
 ..  code-block:: bash
 
-    writer@MacBook-Pro-M4 Documents % uv init --app --python 3.14 my_book
-    Initialized project `my-book` at `/Users/writer/Documents/my_book`
-    writer@MacBook-Pro-M4 Documents % cd my_book
+    writer@MacBook-Pro-M4 Documents % uv init --bare --python 3.14 campaign_book
+    Initialized project `my-campaign_book` at `/Users/writer/Documents/campaign_book`
+    writer@MacBook-Pro-M4 Documents % cd campaign_book
     writer@MacBook-Pro-M4 my_book % ls
-    main.py		pyproject.toml	README.md
+    pyproject.toml
 
-We don't **need** these files. They can be helpful, however, so it helps to look at them.
-What are they?
+The ``pyproject.toml`` describes the project from a technical perspective.
+It can provide a name, the authors, and a description.
+What's essential is lists the Python components on which the project depends.
+This list of dependencies is essential for working with collaborators.
+This file lets others reconstruct a virtual environment that matches the one you're creating.
 
--   ``main.py`` is a little application that shows what a Python application looks like. In the long run, we'll often delete this.
+Step 6: Create and activate a virtual environment
+-------------------------------------------------
 
--   ``pyproject.toml`` describes the project from a technical perspective. It lists the name, the authors, and those kinds of things.
-    It also lists the components on which the project depends.
-    This list of dependencies is essential for working with collaborators.
-    This file lets others reconstruct a virtual environment that matches the one you're creating.
+This isn't required -- **uv** will do it anyway -- but it's helpful to do this and see precisely how Python works.
+The
 
--   ``README.md`` can provide some essential background details on the project. It expands on the bare technical facts in the ``pyproject.toml`` to help a person understand what this directory contains.
-    It helps to think of this as an "elevator pitch" for the project. It's a synopsis we can rattle off in an elevator ride up to the executive conference room.
+..  code-block:: bash
+
+    uv venv --prompt "my-book"
+    source .venv/bin/activate
+
+For **Windows** the second step is slightly different.
+
+..  code-block:: bash
+
+    uv venv --prompt "my-book"
+    .venv\Scripts\Activate.ps1
 
 A book will use a large number of files.
 Since we're going to use Sphinx to produce the documents,
 the next step is to install Sphinx.
 
-Above, we noted that a virtual environment is important.
-We can create one now, with a ``uv venv`` command.
-Or, we can wait, and the **uv** tool will add a virtual environment automatically when it installs Sphinx.
+Once the environment is active, the prompt will change to include "(my-book)" to show the active virtual environment.
+This final command will add the tools to the active virtual environment.
 
-Step 5: Use uv to add Sphinx to the project
--------------------------------------------
-
-The next installation step is to add the central tool for creating the final document.
-We'll add Sphinx to our virtual environment.
-See https://sphinx-doc.org.
-
-Enter this ``uv`` commands in the Terminal (or Powershell) window.
+Each time a Terminal window is opened, the window's local virtual environment needs to be activated.
+If the prompt does not include "(my-book)", then the virtual environment needs to be activated.
+This is required in each new window to be sure the ``my-book`` environment is active.
 
 ..  code-block:: bash
 
-    uv add sphinx
+    source .venv/bin/activate
 
-This will add Sphinx to the project environment, allowing us to create an empty book, ready to hold our ideas.
-
-This will **also** create a virtual environment to contain the unique tools we've added for this project.
-Look for the ``Creating virtual environment`` line in the output to confirm that this happened.
-
-The output is long, so we've truncated it. It might look like this:
+For **Windows** the command is this.
 
 ..  code-block:: bash
 
-    writer@MacBook-Pro-M4 my_book % uv add sphinx
-    Using CPython 3.14.2
-    Creating virtual environment at: .venv
-    Resolved 24 packages in 398ms
-    Prepared 22 packages in 3.22s
-    Installed 22 packages in 34ms
-     + alabaster==1.0.0
-    ...
-     + sphinx==9.0.4
-     + sphinxcontrib-applehelp==2.0.0
-     + sphinxcontrib-devhelp==2.0.0
-     + sphinxcontrib-htmlhelp==2.1.0
-     + sphinxcontrib-jsmath==1.0.1
-     + sphinxcontrib-qthelp==2.0.0
-     + sphinxcontrib-serializinghtml==2.0.0
-     + urllib3==2.6.2
-    writer@MacBook-Pro-M4 my_book %
+    .venv\Scripts\Activate.ps1
 
-We now have enough software that we can use **Spyder** and **Sphinx** to start writing our campaign book.
+The ``.venv`` name starts with a ``.`` to make it less visible.
+Use the ``ls -a`` command on Linux or Macos to see this directory as well as some other hidden files. For Windows, use ``dir /a:hd``.
 
-The final step is to initialize the book's directory structure.
-This means adding a few more directories and files to the ``my_book`` directory.
+Step 6: Use uv to add the opend6-tools to the project
+-----------------------------------------------------
 
-Step 6: Use sphinx-quickstart to start a document
+The next installation step is to add the OpenD6 tools.
+
+Enter this **uv** command in the Terminal (or Powershell) window.
+
+..  code-block:: bash
+
+    uv add opend6-tools
+
+The next steps will be to initialize the book's directory structure.
+This means adding a few more directories and files to the ``campaign_book`` directory.
+
+Step 7: Use sphinx-quickstart to start a document
 -------------------------------------------------
 
-Since our plan is to produce some rather complicated documentation for a campaign, we'll need to make sure we have all the right files in the right directories.
+Our plan is to produce some documentation for a campaign.
+Rather than mastering HTML or LaTeX, we can use a much easier formatting language, ReStructured Test, RST.
+We can write simply in RST, and then use the Sphinx tool to make HTML.
+
+The OpenD6-Tools explicitly depend on Sphinx, and the **uv** tool makes sure that Sphinx was installed along with OpenD6-tools.
+
+we'll need to make sure we have all the right files in the right directories.
 
 ..  sidebar::
 
     A word processor leaves a single, complicated file laying around.
+    It's very difficult to work with.
 
     The tools we're using leave a lot of small, simple files laying around.
     The details are exposed.
+    They can be edited with any programming text editor.
+    The can be processed with tools written in Python.
 
-    What's important is understanding the details always existed.
-    They're no longer hidden.
+    What's important is assuring the content we create is plain text, free of entanglements with proprietary software tools.
 
-To create the empty document directory -- and configuration -- we'll use **uv** to run the Sphinx ``quickstart`` script.
+To create the empty document directory -- and the needed configuration -- we'll run the Sphinx ``quickstart`` script.
 
 ..  code-block:: bash
 
-    uv run sphinx-quickstart
+    sphinx-quickstart
 
 This will ask a few questions about the project.
 Then it will create the required files.
 
 We used the ``cd`` command to set our current working directory to be the ``my_book`` directory.
-We can confirm that using the **macos** ``pwd`` or **Windows** ``cd`` commands.
+We can confirm that using the **Macos** ``pwd`` or **Windows** ``cd`` commands.
 
 (The **Windows** ``cd`` command shows the current directory.
-The **macos** and **Linus** ``cd`` command changes the current directory to be our home directory.)
+The **macOS** and **Linux** ``cd`` command changes the current directory to be our home directory.)
 
 The quickstart shows the ``Selected root path`` for the document.
-The current directory has a name of ``.``. Yes. One period.
+The current directory has a name of ``.``. Yes, one period means "use the current working directory."
 
 The interactive session might look like the following example.
 We've highlighted the lines where questions are asked and we had to provide an answer.
@@ -355,29 +423,29 @@ The log says four files were made. This is what was done for you:
 
 -   ``index.rst`` is the root of the document to be created.
 
--   ``Makefile`` is used by the **make** utility to rebuild the book when any of the source files change. The ``make.bat`` file is a handy proxy for this when working with **Windows** where the **make** utility may be unavailable.
+-   ``Makefile`` is used by the **make** tool to rebuild the book when any of the source files change. The ``make.bat`` file is a handy proxy for this when working with **Windows** where the **make** tool may be unavailable.
 
-Step 7: Create a Spyder project
+Step 8: Create a Spyder project
 -------------------------------
 
-It helps to tell Spyder what we're doing.
-That way, we can simple click on the Spyder icon and start work.
+It helps to tell **Spyder** what we're doing.
+That way, we can click on the **Spyder** icon and start work.
 
-There's **Project** menu in the Spyder window.
+There's **Project** menu in the **Spyder** window.
 This has a **New...** item.
-The **Project->New** menu item will lets us pick the "my_book" folder. This will create the needed project.
+The **Project->New** menu item will lets us pick the "``campaign_book``" folder. This will create the needed project.
 
-Once we've created the project, the left-side of the Spyder window will fill in with the files already created as part of this project.
+Once we've created the project, the left-side of the **Spyder** window will fill in with the files already created as part of this project.
 Feel free to click around, looking at the various files.
 
-If you're unfamiliar with Spyder (or IDE's in general), make sure you've followed the various links for tours and tutorials.
+If you're unfamiliar with **Spyder** (or IDE's in general), make sure you've followed the various links for tours and tutorials.
 
 We'll make one small change to the configuration file in the final step.
 
-Step 8: Tweak the configuration
+Step 9: Tweak the configuration
 -------------------------------
 
-With the current ``my_book`` project open, the left side of the Spyder window is the collection of files we've created so far.
+With the current ``campaign_book`` project open, the left side of the Spyder window is the collection of files we've created so far.
 It shows the various files created by running ``uv init``.
 It also shows the files created by running ``uv run sphinx-quickstart``.
 
@@ -405,10 +473,12 @@ This will prevent Sphinx from peering around inside the ``.venv`` directory tree
 Sphinx tries to confirm that the ``.. toctree::`` directive and the file names all match up neatly.
 Excluding all of the files in the ``.venv`` directory makes it clear any ``.rst`` files that are part of the software components in the virtual environment will not be part of the document we're writing.
 
-Step 9: Edit the index.rst file
--------------------------------
+Step 10: Edit the index.rst file
+---------------------------------
 
-Update the ``index.rst`` file with your working title and maybe some background about your project.
+Update the ``index.rst`` file with your initial working title and maybe some background about your project.
+We'll write more in the next parts of the tutorial.
+For now, it's enough to see the generated HTML pages from something we wrote.
 
 Run the following command in the Terminal window:
 

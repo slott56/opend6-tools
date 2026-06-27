@@ -27,11 +27,11 @@ There are several variations on the extraction process:
     -   Several Python modules, organized by the ``realm`` attribute of the creature.
 
 Each module extracted from a notebook is a stand-alone application, complete with imports and a typer application object.
-For spells, the import is ``opend6_tools.magic2`` and the app is ``spellbook_app``.
+For spells, the import is ``opend6_tools.magic`` and the app is ``spellbook_app``.
 For characters (and creatures), the import is ``opend6_tools.character`` and the app is ``characters_app``.
 
 The extract looks for **all** cells that contain an assignment statement: ``name = TypeName(...)``.
-It looks for :py:class:`opend6_tools.magic2.Spell` and all subclasses, including  ``Cantrip``, ``Miracle``, and ``Invocation``.
+It looks for :py:class:`opend6_tools.magic.Spell` and all subclasses, including  ``Cantrip``, ``Miracle``, and ``Invocation``.
 It also looks for :py:class:`opend6_tools.character.Character` and all subclasses, including ``Creature``.
 
 Typical use is the following construct in a ``Makefile``.
@@ -47,72 +47,6 @@ Typical use is the following construct in a ``Makefile``.
 The ``vpath`` directive is used because notebooks are often kept separate from the source directories for
 the final document.
 
-Help
-====
-
-Here's the help from the application:
-
-..  code-block:: bash
-
-    % python -m opend6_tools.notebook_extract --help
-
-     Usage: python -m opend6_tools.notebook_extract [OPTIONS] COMMAND [ARGS]...
-
-    ╭─ Options ─────────────────────────────────────────────────────────────────╮
-    │ --install-completion          Install completion for the current shell.   │
-    │ --show-completion             Show completion for the current shell, to   │
-    │                               copy it or customize the installation.      │
-    │ --help                        Show this message and exit.                 │
-    ╰───────────────────────────────────────────────────────────────────────────╯
-    ╭─ Commands ────────────────────────────────────────────────────────────────╮
-    │ spells       Converts a notebook of spells to a Python module for         │
-    │              publication. For ranked output, the target will have a       │
-    │              "_rank_xx" suffix appended to the filename stem.             │
-    │ characters   Converts a notebook of characters or creatures to a Python   │
-    │              module for publication.                                      │
-    ╰───────────────────────────────────────────────────────────────────────────╯
-
-For the ``spells`` sub-command, the help looks like this::
-
-     Usage: python -m opend6_tools.notebook_extract spells [OPTIONS] SOURCE
-
-     Converts a notebook of spells to a Python module for publication. For
-     ranked output, the target will have a "_rank_xx" suffix appended to the
-     filename stem.
-
-    ╭─ Arguments ───────────────────────────────────────────────────────────────╮
-    │ *    source      PATH  notebook to convert [required]                     │
-    ╰───────────────────────────────────────────────────────────────────────────╯
-    ╭─ Options ─────────────────────────────────────────────────────────────────╮
-    │ --output                          PATH  output file base name             │
-    │ --book-variable                   TEXT  global variable to create with    │
-    │                                         the list of spells/invocations    │
-    │                                         [default: spells]                 │
-    │ --ranked           --no-ranked          Organize by difficulty and rank   │
-    │                                         [default: no-ranked]              │
-    │ --help                                  Show this message and exit.       │
-    ╰───────────────────────────────────────────────────────────────────────────╯
-
-For the ``characters`` sub-command, here's the help output::
-
-     Usage: python -m opend6_tools.notebook_extract characters
-                [OPTIONS] SOURCE
-
-     Converts a notebook of characters or creatures to a Python module for
-     publication.
-
-    ╭─ Arguments ───────────────────────────────────────────────────────────────╮
-    │ *    source      PATH  notebook to convert [required]                     │
-    ╰───────────────────────────────────────────────────────────────────────────╯
-    ╭─ Options ─────────────────────────────────────────────────────────────────╮
-    │ --output               PATH  output file base name                        │
-    │ --book-variable        TEXT  global variable to create with the list of   │
-    │                              characters/creatures                         │
-    │                              [default: characters]                        │
-    │ --groupby              TEXT  named attribute, e.g. realm                  │
-    │ --help                       Show this message and exit.                  │
-    ╰───────────────────────────────────────────────────────────────────────────╯
-
 
 API Reference
 =============
@@ -127,6 +61,7 @@ The :py:func:`characters` function is an application that extracts Characters an
 The :py:func:`spells` function is an application that extracts Characters and Creatures from a Notebook.
 
 ..  autofunction:: spells
+
 
 Components
 -----------
@@ -161,15 +96,16 @@ from collections.abc import Iterator, Iterable
 from contextlib import redirect_stdout
 from enum import StrEnum
 import json
+import logging
 from pathlib import Path
 from textwrap import dedent
-from typing import Annotated
+from typing import Annotated, cast
 import importlib.metadata
 
 import jinja2
 import typer
 
-from . import magic2
+from . import magic
 from . import character
 
 
@@ -182,22 +118,23 @@ class ModuleWriter:
     This template injects the CLI application and unit test suites into the spell module.
     """
 
-    spell_template = dedent(
-        '''\
+    spell_template = dedent('''\
         """
         Extract {{book_type}} from ``{{ title }}``.
-        Created by V{{version}} of ``opend6_tools.notebook_extract`` 
-
+        Created by V{{version}} opend6-tools, ``{{app_name}}`` 
+        
         {% block comment %}
         When run as app with "display" argument, generates .RST-formatted details of all the {{book_type}}.
         
         With "debug" argument, prints debugging details for selected {{book_type}}.
+        
+        With "test" argument, runs doctest, which uses the __test__ examples.
         {% endblock %}
         """
         {% block import %}
-        from opend6_tools.magic2 import *
+        from opend6_tools.magic import *
         {% endblock %}
-
+        
         {% for name, stmt in definitions %}
         {{ stmt }}
         {% endfor -%}
@@ -205,31 +142,31 @@ class ModuleWriter:
         {{ book_variable }} = [ 
             {% for name, stmt in definitions %}{{ name }}, {% endfor %}
         ]
-
-        {% block apps %}
-        if __name__ == "__main__":
-            app = build_app({{ book_variable }})
-            app()
-        {% endblock %}
-
+        
         __test__ = {
             {% if tests -%}
             {% for name, body in tests.items() %}
             {{ "{!r}".format(name) }}: {{ "{!r}".format(body) }},
             {% endfor %}
             {% else %}
-            "placeholder": ">>> pass\\n\\n"
+            'todo': """>>> note = 'Run the module with ``tests --make`` to create a template.'\\n>>> pass"""
             {% endif %}
         }
-        '''
-    )
+        
+        {% block apps %}
+        if __name__ == "__main__":
+            app = build_app({{ book_variable }})
+            app()
+        {% endblock %}
+        ''')
+
     character_template = dedent("""\
         {% extends "spells.py" %}
         {% block import %}
         from opend6_tools.character import *
         {% endblock %}
         {% block comment %}
-        When run as app with "sheet" argument, generates .RST-formmat player character sheets for all the {{book_type}}.
+        When run as app with "sheet" argument, generates .RST-format player character sheets for all the {{book_type}}.
         
         With "display" argument, generates .RST-formatted short-form of all the {{book_type}}.
         
@@ -246,11 +183,13 @@ class ModuleWriter:
         """
         return title.lower().replace(" ", "_")
 
-    def __init__(self) -> None:
+    def __init__(self, app_name="opend6_tools.notebook_extract") -> None:
         """
-        Initalize a ModuleWriter instance.
+        Initialize a ModuleWriter by configuring the Jinja2 Environment.
         """
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.version = importlib.metadata.version("opend6-tools")
+        self.app_name = app_name
         self.jinja_env = jinja2.Environment()
         self.jinja_env.filters["slug"] = self.book_slug
         self.jinja_env.loader = jinja2.DictLoader(
@@ -279,10 +218,19 @@ class ModuleWriter:
 
         :returns: The string to write.
         """
+        self.logger.debug(
+            "write_book(%r, %r, %r, %r, %r)",
+            book_type,
+            title,
+            definitions,
+            book_variable_name,
+            tests,
+        )
         template = self.jinja_env.get_template(f"{book_type.lower()}.py")
         # Render the module as Python code.
         return template.render(
             version=self.version,
+            app_name=self.app_name,
             definitions=definitions,
             title=title,
             tests=tests,
@@ -292,7 +240,10 @@ class ModuleWriter:
 
 
 def subclass_iter(some_class: type) -> Iterator[type]:
-    """Emit a class and all it's defined subclasses."""
+    """Emit a class and all it's defined subclasses.
+
+    This is used to find all subclasses of ``Spell`` or ``Character``.
+    """
     yield some_class
     for sub_class in some_class.__subclasses__():
         yield from subclass_iter(sub_class)
@@ -306,15 +257,17 @@ class AssignmentVisitor(ast.NodeVisitor):
     The internal ``target_classes`` is the set class names to recognize.
     """
 
-    def __init__(self, source: str, base_class: type = magic2.Spell) -> None:
+    def __init__(self, source: str, base_class: type = magic.Spell) -> None:
         """
-        Initialie an AssignmentVisitor instance.
+        Initialize an ``AssignmentVisitor`` instance.
 
         :param source: The source text for the Python module.
-        :param base_class: The base class to filter on.
+        :param base_class: The base class to filter on; all subclasses of this class will be found.
         """
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.source = source
         self.statements: list[ast.Assign] = []
+        self.tests: list[tuple[ast.expr, ast.expr]] = []
         self.target_classes = set(sc.__name__ for sc in subclass_iter(base_class))
 
     def name_definition_iter(self) -> Iterator[tuple[str, str | None]]:
@@ -322,15 +275,31 @@ class AssignmentVisitor(ast.NodeVisitor):
 
         :returns: sequence of tuple (variable, code block)
         """
+        self.logger.debug("names from %s statements", len(self.statements))
         for stmt in self.statements:
             targets = [t.id for t in stmt.targets if isinstance(t, ast.Name)]
             yield (targets[0], ast.get_source_segment(self.source, stmt))
 
+    def test_condition_iter(self) -> Iterator[tuple[str | None, str | None]]:
+        """Iterates over the assert conditions of the form expr == literal,
+
+        :returns: sequence of tuple[expr, expr]
+        """
+        self.logger.debug("tests from %s statements", len(self.tests))
+        for left, right in self.tests:
+            yield (
+                ast.get_source_segment(self.source, left),
+                ast.get_source_segment(self.source, right),
+            )
+
     def visit_Assign(self, node: ast.Assign) -> None:
-        """Visits :py:class:`ast.Assign` statements.
+        """Visits :py:class:`ast.Assign` statements in the given module.
+
+        Retains all ``variable = Class()`` for one of the target classes.
 
         :param node: the node to visit.
         """
+        self.logger.debug("Assignment %s", node)
         match node.value:
             case ast.Call() as call if (
                 isinstance(call.func, ast.Name) and call.func.id in self.target_classes
@@ -338,6 +307,27 @@ class AssignmentVisitor(ast.NodeVisitor):
                 self.statements.append(node)
                 return
             case _:
+                pass
+
+    def visit_Assert(self, node: ast.Assert) -> None:
+        """Visits :py:class:`ast.Assert` statements in the given module.
+
+        Assertions of the form ``object.attribute == literal`` become doctest cases:
+
+        ``>>> object.attribute\\nliteral``
+
+        :param node: the node to visit.
+        """
+        self.logger.debug("Assert %s", node)
+        match node.test:
+            case ast.Compare(ops=[ast.Eq()]) as compare:
+                # node.left == node.comparators: makes a doctest example.
+                self.tests.append(
+                    (compare.left, cast(ast.expr, compare.comparators[0]))
+                )
+            case _:
+                # Can't turn the expression into a simple doctest.
+                # Might want to write a warning about this assertion.
                 pass
 
 
@@ -349,16 +339,23 @@ class Extractor:
     Uses :py:class:`AssignmentVisitor` to locate the statements.
     """
 
-    def __init__(self, source: Path, target_type: type = magic2.Spell) -> None:
+    def __init__(self, source: Path, target_type: type = magic.Spell) -> None:
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.source = source
         self.target_type = target_type
         with open(source) as nb_file:
             self.notebook = json.load(nb_file)
+        self.analysis = list(self.cell_analysis_iter())
+        self.logger.debug(
+            "Extractor %s: %d code cell analyzers", source, len(self.analysis)
+        )
 
-    def definition_iter(self) -> Iterator[tuple[str, str | None]]:
-        """Extract the DSL definition statements from an IPYNB notebook file.
-        Iterates over tuples of the form ``("name", "name = Spell()")`` for each Spell found.
-        The ``AssignmentVisitor`` filters to be sure these are the DSL definitions based on Spells and Characters.
+    def cell_analysis_iter(self) -> Iterator[AssignmentVisitor]:
+        """
+        Examine the notebook, creating ``AssignmentVisitor`` objects for each code cell.
+        These will produce assignment statements and test assertions.
+        The ``AssignmentVisitor`` filters the code cell to be locate DSL definitions
+        based on target classes like ``Spell`` or ``Character``.
         """
         code_cells = (
             (number, cell)
@@ -370,33 +367,49 @@ class Extractor:
             code = ast.parse(source_text, f"{self.source.stem}[{number}]", "exec")
             asn_visitor = AssignmentVisitor(source_text, self.target_type)
             asn_visitor.visit(code)
+            yield asn_visitor
+
+    def definition_iter(self) -> Iterator[tuple[str, str | None]]:
+        """Extract the DSL definition statements from an IPYNB notebook file.
+        Iterates over tuples of the form ``("name", "name = Class()")`` for each assignment
+        with the appropriate target class of ``Spell`` or ``Character``.
+        """
+        for asn_visitor in self.analysis:
             yield from asn_visitor.name_definition_iter()
+
+    def test_case_iter(self) -> Iterator[tuple[str | None, str | None]]:
+        """Extract the DSL test cases from an IPYNB notebook file.
+        Iterates over tuples of the form ``("expr", "literal")`` for each ``assert`` statement.
+        """
+        for asn_visitor in self.analysis:
+            yield from asn_visitor.test_condition_iter()
 
 
 class EvalContext(StrEnum):
-    MAGIC = "from opend6_tools.magic2 import *"
+    MAGIC = "from opend6_tools.magic import *"
     CHARACTERS = "from opend6_tools.character import *"
 
 
 def eval_cell(
     name: str, assignment: str, variety: EvalContext
-) -> tuple[str, magic2.Spell | character.Character]:
+) -> tuple[str, magic.Spell | character.Character]:
     """
     Evaluate an assignment statement to a ``Spell`` (or ``Character``) object.
-    This uses an explicit filter rule to check for ``Spell`` creation.
-    The default rule is ``isinstance(obj, Spell)``
 
     :param name: variable name from the source
     :param assignment: Full assignment statement ``name = Spell()``.
     :param variety: One of the :py:class:`EvalContext` values: MAGIC or CHARACTERS.
+        This defines an ``import`` required to evaluate the expression.
     :returns: tuple of (name, object)
     """
     global_defs = {}
     local_vars = {}
+    # print("Eval", name)
     exec(variety.value, global_defs, local_vars)
     exec(assignment, global_defs, local_vars)
-    if isinstance(local_vars[name], magic2.Spell):
-        exec(f"{name}.finalize()", global_defs, local_vars)
+    # Magic V2 needed this.
+    # if isinstance(local_vars[name], magic.Spell):
+    #     exec(f"{name}.finalize()", global_defs, local_vars)
     return name, local_vars[name]
 
 
@@ -405,9 +418,10 @@ def write_spells_ranked(
     output: Path | None,
     source_name: str,
     spell_source: list[tuple[str, str | None]],
+    tests: list[tuple[str | None, str | None]],
     writer: ModuleWriter,
 ) -> None:
-    """Ranks spells and write multiple files.
+    """Ranks spells and writes multiple files with spells extracted from a single source Notebook.
 
     :param book_variable: global variable name to use
     :param output: output Path or None to write to stdout
@@ -416,7 +430,7 @@ def write_spells_ranked(
     :param writer: ModuleWriter instance to write.
     """
     source_map = dict(spell_source)  # map variable name -> statement
-    spell_context: dict[str, magic2.Spell | character.Character | None] = dict(
+    spell_context: dict[str, magic.Spell | character.Character | None] = dict(
         eval_cell(variable, stmt, EvalContext.MAGIC)
         for variable, stmt in source_map.items()
         if stmt
@@ -426,18 +440,19 @@ def write_spells_ranked(
         for variable, spell in spell_context.items()
         if spell
     }  # map Spell name -> (variable, statement) source
-    ranked = magic2.workbook_rank(spell_context)
+    ranked = magic.workbook_rank(spell_context)
     for rank, spell_list in sorted(ranked.items()):
         rank_list = [spell_name_to_source[spell.name] for spell in spell_list]
-        tests = {
-            name: f">>> -2 <= {name}.difficulty - {rank * 5} < +3\nTrue\n" for name, _ in rank_list
+        doctests = {
+            name: f">>> -2 <= {name}.difficulty - {rank * 5} < +3\nTrue\n"
+            for name, _ in rank_list
         }
         book_body = writer.write_book(
             book_type="Spells",
             title=f"{source_name} rank {rank} {book_variable}",
             definitions=rank_list,
             book_variable_name=book_variable,
-            tests=tests,
+            tests=doctests,
         )
         if output:
             rank_name = output.with_stem(f"{output.stem}_Rank{rank}")
@@ -456,9 +471,10 @@ def write_spells_unranked(
     output: Path | None,
     source_name: str,
     spell_source: list[tuple[str, str | None]],
+    tests: list[tuple[str | None, str | None]],
     writer: ModuleWriter,
 ) -> None:
-    """Writes extracted spells to a single file.
+    """Writes extracted spells from a single source Notebook to a single target module file.
 
     :param book_variable: global variable name to use
     :param output: output Path or None to write to stdout
@@ -466,12 +482,15 @@ def write_spells_unranked(
     :param spell_source: list of tuple[str, str] with spell name and assignment statement
     :param writer: ModuleWriter instance to write.
     """
+    doctests = {
+        cast(str, left).split(".")[0]: f">>> {left}\n{right}\n" for left, right in tests
+    }
     book_body = writer.write_book(
         book_type="Spells",
         title=source_name,
         definitions=spell_source,
         book_variable_name=book_variable,
-        tests={},
+        tests=doctests,
     )
     if output:
         with open(output, "w") as target:
@@ -527,7 +546,7 @@ def write_characters_byRealm(
     character_source: list[tuple[str, str | None]],
     writer: ModuleWriter,
 ) -> None:
-    """Groups Characters by realm attribute and write multiple files.
+    """Groups Characters by realm attribute and write multiple files from a single Notebook source.
 
     :param book_variable: global variable name to use
     :param output: output Path or None to write to stdout
@@ -536,7 +555,7 @@ def write_characters_byRealm(
     :param writer: ModuleWriter instance to write.
     """
     source_map = dict(character_source)  # map variable name -> statement
-    char_context: dict[str, magic2.Spell | character.Character | None] = dict(
+    char_context: dict[str, magic.Spell | character.Character | None] = dict(
         eval_cell(variable, stmt, EvalContext.CHARACTERS)
         for variable, stmt in source_map.items()
         if stmt
@@ -546,7 +565,9 @@ def write_characters_byRealm(
         for variable, spell in char_context.items()
         if spell
     }  # map Spell name -> (variable, statement) source
-    grouped = character.workbook_groupBy(char_context, group_rule=lambda char: char.realm)
+    grouped = character.workbook_groupBy(
+        char_context, group_rule=lambda char: char.realm
+    )
     for group, char_list in sorted(grouped.items()):
         group_list = [char_name_to_source[char.name] for char in char_list]
         book_body = writer.write_book(
@@ -576,21 +597,43 @@ def spells(
     output: Annotated[Path | None, typer.Option(help="output file base name")] = None,
     book_variable: Annotated[
         str,
-        typer.Option(help="global variable to create with the list of spells/invocations"),
+        typer.Option(
+            help="global variable to create with the list of spells/invocations"
+        ),
     ] = "spells",
-    ranked: Annotated[bool, typer.Option(help="Organize by difficulty and rank")] = False,
+    ranked: Annotated[
+        bool, typer.Option(help="Organize by difficulty and rank")
+    ] = False,
+    verbose: Annotated[bool, typer.Option(help="show verbose output")] = False,
 ) -> None:
     """Converts a notebook of spells to a Python module for publication.
     For ranked output, the target will have a "_rank_xx" suffix appended to the filename stem.
     """
-    writer = ModuleWriter()
-    extractor = Extractor(source, target_type=magic2.Spell)
-    spell_source = list(extractor.definition_iter())
+    if verbose:
+        logging.getLogger("").setLevel(logging.DEBUG)
+    logger = logging.getLogger("spells")
 
+    logger.info(
+        "source %r, output %r, book_variable %r, ranked %r",
+        source,
+        output,
+        book_variable,
+        ranked,
+    )
+    extractor = Extractor(source, target_type=magic.Spell)
+    spell_source = list(extractor.definition_iter())
+    tests = list(extractor.test_case_iter())
+
+    writer = ModuleWriter()
     if ranked:
-        write_spells_ranked(book_variable, output, source.name, spell_source, writer)
+        write_spells_ranked(
+            book_variable, output, source.name, spell_source, tests, writer
+        )
     else:
-        write_spells_unranked(book_variable, output, source.name, spell_source, writer)
+        write_spells_unranked(
+            book_variable, output, source.name, spell_source, tests, writer
+        )
+    logger.info("Wrote %d spells", len(spell_source))
 
 
 @app.command(name="characters")
@@ -599,20 +642,39 @@ def characters(
     output: Annotated[Path | None, typer.Option(help="output file base name")] = None,
     book_variable: Annotated[
         str,
-        typer.Option(help="global variable to create with the list of characters/creatures"),
+        typer.Option(
+            help="global variable to create with the list of characters/creatures"
+        ),
     ] = "characters",
     groupby: Annotated[str, typer.Option(help="named attribute, e.g. realm")] = "",
+    verbose: Annotated[bool, typer.Option(help="show verbose output")] = False,
 ) -> None:
     """Converts a notebook of characters or creatures to a Python module for publication."""
-    writer = ModuleWriter()
+    if verbose:
+        logging.getLogger("").setLevel(logging.DEBUG)
+    logger = logging.getLogger("characters")
+
+    logger.info(
+        "source %r, output %r, book_variable %r, groupby %r",
+        source,
+        output,
+        book_variable,
+        groupby,
+    )
+
     extractor = Extractor(source, target_type=character.Character)
     character_source = list(extractor.definition_iter())
 
+    writer = ModuleWriter()
     if groupby.lower() == "realm":
-        write_characters_byRealm(book_variable, output, source.name, character_source, writer)
+        write_characters_byRealm(
+            book_variable, output, source.name, character_source, writer
+        )
     else:
         write_characters(book_variable, output, source.name, character_source, writer)
+    logger.info("Wrote %d characters", len(character_source))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
+    logging.basicConfig(level=logging.INFO)
     app()

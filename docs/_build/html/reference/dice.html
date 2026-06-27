@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dice &#8212; OpenD6 Tools 2026.6.26.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=4e5c487b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="magic2 Package" href="magic2.html" />
+    <link rel="prev" title="Reference" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="dice">
+<span id="dice-module"></span><h1><code class="docutils literal notranslate"><span class="pre">dice</span></code><a class="headerlink" href="#dice" title="Link to this heading">¶</a></h1>
+<p>The <a class="reference internal" href="#module-opend6_tools.dice" title="opend6_tools.dice"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.dice</span></code></a> module is a small DSL for dice specifications.
+This is shared by the <a class="reference internal" href="magic2.html#module-opend6_tools.magic2" title="opend6_tools.magic2"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.magic2</span></code></a> and <a class="reference internal" href="character.html#module-opend6_tools.character" title="opend6_tools.character"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.character</span></code></a> modules.</p>
+<p>A class definition implements operators to support
+<em>n</em> <code class="docutils literal notranslate"><span class="pre">*D</span></code> and <code class="docutils literal notranslate"><span class="pre">D+</span></code> <em>n</em>, where <em>n</em> is a number.
+It will also support more complex operations like <code class="docutils literal notranslate"><span class="pre">3*D</span> <span class="pre">+</span> <span class="pre">4*D</span> <span class="pre">+</span> <span class="pre">2</span></code>.</p>
+<p class="plantuml">
+<img src="../_images/plantuml-cb08d6bfb793e6596741d823f43acfadecdf1629.png" alt="&#64;startuml
+'https://plantuml.com/component-diagram
+
+title &quot;&quot;dice&quot;&quot; module
+
+class DieCode {
+__mul__(int) -&gt; DiceCode
+__add__(int) -&gt; DiceCode
+roll() -&gt; Roll
+measure() -&gt; int
+{static} from_pips() -&gt; DieCode
+{static} parse_str() -&gt; DieCode
+}
+
+object D
+
+D --&gt; DieCode : &quot;Instance of&quot;
+
+class Roll {
+    total: int
+    success: bool
+    fail: bool
+}
+
+DieCode ..&gt; Roll : &quot;Creates&quot;
+
+class CriticalSuccess {
+    rolls: int
+    success = True
+}
+class CriticalFailure {
+    fail = True
+}
+
+Roll &lt;|-- CriticalSuccess : &quot;Wild Die = 6&quot;
+Roll &lt;|-- CriticalFailure : &quot;Wild Die = 1&quot;
+
+&#64;enduml"/>
+</p>
+<p>The global object <code class="docutils literal notranslate"><span class="pre">D</span></code> is the essential ingredient here.
+It permits an expression like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DamageEffect</span><span class="p">(</span><span class="s2">&quot;Attack&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Additionally, this module also offers a command-line interface: an <code class="docutils literal notranslate"><span class="pre">dice</span></code> command.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(opend6-tools) % dice --help
+
+ Usage: dice [OPTIONS] [EXPR]
+
+ Roll the handful of dice described by a dice expression. Use the --count
+ option to roll multiple times.
+
+ ? is a critical failure showing a total with the largest die value excluded, and, in ()&#39;s, the total of all dice.
+
+ ! is a critical success followed by the number of re-rolls.
+
+╭─ Arguments ───────────────────────────────────────────────────────────────╮
+│   expr      [EXPR]  Dice expression, example: &#39;2*D6+3&#39; (quotes are        │
+│                     *required*)                                           │
+╰───────────────────────────────────────────────────────────────────────────╯
+╭─ Options ─────────────────────────────────────────────────────────────────╮
+│ --count               -c      INTEGER  number of times to roll            │
+│                                        [default: 1]                       │
+│ --install-completion                   Install completion for the current │
+│                                        shell.                             │
+│ --show-completion                      Show completion for the current    │
+│                                        shell, to copy it or customize the │
+│                                        installation.                      │
+│ --help                                 Show this message and exit.        │
+╰───────────────────────────────────────────────────────────────────────────╯
+</pre></div>
+</div>
+<section id="module-opend6_tools.dice">
+<span id="implementation"></span><h2>Implementation<a class="headerlink" href="#module-opend6_tools.dice" title="Link to this heading">¶</a></h2>
+<p>A DSL for dice definitions.</p>
+<p>The most important global object is <code class="docutils literal notranslate"><span class="pre">D</span></code>, which is the basis for the DieCode DSL.</p>
+<p>Example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.dice</span><span class="w"> </span><span class="kn">import</span> <span class="n">D</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mi">3</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="go">3*D+2</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">opend6_tools.dice.</span></span><span class="sig-name descname"><span class="pre">DieCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Decimal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Decimal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode" title="Link to this definition">¶</a></dt>
+<dd><p>Specifications for collections of dice.
+Computes the overall measure, <span class="math notranslate nohighlight">\(3 \times d + p\)</span>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.dice</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">D</span><span class="o">+</span><span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">measure</span>
+<span class="go">Decimal(&#39;11&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">repr</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="go">&#39;3*D+2&#39;</span>
+</pre></div>
+</div>
+<p>Can also parse a text specification.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">DieCode</span><span class="o">.</span><span class="n">parse_str</span><span class="p">(</span><span class="s2">&quot;3D+2&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">measure</span>
+<span class="go">Decimal(&#39;11&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">repr</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="go">&#39;3*D+2&#39;</span>
+</pre></div>
+</div>
+<p>A degenerate case of only pips, not clear why someone might need this.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">DieCode</span><span class="o">.</span><span class="n">parse_str</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">)</span>
+<span class="go">0*D+2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mi">0</span><span class="o">*</span><span class="n">D</span> <span class="o">+</span> <span class="mi">2</span>
+<span class="go">0*D+2</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">seed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">physique</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">D</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">physique</span><span class="o">.</span><span class="n">roll</span><span class="p">())</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">)]</span>
+<span class="go">[&#39;17!&#39;, &#39;13!&#39;, &#39;12? (18)&#39;, &#39;6? (11)&#39;, &#39;10&#39;, &#39;13&#39;, &#39;23&#39;, &#39;15&#39;, &#39;16!&#39;, &#39;10&#39;, &#39;9&#39;, &#39;12&#39;]</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Decimal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Decimal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create a working DieCode instance, usually the global <code class="docutils literal notranslate"><span class="pre">D</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.n">
+<span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#opend6_tools.dice.DieCode.n" title="Link to this definition">¶</a></dt>
+<dd><p>Number of dice</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.adj">
+<span class="sig-name descname"><span class="pre">adj</span></span><a class="headerlink" href="#opend6_tools.dice.DieCode.adj" title="Link to this definition">¶</a></dt>
+<dd><p>Additional pips</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode.__repr__" title="Link to this definition">¶</a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode.__str__" title="Link to this definition">¶</a></dt>
+<dd><p>Return str(self).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.__mul__">
+<span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#opend6_tools.dice.DieCode" title="opend6_tools.dice.DieCode"><span class="pre">DieCode</span></a></span></span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode.__mul__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode.__mul__" title="Link to this definition">¶</a></dt>
+<dd><p>Implement the <code class="docutils literal notranslate"><span class="pre">*</span></code> operator for <code class="docutils literal notranslate"><span class="pre">D</span></code> and a number.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.__rmul__">
+<span class="sig-name descname"><span class="pre">__rmul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#opend6_tools.dice.DieCode" title="opend6_tools.dice.DieCode"><span class="pre">DieCode</span></a></span></span><a class="headerlink" href="#opend6_tools.dice.DieCode.__rmul__" title="Link to this definition">¶</a></dt>
+<dd><p>Implement the <code class="docutils literal notranslate"><span class="pre">*</span></code> operator for <code class="docutils literal notranslate"><span class="pre">D</span></code> and a number.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.__add__">
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#opend6_tools.dice.DieCode" title="opend6_tools.dice.DieCode"><span class="pre">DieCode</span></a></span></span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode.__add__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode.__add__" title="Link to this definition">¶</a></dt>
+<dd><p>Implement the <code class="docutils literal notranslate"><span class="pre">+</span></code> operator for <code class="docutils literal notranslate"><span class="pre">D</span></code> and a number.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.__radd__">
+<span class="sig-name descname"><span class="pre">__radd__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#opend6_tools.dice.DieCode" title="opend6_tools.dice.DieCode"><span class="pre">DieCode</span></a></span></span><a class="headerlink" href="#opend6_tools.dice.DieCode.__radd__" title="Link to this definition">¶</a></dt>
+<dd><p>Implement the <code class="docutils literal notranslate"><span class="pre">+</span></code> operator for <code class="docutils literal notranslate"><span class="pre">D</span></code> and a number.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode.__eq__" title="Link to this definition">¶</a></dt>
+<dd><p>Return self==value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.d">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">d</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#opend6_tools.dice.DieCode.d" title="Link to this definition">¶</a></dt>
+<dd><p>Legacy attribute reference, now a property.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.from_pips">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_pips</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Decimal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#opend6_tools.dice.DieCode" title="opend6_tools.dice.DieCode"><span class="pre">DieCode</span></a></span></span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode.from_pips"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode.from_pips" title="Link to this definition">¶</a></dt>
+<dd><p>Converts number of pips to Die + Pips.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pips</strong> – pips value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DieCode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.measure">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">measure</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Decimal</span></span><a class="headerlink" href="#opend6_tools.dice.DieCode.measure" title="Link to this definition">¶</a></dt>
+<dd><p>The overall measure associated with this DieCode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.parse_str">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parse_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#opend6_tools.dice.DieCode" title="opend6_tools.dice.DieCode"><span class="pre">DieCode</span></a></span></span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode.parse_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode.parse_str" title="Link to this definition">¶</a></dt>
+<dd><p>Parse a string representation of a DieCode object, example: <code class="docutils literal notranslate"><span class="pre">&quot;3D+2&quot;</span></code>.</p>
+<p>The syntax has three closely-related forms:  <code class="docutils literal notranslate"><span class="pre">[+]n[*]D+n</span></code> | <code class="docutils literal notranslate"><span class="pre">[+]n[*]D</span></code> | <code class="docutils literal notranslate"><span class="pre">+n</span></code></p>
+<p>Pragmatically, <code class="docutils literal notranslate"><span class="pre">+</span></code> and <code class="docutils literal notranslate"><span class="pre">*</span></code> are essentially whitespace.
+The meaningful tokens are strings of digits and <code class="docutils literal notranslate"><span class="pre">D</span></code>.
+The three interesting forms are nDn, nD, and n.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.roll">
+<span class="sig-name descname"><span class="pre">roll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#opend6_tools.dice.Roll" title="opend6_tools.dice.Roll"><span class="pre">Roll</span></a></span></span><a class="reference internal" href="../_modules/opend6_tools/dice.html#DieCode.roll"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.DieCode.roll" title="Link to this definition">¶</a></dt>
+<dd><p>The “Wild Die” roll algorithm.</p>
+<p>This returns several things:</p>
+<ol class="arabic simple">
+<li><p>Ordinary result: a <a class="reference internal" href="#opend6_tools.dice.Roll" title="opend6_tools.dice.Roll"><code class="xref py py-class docutils literal notranslate"><span class="pre">Roll</span></code></a> instance.</p></li>
+<li><dl class="simple">
+<dt>Critical Success, wild die was 6.</dt><dd><p>A <a class="reference internal" href="#opend6_tools.dice.CriticalSuccess" title="opend6_tools.dice.CriticalSuccess"><code class="xref py py-class docutils literal notranslate"><span class="pre">CriticalSuccess</span></code></a> instance.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Critical Failure, wild die was 1.</dt><dd><p>Two totals (with and without the highest die value.)
+A <a class="reference internal" href="#opend6_tools.dice.CriticalFailure" title="opend6_tools.dice.CriticalFailure"><code class="xref py py-class docutils literal notranslate"><span class="pre">CriticalFailure</span></code></a> instance.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="opend6_tools.dice.DieCode.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#opend6_tools.dice.DieCode.__weakref__" title="Link to this definition">¶</a></dt>
+<dd><p>list of weak references to the object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="opend6_tools.dice.Roll">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">opend6_tools.dice.</span></span><span class="sig-name descname"><span class="pre">Roll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">die</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rolls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/opend6_tools/dice.html#Roll"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.Roll" title="Link to this definition">¶</a></dt>
+<dd><p>A single roll of the dice.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="opend6_tools.dice.Roll.die">
+<span class="sig-name descname"><span class="pre">die</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#opend6_tools.dice.Roll.die" title="Link to this definition">¶</a></dt>
+<dd><p>The die values</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="opend6_tools.dice.Roll.fail">
+<span class="sig-name descname"><span class="pre">fail</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#opend6_tools.dice.Roll.fail" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="opend6_tools.dice.Roll.pips">
+<span class="sig-name descname"><span class="pre">pips</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#opend6_tools.dice.Roll.pips" title="Link to this definition">¶</a></dt>
+<dd><p>Additional pips to add</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="opend6_tools.dice.Roll.rolls">
+<span class="sig-name descname"><span class="pre">rolls</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#opend6_tools.dice.Roll.rolls" title="Link to this definition">¶</a></dt>
+<dd><p>Number of rolls (&gt;1 for Critical Success)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="opend6_tools.dice.Roll.success">
+<span class="sig-name descname"><span class="pre">success</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#opend6_tools.dice.Roll.success" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="opend6_tools.dice.Roll.total">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">total</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#opend6_tools.dice.Roll.total" title="Link to this definition">¶</a></dt>
+<dd><p>Total of Die plus bonus pips</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="opend6_tools.dice.CriticalSuccess">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">opend6_tools.dice.</span></span><span class="sig-name descname"><span class="pre">CriticalSuccess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">die</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rolls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/opend6_tools/dice.html#CriticalSuccess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.CriticalSuccess" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#opend6_tools.dice.Roll" title="opend6_tools.dice.Roll"><code class="xref py py-class docutils literal notranslate"><span class="pre">Roll</span></code></a></p>
+<p>A single roll that was a Critical Success – Wild Die was 6.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="opend6_tools.dice.CriticalFailure">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">opend6_tools.dice.</span></span><span class="sig-name descname"><span class="pre">CriticalFailure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">die</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pips</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rolls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/opend6_tools/dice.html#CriticalFailure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.CriticalFailure" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#opend6_tools.dice.Roll" title="opend6_tools.dice.Roll"><code class="xref py py-class docutils literal notranslate"><span class="pre">Roll</span></code></a></p>
+<p>A single roll that was a Critical Failure – Wild Die was 1.</p>
+</dd></dl>
+
+<p>This includes the <code class="docutils literal notranslate"><span class="pre">dice_app</span></code> CLI.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="opend6_tools.dice.main">
+<span class="sig-prename descclassname"><span class="pre">opend6_tools.dice.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">expr:</span> <span class="pre">~typing.Annotated[~opend6_tools.dice.DieCode,</span> <span class="pre">&lt;typer.models.ArgumentInfo</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x109e8aba0&gt;],</span> <span class="pre">count:</span> <span class="pre">~typing.Annotated[int,</span> <span class="pre">&lt;typer.models.OptionInfo</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x109ebcf50&gt;]</span> <span class="pre">=</span> <span class="pre">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/opend6_tools/dice.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#opend6_tools.dice.main" title="Link to this definition">¶</a></dt>
+<dd><p>Roll the handful of dice described by a dice expression.
+Use the –count option to roll multiple times.</p>
+<p>? is a critical failure showing a total with the largest
+die value excluded, and, in ()’s, the total of all dice.</p>
+<p>! is a critical success followed by the number of re-rolls.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">OpenD6 Tools</a></h1>
+
+
+
+
+
+
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Reference</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Reference</a></li>
+      <li>Next: <a href="magic2.html" title="next chapter"><code class="docutils literal notranslate"><span class="pre">magic2</span></code> Package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation and Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../applications.html">Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">dice</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-opend6_tools.dice">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="magic2.html"><code class="docutils literal notranslate"><span class="pre">magic2</span></code> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="character.html"><code class="docutils literal notranslate"><span class="pre">character</span></code> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebook_extract.html"><code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="computations.html">Miscellaneous Applications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/index.html">Notes</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, S.Lott.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/reference/dice.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

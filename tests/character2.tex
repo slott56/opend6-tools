@@ -1,0 +1,354 @@
+
+% Preamble
+
+\documentclass[10pt]{article}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{layout}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+
+
+% See https://www.overleaf.com/learn/latex/Articles%2FA_visual_guide_to_LaTeX’s_page_layout_parameters
+% Paper width = 612 pt height = 792 pt
+% 1in offset means \pagewidth = 72pt + \hoffset + \evensidemargin + Book_IM + DeltaX
+\setlength{\marginparwidth}{0pt}
+\setlength{\marginparsep}{0pt}
+\setlength{\textwidth}{504pt}   % 468 = 6.5 in, 504=7in
+\setlength{\textheight}{620pt}  % 8.6 in
+\setlength{\evensidemargin}{6pt}
+\setlength{\oddsidemargin}{6pt}
+\setlength{\topmargin}{6pt}
+\setlength{\headheight}{12pt}
+\setlength{\headsep}{12pt}
+
+
+\title{OpenD6 Fantasy Character Sheet}
+
+
+% Document
+\begin{document}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textit{OpenD6 Fantasy Character}}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+
+\cleardoublepage
+% \textwidth of 468 pt = 144pt * 3 + 36pt
+% \textwidth of 504 pt = 156pt * 3 + 36pt
+\begin{table}
+\begin{tabular}{m{156pt} m{156pt} m{156pt}}
+    \multicolumn{2}{l}{\textbf{Character Name}:  \hrulefill} \\
+    \multicolumn{2}{l}{\textbf{Occupation}: Aspiring Hero \hrulefill} \\
+    \multicolumn{2}{l}{\textbf{Race}: Human \hrulefill \hspace{1em} \textbf{Gender}:  \hrulefill} \\
+    \multicolumn{2}{l}{\textbf{Age}:  \hrulefill \hspace{1em} \textbf{Height}:  \hrulefill \hspace{1em}  \textbf{Weight}:  \hrulefill } \\
+    \multicolumn{2}{l}{\textbf{Physical Description}:  \hrulefill } \\
+    \multicolumn{2}{l}{ \hrulefill } \\
+ & & \\
+\textbf{Agility}: 3D+1 \hrulefill      & \textbf{Intellect}: 2D+2 \hrulefill  &                             \\
+
+acrobatics           \hrulefill & cultures             \hrulefill & \\
+
+climbing             \hrulefill & devices              \hrulefill & \\
+
+combat               \hrulefill & healing              \hrulefill & \\
+
+contortion           \hrulefill & navigation           \hrulefill & \\
+
+dodge                \hrulefill & reading/writing      \hrulefill & \\
+
+fighting             \hrulefill & scholar              \hrulefill & \\
+
+flying               \hrulefill & speaking             \hrulefill & \\
+
+jumping              \hrulefill & trading              \hrulefill & \\
+
+melee combat         \hrulefill & traps                \hrulefill & \\
+
+riding               \hrulefill &  \hrulefill & \\
+
+stealth              \hrulefill &  \hrulefill & \\
+
+ \hrulefill &  \hrulefill & \\
+
+ \hrulefill &  \hrulefill & \\
+
+
+\textbf{Coordination}: 2D+2 \hrulefill & \textbf{Acumen}: 3D+1 \hrulefill     & \hrulefill \\
+
+charioteering        \hrulefill & artist               \hrulefill & \textbf{Advantages}: \hrulefill \\
+
+lockpicking          \hrulefill & crafting             \hrulefill & \textbf{Disadvantages}: \hrulefill \\
+
+marksmanship         \hrulefill & disguise             \hrulefill & \textbf{Special Abilities}: \hrulefill \\
+
+pilotry              \hrulefill & gambling             \hrulefill &  \hrulefill \\
+
+sleight of hand      \hrulefill & hide                 \hrulefill &  \hrulefill \\
+
+throwing             \hrulefill & investigation        \hrulefill &  \hrulefill \\
+
+ \hrulefill & know-how             \hrulefill &  \hrulefill \\
+
+ \hrulefill & search               \hrulefill &  \hrulefill \\
+
+ \hrulefill & streetwise           \hrulefill &  \hrulefill \\
+
+ \hrulefill & survival             \hrulefill &  \hrulefill \\
+
+ \hrulefill & tracking             \hrulefill &  \hrulefill \\
+
+ \hrulefill &  \hrulefill &  \hrulefill \\
+
+ \hrulefill &  \hrulefill &  \hrulefill \\
+
+
+\textbf{Physique}: 3D \hrulefill & \textbf{Charisma}: 3D \hrulefill     &  \hrulefill \\
+
+lifting              \hrulefill & animal handling      \hrulefill &  \hrulefill \\
+
+running              \hrulefill & bluff                \hrulefill &  \hrulefill \\
+
+stamina              \hrulefill & charm                \hrulefill &  \hrulefill \\
+
+swimming             \hrulefill & command              \hrulefill &  \hrulefill \\
+
+ \hrulefill & intimidation         \hrulefill &  \hrulefill \\
+
+ \hrulefill & mettle               \hrulefill &  \hrulefill \\
+
+ \hrulefill & persuasion           \hrulefill &  \hrulefill \\
+
+ \hrulefill &  \hrulefill &  \hrulefill \\
+
+                                  &                                 &                             \\
+\textbf{Magic }:  \hrulefill  &                                 &                             \\
+alteration           \hrulefill & \textbf{Strength Damage}: 2D \hrulefill                             & \textbf{Body Points}: 28 \hrulefill \\
+apportation          \hrulefill                        & \textbf{Move}:             10             \hrulefill    & $\Box$ Stunned \footnotesize{(80\%)} \hfill 17-21 \\
+conjuration          \hrulefill                        & \textbf{Fate Points}:      1      \hrulefill    & $\Box$ Wounded \footnotesize{(60\%)} \hfill 11-16 \\
+divination           \hrulefill                        & \textbf{Character Points}: 5 \hrulefill    & $\Box$ Severely Wounded \footnotesize{(40\%)} \hfill 6-10 \\
+ \hrulefill                        & \textbf{Funds}:            3D            \hrulefill    & $\Box$ Incapacitated \footnotesize{(20\%)} \hfill 3-5 \\
+ \hrulefill                        & \textbf{Silver}:           180           \hrulefill    & $\Box$ Mortally Wounded \footnotesize{(10\%)} \hfill 1-2 \\
+ \hrulefill                        &  \hrulefill                                                       & $\Box$ Dead   \\
+\end{tabular}
+\end{table}
+% \newpage 
+\cleardoublepage
+
+\begin{multicols}{2}
+\textbf{Character Name:} \hrulefill
+
+\vspace{24pt}
+
+\textbf{Armor}
+
+
+leather jerkin (Armor Value +2)
+
+
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+
+\vspace{24pt}
+
+\textbf{Weapons}
+
+
+Dagger (damage +1D)
+
+
+
+
+\hrulefill
+
+Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$ 
+
+
+\hrulefill
+
+Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$ 
+
+
+\hrulefill
+
+Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$ 
+
+
+\hrulefill
+
+Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$ 
+
+
+\hrulefill
+
+Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$ 
+
+
+
+\vspace{24pt}
+
+\textbf{Other Equipment}
+
+
+shoulder bag with cheese, bread, and silver coins in it
+
+
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+
+\columnbreak
+
+\vspace*{24pt}
+
+\textbf{Magic }
+
+
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\hrulefill
+
+
+\vspace{24pt}
+
+\textbf{Personality}: \hrulefill
+
+\hrulefill
+
+\hrulefill
+
+\hrulefill
+
+\textbf{Objectives}: \hrulefill
+
+\hrulefill
+
+\hrulefill
+
+
+\textbf{Native Language}: \hrulefill
+
+\hrulefill
+
+\textbf{Other Information}: \hrulefill
+
+\hrulefill
+
+\hrulefill
+
+\hrulefill
+
+\hrulefill
+
+\hrulefill
+
+\end{multicols}
+
+
+\end{document}

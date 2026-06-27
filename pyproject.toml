@@ -1,7 +1,7 @@
 [project]
 name = "opend6-tools"
-version = "2025.12.20.dev2"
-description = "Tools to support designing spells and characters in OpenD6 games"
+version = "2025.6.27.dev1"
+description = "Tools to support designing spells, characters, creatures and items in OpenD6 games"
 readme = "README.rst"
 authors = [
     { name = "S.Lott", email = "slott56@gmail.com" }
@@ -9,33 +9,46 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.13.4",
+    "graphviz>=0.21",
     "humre>=1.0.0",
+    "ipykernel>=7.1.0",
     "jinja2>=3.1.6",
+    "jupyterlab>=4.5.5",
+    "pycairo",
     "pydantic>=2.11.7",
     "pypdf>=5.9.0",
+    "pytest>=9.0.2",
+    "sphinx>=9.1.0",
+    "sphinxcontrib-plantuml>=0.31",
+    "sphinxnotes-strike>=2.0",
+    "sympy>=1.14.0",
+    "tabulate>=0.10.0",
     "tomli>=2.3.0",
     "tomli-w>=1.2.0",
     "typer>=0.19.2",
+    "xhtml2pdf[pycairo]>=0.2.17",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "tox",
+    "tox-uv",
     "sphinx",
     "sphinxcontrib-plantuml>=0.31",
     "sphinxnotes-strike>=1.2.1",
     "mypy>=1.18.2",
     "pytest>=8.4.2",
     "pyright",
+    "coverage",
 ]
 
 
 [project.scripts]
-analyze_magic = "opend6_tools.analyze_magic:main"
-die_simplification = "opend6_tools.die_simplification:main"
-spell_measure = "opend6_tools.spell_measure:main"
+die_simplification = "opend6_tools.die_simplification:app"
+spell_measure = "opend6_tools.spell_measure:app"
 notebook_extract = "opend6_tools.notebook_extract:app"
-character_sheet = "opend6_tools.character:main"
+character_sheet = "opend6_tools.character.cli:app"
+dice = "opend6_tools.dice:dice_app"
 
 
 [build-system]
@@ -44,17 +57,34 @@ build-backend = "uv_build"
 
 [tool.tox]
 requires = ["tox>=4.19"]
-env_list = ["3.12", "3.13", "3.14"]  # , "3.15"]
+env_list = ["3.12", "3.13", "3.14"
+    # Pillow 12.2.0 problem with "3.15"
+    ]
 skip_missing_interpreters = true
 
 [tool.tox.env_run_base]
-# TODO: Add Coverage
 description = "Run test under {base_python}"
 deps = ["pytest"]
+# package = "editable"  # Sometimes helpful to test without a full build.
 commands = [
+    ["python", "-m", "pytest", "-vv", "-x", "--showlocals", "tests"],
+    # Do these last, doctest failures can be hard to debug.
     ["pytest", "--doctest-modules", "src/opend6_tools"],
-    ["pytest", "-vv", "tests"],
 ]
+
+[tool.tox.env.docs]
+description = "Essentially `cd docs && ${MAKE} doctest`"
+base_python = ["3.13"]
+deps = ["sphinx", "sphinxcontrib-plantuml", "sphinxnotes-strike"]
+allowlist_externals = ["make"]
+change_dir = "docs"
+commands_pre=[
+    ["uv", "add", "--active", "sphinx", "sphinxcontrib-plantuml", "sphinxnotes-strike"]
+]
+commands = [
+    ["make", "doctest"]
+]
+
 
 [tool.tox.env.type_mypy]
 # .tox/type/lib/python3.13/site-packages/humre/__init__.py:15: error: Invalid syntax  [syntax]

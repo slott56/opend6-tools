@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>OpenD6 Tools &#8212; OpenD6 Tools 1.0 documentation</title>
+    <title>OpenD6 Tools &#8212; OpenD6 Tools 2026.6.26.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
-    <script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/documentation_options.js?v=4e5c487b"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="next" title="Installation and Quickstart" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -34,38 +34,39 @@
             
   <section id="opend6-tools">
 <h1>OpenD6 Tools<a class="headerlink" href="#opend6-tools" title="Link to this heading">¶</a></h1>
-<p>These tools help preparing documents to support the <strong>OpenD6</strong> Table-Top Role-Playing Game (TTRPG).</p>
-<p>This is focused on two Python libraries that define a Domain Specific Language (DSL) for spells and characters.
-Each offers a number of helpful features:</p>
+<p>Welcome to a collection of tools to help preparing documents for the <strong>OpenD6</strong> Table-Top Role-Playing Game (TTRPG).</p>
+<p>The essence is Domain Specific Languages (DSL) to define spells, items, creatures, and characters using Python syntax.
+Python is a programming language, but there’s no real “programming” involved.
+The definition doesn’t involve iteration or conditional execution; it’s an explicit specification of the <strong>OpenD6</strong> object.</p>
+<p>There are three DSL’s:</p>
 <ul class="simple">
-<li><p>These modules allow the definition of spells (and miracles) using Python syntax.
-Since the DSL is declaratory, there’s no real “programming” involved: only adherence to Python syntax rules.</p></li>
-<li><p>Check the math used to compute spell difficulties, and character budgets (dice or character points.)</p></li>
-<li><p>Emit ReStructuredText documents that can be processed by the <strong>Sphinx</strong> tool (and any other <strong>docutils</strong> tools) to create published documents.</p></li>
+<li><p>The <a class="reference internal" href="reference/magic2.html#module-opend6_tools.magic2" title="opend6_tools.magic2"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.magic2</span></code></a> package is for designing spells, invocations, and items.</p></li>
+<li><p>The <a class="reference internal" href="reference/character.html#module-opend6_tools.character" title="opend6_tools.character"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.character</span></code></a> package is for building characters and creatures.
+(As a nod to the <em>OpenD6 Fantasy Worldbook: Kingdom of the East</em>, magical swords can have Charisma and Agility, and are essentially creatures, defined with this package.)</p></li>
+<li><p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6.dice</span></code> package is a small DSL for dice expressions, used by the other two packages.</p></li>
 </ul>
-<p>There are two modules that define the DSL’s:</p>
+<p>The package includes the <a class="reference internal" href="reference/notebook_extract.html#module-opend6_tools.notebook_extract" title="opend6_tools.notebook_extract"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.notebook_extract</span></code></a> application to extract Spell, Item, or Character definitions from a Jupyter Lab notebook into a Python module.
+Using JupyterLab permits easy, flexible, interactive computation of details.
+When defining a character, for example, the result of a change to the attributes can be computed and displayed immediately in JupyterLab.
+We call this the <strong>Change</strong>-<strong>Compute</strong>-<strong>Consider</strong> cycle for working on a design.
+The extract from the notebook can then be converted to RST to feed the publication pipeline.</p>
+<p>The <a class="reference internal" href="reference/dice.html#module-opend6_tools.dice" title="opend6_tools.dice"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.dice</span></code></a> module is also a command-line application to roll dice using the <strong>OpenD6</strong> Wild Die rules.</p>
+<p>Similarly, the <a class="reference internal" href="reference/character.html#module-opend6_tools.character" title="opend6_tools.character"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.character</span></code></a> package is <strong>also</strong> a command-line application to create blank character sheets.</p>
+<p>Plus, just for the curious, there are two other other applications.
+See the <a class="reference internal" href="reference/computations.html#misc-comp"><span class="std std-ref">Miscellaneous Applications</span></a> section on creating some of the more complicated tables in the <strong>OpenD6</strong> rules from first principles.</p>
 <ul class="simple">
-<li><p>The <a class="reference internal" href="magic2.html#module-opend6_tools.magic2" title="opend6_tools.magic2"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.magic2</span></code></a> module defines the DSL for designing spells and invocations.</p></li>
-<li><p>The <a class="reference internal" href="character.html#module-opend6_tools.character" title="opend6_tools.character"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.character</span></code></a> module defines a DSL building characters and creatures that fit within a campaign.</p></li>
+<li><p>The <a class="reference internal" href="reference/computations.html#module-opend6_tools.die_simplification" title="opend6_tools.die_simplification"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.die_simplification</span></code></a> application.</p></li>
+<li><p>The <a class="reference internal" href="reference/computations.html#module-opend6_tools.spell_measure" title="opend6_tools.spell_measure"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.spell_measure</span></code></a> application.</p></li>
 </ul>
-<p>Additionally, the following applications are also part of publishing the rule books.</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>The <a class="reference internal" href="notebook_extract.html#module-opend6_tools.notebook_extract" title="opend6_tools.notebook_extract"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.notebook_extract</span></code></a> module extracts Spell or Character definitions from a Jupyter Lab notebook into a Python module.</dt><dd><p>This can be converted to RST for publication.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>The <a class="reference internal" href="computations.html#misc-comp"><span class="std std-ref">Miscellaneous Computations</span></a> section describes some modules to compute a few tables in the <strong>OpenD6</strong> rules from first principles.</dt><dd><p>These include the <a class="reference internal" href="computations.html#module-opend6_tools.die_simplification" title="opend6_tools.die_simplification"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.die_simplification</span></code></a> and <a class="reference internal" href="computations.html#module-opend6_tools.spell_measure" title="opend6_tools.spell_measure"><code class="xref py py-mod docutils literal notranslate"><span class="pre">opend6_tools.spell_measure</span></code></a> modules.</p>
-</dd>
-</dl>
-</li>
-</ul>
-<p>The <a class="reference internal" href="notes.html#dsl-design"><span class="std std-ref">Notes on DSL Design</span></a> section describes the overall approach to creating the DSLs.</p>
+<p>Additionally, some Jupyter Lab notebooks are part of this project. These can help to analyze spells and characters.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#quick-start">Quick Start</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#background">Background</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial/index.html#the-big-picture">The Big Picture</a></li>
@@ -74,31 +75,57 @@ Since the DSL is declaratory, there’s no real “programming” involved: only
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using the OpenD6 Tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#creation">Creation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage.html#spells">Spells</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#spells-invocations-and-items">Spells, Invocations, and Items</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage.html#characters">Characters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#supporting-functions">Supporting Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage.html#publication">Publication</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage.html#files-and-structure">Files and structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage.html#processing-and-control">Processing and control</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="applications.html">Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="applications.html#dice">dice</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#synopsis">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#examples">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#options">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#environment">Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#exit-status">Exit Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#see-also">See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html#character-sheet">character_sheet</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id1">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id2">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id3">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id4">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id5">Exit Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id6">See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html#notebook-extract">notebook_extract</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id7">Synopsis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id8">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id9">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id10">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id11">Exit Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#id12">See Also</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="applications.html#other-applications">Other Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#die-simplification">die_simplification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="applications.html#spell-measure">spell_measure</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#context">Context</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html#challenges">Challenges</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="architecture.html#draft-documents">Draft Documents</a></li>
-<li class="toctree-l4"><a class="reference internal" href="architecture.html#documents-designed-for-human-consumption">Documents Designed for Human Consumption</a></li>
-<li class="toctree-l4"><a class="reference internal" href="architecture.html#colorful-prose">Colorful Prose</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="architecture.html#non-functional-requirements">Non-Functional Requirements</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="architecture.html#usability">Usability</a></li>
-<li class="toctree-l4"><a class="reference internal" href="architecture.html#reliability">Reliability</a></li>
-<li class="toctree-l4"><a class="reference internal" href="architecture.html#performance">Performance</a></li>
-<li class="toctree-l4"><a class="reference internal" href="architecture.html#supportability">Supportability</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#non-functional-requirements">Non-Functional Requirements</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#containers">Containers</a></li>
@@ -106,297 +133,86 @@ Since the DSL is declaratory, there’s no real “programming” involved: only
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#code">Code</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="magic2.html"><code class="docutils literal notranslate"><span class="pre">magic2</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="magic2.html#the-spell-and-miracle-dsl">The Spell (and Miracle) DSL</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#spell">Spell</a></li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#effects">Effects</a></li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#aspects">Aspects</a></li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#foundational-definitions">Foundational Definitions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#units-mass-distance-time">Units: Mass, Distance, Time</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/dice.html"><code class="docutils literal notranslate"><span class="pre">dice</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/dice.html#module-opend6_tools.dice">Implementation</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="magic2.html#module-opend6_tools.magic2">Implementation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#example">Example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#top-level-components">Top-Level Components</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.display"><code class="docutils literal notranslate"><span class="pre">display()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.debug"><code class="docutils literal notranslate"><span class="pre">debug()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.dumps"><code class="docutils literal notranslate"><span class="pre">dumps()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.workbook_spells"><code class="docutils literal notranslate"><span class="pre">workbook_spells()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.workbook_rank"><code class="docutils literal notranslate"><span class="pre">workbook_rank()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.workbook_validation"><code class="docutils literal notranslate"><span class="pre">workbook_validation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/magic2.html"><code class="docutils literal notranslate"><span class="pre">magic2</span></code> Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/magic2.html#defining-spells">Defining Spells</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/magic2.html#display-and-output">Display and Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/magic2.html#workbook-support">Workbook Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/magic2.html#the-spellbook-wrapper">The Spellbook Wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/magic2.html#module-opend6_tools.magic2">Implementation</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#reporting-and-display">Reporting and Display</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.TableSummary"><code class="docutils literal notranslate"><span class="pre">TableSummary</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.SpellWriter"><code class="docutils literal notranslate"><span class="pre">SpellWriter</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.summary"><code class="docutils literal notranslate"><span class="pre">summary()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.detail"><code class="docutils literal notranslate"><span class="pre">detail()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/character.html"><code class="docutils literal notranslate"><span class="pre">character</span></code> Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/character.html#defining-characters-and-creatures">Defining Characters and Creatures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/character.html#display-and-output">Display and Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/character.html#workbook-support">Workbook Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/character.html#application-wrapper">Application Wrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/character.html#module-opend6_tools.character">Implementation</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#spells-and-miracles">Spells (and Miracles)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.Spell"><code class="docutils literal notranslate"><span class="pre">Spell</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.Miracle"><code class="docutils literal notranslate"><span class="pre">Miracle</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.Cantrip"><code class="docutils literal notranslate"><span class="pre">Cantrip</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.OtherAspects"><code class="docutils literal notranslate"><span class="pre">OtherAspects</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/notebook_extract.html"><code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> app</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/notebook_extract.html#module-opend6_tools.notebook_extract">Implementation</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#aspects-and-effects">Aspects and Effects</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#opend6_tools.magic2.Aspect"><code class="docutils literal notranslate"><span class="pre">Aspect</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#id2">Effects</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#measureeffect">MeasureEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#volumeeffect">VolumeEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#compositeeffect">CompositeEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#damageeffect">DamageEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#protectioneffect">ProtectionEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#skilleffect">SkillEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#attributeeffect">AttributeEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#specialabilityeffect">SpecialAbilityEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#disadvantageeffect">DisadvantageEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#timeeffect">TimeEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#masseffect">MassEffect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#distanceeffect">DistanceEffect</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#id4">Aspects</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#genericaspect">GenericAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#compositeaspect">CompositeAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#rangeaspect">RangeAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#speedaspect">SpeedAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#durationaspect">DurationAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#castingtimeaspect">CastingTimeAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#areaeffectaspect">AreaEffectAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#changetargetaspect">ChangeTargetAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#chargesaspect">ChargesAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#communityaspect">CommunityAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#componentsaspect">ComponentsAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#concentrationaspect">ConcentrationAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#countenanceaspect">CountenanceAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#feedbackaspect">FeedbackAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#focusedaspect">FocusedAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#gesturesaspect">GesturesAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#incantationsaspect">IncantationsAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#multipletargetaspect">MultipleTargetAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#unrealeffectaspect">UnrealEffectAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#variabledurationaspect">VariableDurationAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#variableeffectaspect">VariableEffectAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#variablemovementaspect">VariableMovementAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#arcaneknowledgeaspect">ArcaneKnowledgeAspect</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#otheralterant">OtherAlterant</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="magic2.html#supporting-classes">Supporting Classes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#id9">Foundational Definitions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#part-ii-measures-modifiers-and-factors">Part II: Measures, Modifiers, and Factors</a></li>
-<li class="toctree-l4"><a class="reference internal" href="magic2.html#part-iii-aspects-and-effects">Part III: Aspects and Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/computations.html">Miscellaneous Applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/computations.html#module-opend6_tools.die_simplification"><code class="docutils literal notranslate"><span class="pre">die_simplification</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/computations.html#module-opend6_tools.spell_measure"><code class="docutils literal notranslate"><span class="pre">spell_measure</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notes/index.html">Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notes/dsl_design.html">Notes on DSL Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notes/dsl_design.html#rigor-and-modes-of-play">Rigor and Modes of Play</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notes/dsl_design.html#non-combat-mode">Non-Combat Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notes/dsl_design.html#dsl-syntax">DSL Syntax</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notes/dsl_design.html#phased-dsl-design">Phased DSL Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notes/dsl_design.html#phase-i-capture">Phase I – Capture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notes/dsl_design.html#phase-ii-completeness">Phase II – Completeness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notes/dsl_design.html#phase-iii-fluency">Phase III – Fluency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notes/dsl_design.html#conclusion">Conclusion</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="character.html"><code class="docutils literal notranslate"><span class="pre">character</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="character.html#the-character-and-creature-dsl">The Character (and Creature) DSL</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="character.html#character-and-creature">Character and Creature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#attributes">Attributes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#options">Options</a></li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#foundational-definitions">Foundational Definitions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="character.html#module-opend6_tools.character">Implementation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="character.html#example">Example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#top-level-components">Top-Level Components</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.display"><code class="docutils literal notranslate"><span class="pre">display()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.workbook_characters"><code class="docutils literal notranslate"><span class="pre">workbook_characters()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.workbook_groupBy"><code class="docutils literal notranslate"><span class="pre">workbook_groupBy()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#reporting-and-display">Reporting and Display</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CharacterWriter"><code class="docutils literal notranslate"><span class="pre">CharacterWriter</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CharacterWriter_Literal"><code class="docutils literal notranslate"><span class="pre">CharacterWriter_Literal</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CharacterWriter_Short"><code class="docutils literal notranslate"><span class="pre">CharacterWriter_Short</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CharacterWriter_Table"><code class="docutils literal notranslate"><span class="pre">CharacterWriter_Table</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.parse_param_name"><code class="docutils literal notranslate"><span class="pre">parse_param_name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.sheet"><code class="docutils literal notranslate"><span class="pre">sheet()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CharacterBudget"><code class="docutils literal notranslate"><span class="pre">CharacterBudget</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Format"><code class="docutils literal notranslate"><span class="pre">Format</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.detail"><code class="docutils literal notranslate"><span class="pre">detail()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.summary"><code class="docutils literal notranslate"><span class="pre">summary()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#characters">Characters</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Character"><code class="docutils literal notranslate"><span class="pre">Character</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Creature"><code class="docutils literal notranslate"><span class="pre">Creature</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.OptionList"><code class="docutils literal notranslate"><span class="pre">OptionList</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CharacterOption"><code class="docutils literal notranslate"><span class="pre">CharacterOption</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#id2">Attributes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Attribute"><code class="docutils literal notranslate"><span class="pre">Attribute</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Acumen"><code class="docutils literal notranslate"><span class="pre">Acumen</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Charisma"><code class="docutils literal notranslate"><span class="pre">Charisma</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Intellect"><code class="docutils literal notranslate"><span class="pre">Intellect</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Agility"><code class="docutils literal notranslate"><span class="pre">Agility</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Coordination"><code class="docutils literal notranslate"><span class="pre">Coordination</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Physique"><code class="docutils literal notranslate"><span class="pre">Physique</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Magic"><code class="docutils literal notranslate"><span class="pre">Magic</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Miracles"><code class="docutils literal notranslate"><span class="pre">Miracles</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#options-disadvantage">Options: Disadvantage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Disadvantage"><code class="docutils literal notranslate"><span class="pre">Disadvantage</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.AchillesHeel"><code class="docutils literal notranslate"><span class="pre">AchillesHeel</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.AdvantageFlaw"><code class="docutils literal notranslate"><span class="pre">AdvantageFlaw</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.MinorStigma"><code class="docutils literal notranslate"><span class="pre">MinorStigma</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Age"><code class="docutils literal notranslate"><span class="pre">Age</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.BadLuck"><code class="docutils literal notranslate"><span class="pre">BadLuck</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.BurnOut"><code class="docutils literal notranslate"><span class="pre">BurnOut</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CulturalUnfamiliarity"><code class="docutils literal notranslate"><span class="pre">CulturalUnfamiliarity</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Debt"><code class="docutils literal notranslate"><span class="pre">Debt</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Devotion"><code class="docutils literal notranslate"><span class="pre">Devotion</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Employed"><code class="docutils literal notranslate"><span class="pre">Employed</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Enemy"><code class="docutils literal notranslate"><span class="pre">Enemy</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Hindrance"><code class="docutils literal notranslate"><span class="pre">Hindrance</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Infamy"><code class="docutils literal notranslate"><span class="pre">Infamy</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.LanguageProblems"><code class="docutils literal notranslate"><span class="pre">LanguageProblems</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.LearningProblems"><code class="docutils literal notranslate"><span class="pre">LearningProblems</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Poverty"><code class="docutils literal notranslate"><span class="pre">Poverty</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Prejudice"><code class="docutils literal notranslate"><span class="pre">Prejudice</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Price"><code class="docutils literal notranslate"><span class="pre">Price</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Quirk"><code class="docutils literal notranslate"><span class="pre">Quirk</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.ReducedAttribute"><code class="docutils literal notranslate"><span class="pre">ReducedAttribute</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#options-advantage">Options: Advantage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Advantage"><code class="docutils literal notranslate"><span class="pre">Advantage</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Authority"><code class="docutils literal notranslate"><span class="pre">Authority</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Contacts"><code class="docutils literal notranslate"><span class="pre">Contacts</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Cultures"><code class="docutils literal notranslate"><span class="pre">Cultures</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Equipment"><code class="docutils literal notranslate"><span class="pre">Equipment</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Fame"><code class="docutils literal notranslate"><span class="pre">Fame</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Patron"><code class="docutils literal notranslate"><span class="pre">Patron</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Size"><code class="docutils literal notranslate"><span class="pre">Size</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.TrademarkSpecialization"><code class="docutils literal notranslate"><span class="pre">TrademarkSpecialization</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Wealth"><code class="docutils literal notranslate"><span class="pre">Wealth</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#options-special-ability">Options: Special Ability</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.SpecialAbility"><code class="docutils literal notranslate"><span class="pre">SpecialAbility</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.AcceleratedHealing"><code class="docutils literal notranslate"><span class="pre">AcceleratedHealing</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Ambidextrous"><code class="docutils literal notranslate"><span class="pre">Ambidextrous</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.AnimalControl"><code class="docutils literal notranslate"><span class="pre">AnimalControl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.ArmorDefeatingAttack"><code class="docutils literal notranslate"><span class="pre">ArmorDefeatingAttack</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.AtmosphericTolerance"><code class="docutils literal notranslate"><span class="pre">AtmosphericTolerance</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.AttackResistance"><code class="docutils literal notranslate"><span class="pre">AttackResistance</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.AttributeScramble"><code class="docutils literal notranslate"><span class="pre">AttributeScramble</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Blur"><code class="docutils literal notranslate"><span class="pre">Blur</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CombatSense"><code class="docutils literal notranslate"><span class="pre">CombatSense</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Confusion"><code class="docutils literal notranslate"><span class="pre">Confusion</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Darkness"><code class="docutils literal notranslate"><span class="pre">Darkness</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Elasticity"><code class="docutils literal notranslate"><span class="pre">Elasticity</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Endurance"><code class="docutils literal notranslate"><span class="pre">Endurance</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.EnhancedSense"><code class="docutils literal notranslate"><span class="pre">EnhancedSense</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.EnvironmentalResistance"><code class="docutils literal notranslate"><span class="pre">EnvironmentalResistance</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.ExtraBodyPart"><code class="docutils literal notranslate"><span class="pre">ExtraBodyPart</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.ExtraSense"><code class="docutils literal notranslate"><span class="pre">ExtraSense</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.FastReactions"><code class="docutils literal notranslate"><span class="pre">FastReactions</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Fear"><code class="docutils literal notranslate"><span class="pre">Fear</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Flight"><code class="docutils literal notranslate"><span class="pre">Flight</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.GliderWings"><code class="docutils literal notranslate"><span class="pre">GliderWings</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Hardiness"><code class="docutils literal notranslate"><span class="pre">Hardiness</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Hypermovement"><code class="docutils literal notranslate"><span class="pre">Hypermovement</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Immortality"><code class="docutils literal notranslate"><span class="pre">Immortality</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Immunity"><code class="docutils literal notranslate"><span class="pre">Immunity</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.IncreasedAttribute"><code class="docutils literal notranslate"><span class="pre">IncreasedAttribute</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.InfravisionUltravision"><code class="docutils literal notranslate"><span class="pre">InfravisionUltravision</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Intangibility"><code class="docutils literal notranslate"><span class="pre">Intangibility</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Invisibility"><code class="docutils literal notranslate"><span class="pre">Invisibility</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.IronWill"><code class="docutils literal notranslate"><span class="pre">IronWill</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.LifeDrain"><code class="docutils literal notranslate"><span class="pre">LifeDrain</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Longevity"><code class="docutils literal notranslate"><span class="pre">Longevity</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.LuckGood"><code class="docutils literal notranslate"><span class="pre">LuckGood</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.LuckGreat"><code class="docutils literal notranslate"><span class="pre">LuckGreat</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.MasterOfDisguise"><code class="docutils literal notranslate"><span class="pre">MasterOfDisguise</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.MultipleAbilities"><code class="docutils literal notranslate"><span class="pre">MultipleAbilities</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.NaturalArmor"><code class="docutils literal notranslate"><span class="pre">NaturalArmor</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.NaturalHandWeapon"><code class="docutils literal notranslate"><span class="pre">NaturalHandWeapon</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.NaturalMagick"><code class="docutils literal notranslate"><span class="pre">NaturalMagick</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.NaturalRangedWeapon"><code class="docutils literal notranslate"><span class="pre">NaturalRangedWeapon</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Omnivorous"><code class="docutils literal notranslate"><span class="pre">Omnivorous</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.ParalyzingTouch"><code class="docutils literal notranslate"><span class="pre">ParalyzingTouch</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.PossessionLimited"><code class="docutils literal notranslate"><span class="pre">PossessionLimited</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.PossessionFull"><code class="docutils literal notranslate"><span class="pre">PossessionFull</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.QuickStudy"><code class="docutils literal notranslate"><span class="pre">QuickStudy</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.SenseOfDirection"><code class="docutils literal notranslate"><span class="pre">SenseOfDirection</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Shapeshifting"><code class="docutils literal notranslate"><span class="pre">Shapeshifting</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Silence"><code class="docutils literal notranslate"><span class="pre">Silence</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.SkillBonus"><code class="docutils literal notranslate"><span class="pre">SkillBonus</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.SkillMinimum"><code class="docutils literal notranslate"><span class="pre">SkillMinimum</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Teleportation"><code class="docutils literal notranslate"><span class="pre">Teleportation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Transmutation"><code class="docutils literal notranslate"><span class="pre">Transmutation</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.UncannyAptitude"><code class="docutils literal notranslate"><span class="pre">UncannyAptitude</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Ventriloquism"><code class="docutils literal notranslate"><span class="pre">Ventriloquism</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.WaterBreathing"><code class="docutils literal notranslate"><span class="pre">WaterBreathing</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.YouthfulAppearance"><code class="docutils literal notranslate"><span class="pre">YouthfulAppearance</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.NaturalAbility"><code class="docutils literal notranslate"><span class="pre">NaturalAbility</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="character.html#foundations">Foundations</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.Roll"><code class="docutils literal notranslate"><span class="pre">Roll</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CriticalSuccess"><code class="docutils literal notranslate"><span class="pre">CriticalSuccess</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.CriticalFailure"><code class="docutils literal notranslate"><span class="pre">CriticalFailure</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="character.html#opend6_tools.character.DieCode"><code class="docutils literal notranslate"><span class="pre">DieCode</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="notebook_extract.html"><code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> app</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebook_extract.html#module-opend6_tools.notebook_extract">Implementation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebook_extract.html#help">Help</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebook_extract.html#api-reference">API Reference</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="notebook_extract.html#top-level-apps">Top-Level Apps</a></li>
-<li class="toctree-l4"><a class="reference internal" href="notebook_extract.html#components">Components</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="computations.html">Miscellaneous Computations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="computations.html#module-opend6_tools.die_simplification">die_simplification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="computations.html#alternate">Alternate</a></li>
-<li class="toctree-l3"><a class="reference internal" href="computations.html#implementation">Implementation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="computations.html#opend6_tools.die_simplification.die_code"><code class="docutils literal notranslate"><span class="pre">die_code()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="computations.html#opend6_tools.die_simplification.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="computations.html#module-opend6_tools.spell_measure">spell_measure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="computations.html#id1">Implementation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="computations.html#opend6_tools.spell_measure.value_measure"><code class="docutils literal notranslate"><span class="pre">value_measure()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="computations.html#opend6_tools.spell_measure.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="notes.html">Notes on DSL Design</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notes.html#combat-mode">Combat Mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notes.html#non-combat-mode">Non-Combat Mode</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notes.html#dsl-syntax">DSL Syntax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notes.html#two-phase-dsl-design">Two-Phase DSL Design</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notes.html#phase-i-capture">Phase I – Capture</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notes.html#phase-ii-expressiveness">Phase II – Expressiveness</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notes.html#phase-iii-optimization">Phase III – Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes/source_extraction.html">The Source Extraction Saga</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notes/source_extraction.html#draft-documents">Draft Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notes/source_extraction.html#design-for-human-consumption">Design for Human Consumption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notes/source_extraction.html#colorful-prose">Colorful Prose</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </div>
+<section id="on-dsl-s">
+<h2>On DSL’s<a class="headerlink" href="#on-dsl-s" title="Link to this heading">¶</a></h2>
+<p>These DSL’s provide a way to define <strong>OpenD6</strong> objects (like spells or creatures) using using Python syntax.
+These DSL’s have a number of benefits:</p>
+<ul class="simple">
+<li><p>Incomplete definitions are easily identified. The Python syntax errors will show many spelling mistakes.</p></li>
+<li><p>Analytical tools can be used to locate inconsistent spell definitions.</p></li>
+<li><p>The spell difficulties and character dice budgets are directly computed from the details.
+This is consistent (and automatic); it avoids time with pencil, paper, or calculator.</p></li>
+<li><p>The definition is transformed into ReStructuredText documents with consistent organization. These can be processed by the <strong>Sphinx</strong> tool (and any other <strong>docutils</strong> tools) to create final publications.</p></li>
+</ul>
+<p>The Text User Interface (TUI) of a DSL has a few advantages over a point-and-click Graphical User Interface (GUI).</p>
+<ul class="simple">
+<li><p>Any programming text editor can be used. A project consists entirely of text files which are <strong>always</strong> accessible.</p></li>
+<li><p>There’s no separate save-file format. (A GUI needs to save the state of the graphic presentation in some kind of file format: JSON, TOML, XML, etc.)</p></li>
+<li><p>Processing to do budget computations – either difficulty or dice – are an essential feature of the DSL.</p></li>
+<li><p>Conversion to other formats is done via <a class="reference external" href="https://jinja.palletsprojects.com/en/stable/">Jinja</a> templates to emit the details in the desired format.
+New templates can be added.</p></li>
+<li><p>Conversions from other sources (e.g., personal notes, a VTT tool, etc.) are a matter of transforming the source to Python format.
+This requires transforming source text into Python syntax.
+This is not <em>easy</em>, but it is relatively straight-forward text manipulation.</p></li>
+</ul>
+<p>The advantage of a GUI is providing a known, fixed number of slots which must be filled.
+Most designers will create a block of text with a template character definition or a template spell definition.
+Many programming editors have convenient template management features.</p>
+</section>
 </section>
 
 
@@ -419,7 +235,7 @@ Since the DSL is declaratory, there’s no real “programming” involved: only
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation and Quickstart</a></li>
   </ul></li>
 </ul>
 </div>
@@ -434,15 +250,13 @@ Since the DSL is declaratory, there’s no real “programming” involved: only
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="applications.html">Applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="magic2.html"><code class="docutils literal notranslate"><span class="pre">magic2</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="character.html"><code class="docutils literal notranslate"><span class="pre">character</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebook_extract.html"><code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> app</a></li>
-<li class="toctree-l1"><a class="reference internal" href="computations.html">Miscellaneous Computations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notes.html">Notes on DSL Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/index.html">Notes</a></li>
 </ul>
 
 
@@ -454,7 +268,7 @@ Since the DSL is declaratory, there’s no real “programming” involved: only
       &#169;2025, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

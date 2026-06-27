@@ -73,6 +73,20 @@ The definitions from a notebook are organized into a module, with a CLI applicat
 
     @enduml
 
+When engaging with the **Change-Compute-Consider** cycle, it can help to have
+formal test cases to be sure that a small change to a spell doesn't make an unexpected alteration to the difficulty.
+
+This can be included in a Notebook via Python ``assert`` statements that will validate
+an aspect of a Spell (or Character.)
+
+..  code-block::
+
+    assert some_spell.difficulty == 42
+
+This will become part of the ``__test__`` definition in the spell module.
+It is used by **make** to be sure the spell is defined properly, and there's no
+technical problem with the Python code.
+
 Implementation
 ==============
 

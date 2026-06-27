@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>opend6_tools.character.output &#8212; OpenD6 Tools 2026.6.26.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=4e5c487b"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for opend6_tools.character.output</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">OpenD6 Character and Creature DSL.</span>
+<span class="sd">Output functions and classes.</span>
+
+<span class="sd">These are the conventional top-level application components.</span>
+<span class="sd">The :py:func:`display` function produces the useful RST output.</span>
+
+<span class="sd">A character extract application can produce character sheets in a variety of formats:</span>
+
+<span class="sd"> -  RST for use with Sphinx to produce HTML websites, books, and player handouts.</span>
+<span class="sd">    RST can be converted via **rst2html** into HTML. Custom CSS styles can make the HTML more useful.</span>
+<span class="sd">    Alternative, RST can be converted via **rst2latex** into LaTex.</span>
+
+<span class="sd">-   Stripped-down HTML (with carefully-designed CSS styles) that can be used by tools like **xhtml2pdf** to produce PDF player handouts.</span>
+
+<span class="sd">-   LaTeX that can be used by tools like **pdflatex** to produce PDF player handouts.</span>
+
+<span class="sd">The HTML can be converted to PDF to create Player handouts.</span>
+
+<span class="sd">RST output</span>
+<span class="sd">==========</span>
+
+<span class="sd">..  autoclass:: CharacterWriter</span>
+<span class="sd">    :members:</span>
+
+<span class="sd">..  autoclass:: CharacterWriter_Short</span>
+<span class="sd">    :members:</span>
+
+<span class="sd">..  autoclass:: CharacterWriter_Long2</span>
+<span class="sd">    :members:</span>
+
+<span class="sd">..  autoclass:: CharacterWriter_Table</span>
+<span class="sd">    :members:</span>
+
+<span class="sd">..  autoclass:: CharacterWriter_Literal</span>
+<span class="sd">    :members:</span>
+
+
+<span class="sd">HTML Output</span>
+<span class="sd">===========</span>
+
+<span class="sd">..  autoclass:: CharacterWriter_HTML1</span>
+<span class="sd">    :members:</span>
+
+<span class="sd">..  autoclass:: CharacterWriter_HTML2</span>
+<span class="sd">    :members:</span>
+
+
+<span class="sd">LaTex Output</span>
+<span class="sd">============</span>
+
+<span class="sd">..  autoclass:: CharacterWriter_LaTeX</span>
+<span class="sd">    :members:</span>
+
+
+<span class="sd">High-Level Output API</span>
+<span class="sd">=====================</span>
+
+<span class="sd">..  autofunction::  detail</span>
+
+<span class="sd">..  autofunction::  summary</span>
+
+
+
+<span class="sd">PDF Conversion</span>
+<span class="sd">==============</span>
+
+<span class="sd">There are some alternative HTML to PDF conversion tool candidates:</span>
+
+<span class="sd">-   https://pypi.org/project/xhtml2pdf/.</span>
+<span class="sd">    This installs an easy-to-use application, ``xhtml2pdf x.html x.pdf``.</span>
+<span class="sd">    It requires ``brew install pkg-config cairo`` on MacOS.</span>
+
+<span class="sd">-   https://pypi.org/project/fpdf2/</span>
+<span class="sd">    This does **not** read the CSS from the HTML source, but requires it separately,</span>
+<span class="sd">    making the templates slightly more complicated.</span>
+
+<span class="sd">-   WeasyPrint (too complicated to install.)</span>
+
+<span class="sd">Supported CSS styles by xhtml2pdf:</span>
+
+<span class="sd">    background-color</span>
+<span class="sd">    border-bottom-color, border-bottom-style, border-bottom-width</span>
+<span class="sd">    border-left-color, border-left-style, border-left-width</span>
+<span class="sd">    border-right-color, border-right-style, border-right-width</span>
+<span class="sd">    border-top-color, border-top-style, border-top-width</span>
+<span class="sd">    colordisplay</span>
+<span class="sd">    font-family, font-size, font-style, font-weight</span>
+<span class="sd">    height</span>
+<span class="sd">    line-height, list-style-type</span>
+<span class="sd">    margin-bottom, margin-left, margin-right, margin-top</span>
+<span class="sd">    padding-bottom, padding-left, padding-right, padding-top</span>
+<span class="sd">    page-break-after, page-break-before</span>
+<span class="sd">    size</span>
+<span class="sd">    text-align, text-decoration, text-indent</span>
+<span class="sd">    vertical-align</span>
+<span class="sd">    white-space</span>
+<span class="sd">    width</span>
+<span class="sd">    zoom</span>
+
+<span class="sd">The following properties can also be set true in a style</span>
+
+<span class="sd">    -pdf-frame-border</span>
+<span class="sd">    -pdf-frame-break</span>
+<span class="sd">    -pdf-frame-content</span>
+<span class="sd">    -pdf-keep-with-next</span>
+<span class="sd">    -pdf-next-page</span>
+<span class="sd">    -pdf-outline</span>
+<span class="sd">    -pdf-outline-level</span>
+<span class="sd">    -pdf-outline-open</span>
+<span class="sd">    -pdf-page-break</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">difflib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">singledispatchmethod</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">TextIO</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">jinja2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.features</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Character</span><span class="p">,</span>
+    <span class="n">CharacterDict</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="parse_param_name">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.parse_param_name">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_param_name</span><span class="p">(</span><span class="n">all_characters</span><span class="p">:</span> <span class="n">CharacterDict</span><span class="p">,</span> <span class="n">arg_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a dictionary with names and characters, find the closest match to a given arg_value.</span>
+
+<span class="sd">    :param all_characters: A dictionary with names and Characters.</span>
+<span class="sd">    :param arg_value: A command-line argument value.</span>
+<span class="sd">    :returns: closest matching key from the dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">names_lc</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">all_characters</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">difflib</span><span class="o">.</span><span class="n">get_close_matches</span><span class="p">(</span><span class="n">arg_value</span><span class="p">,</span> <span class="n">names_lc</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">names_lc</span><span class="p">[</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="c1"># Nothing even close??</span>
+    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># pragma: no cover</span></div>
+
+
+
+<div class="viewcode-block" id="CharacterWriter">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterWriter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Report a character for publication.</span>
+
+<span class="sd">    Default is long form with table-formatted identity block as a header.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;.rst&quot;</span>
+
+    <span class="n">base_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {%- block preface %}</span>
+<span class="s2">    **OpenD6 Fantasy**</span>
+
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    {%- block identity %}</span>
+<span class="s2">    +--------------------------------------------------+</span>
+<span class="s2">    | Character Name: {{c.name|pad(50-18)}} |</span>
+<span class="s2">    +--------------------------------------------------+</span>
+<span class="s2">    | Occupation: {{c.occupation|pad(50-14)}} |</span>
+<span class="s2">    +-------------------------+------------------------+</span>
+<span class="s2">    | Race: {{c.race|pad(25-8)}} | Gender: {{c.gender|pad(24-10)}} |</span>
+<span class="s2">    +----------------+--------+-------+----------------+</span>
+<span class="s2">    | Age: {{c.age|pad(16-8)}}  | Height: {{c.height|pad(16-10)}} | Weight: {{c.weight|pad(16-10)}} |</span>
+<span class="s2">    +----------------+----------------+----------------+</span>
+<span class="s2">    | Physical Description {{c.physical_description|pad(50-23)}} |</span>
+<span class="s2">    +--------------------------------------------------+</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    {% block attributes %}</span>
+<span class="s2">    :Agility ({{c.agility.dice}}):</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or skill in c.agility.skills %}{</span><span class="si">% i</span><span class="s2">f c.agility[skill] %}{{ skill }} {{c.agility[skill]}}{</span><span class="si">% i</span><span class="s2">f not loop.last %}, {</span><span class="si">% e</span><span class="s2">ndif %}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}</span>
+
+<span class="s2">    :Coordination ({{c.coordination.dice}}):</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or skill in c.coordination.skills %}{</span><span class="si">% i</span><span class="s2">f c.coordination[skill] %}{{ skill }} {{c.coordination[skill]}}{</span><span class="si">% i</span><span class="s2">f not loop.last %}, {</span><span class="si">% e</span><span class="s2">ndif %}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}</span>
+
+<span class="s2">    :Physique ({{c.physique.dice}}):</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or skill in c.physique.skills %}{</span><span class="si">% i</span><span class="s2">f c.physique[skill] %}{{ skill }} {{ c.physique[skill] }}{</span><span class="si">% i</span><span class="s2">f not loop.last %}, {</span><span class="si">% e</span><span class="s2">ndif %}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}</span>
+
+<span class="s2">    :Intellect ({{c.intellect.dice}}):</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or skill in c.intellect.skills %}{</span><span class="si">% i</span><span class="s2">f c.intellect[skill] %}{{ skill }} {{c.intellect[skill]}}{</span><span class="si">% i</span><span class="s2">f not loop.last %}, {</span><span class="si">% e</span><span class="s2">ndif %}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}</span>
+
+<span class="s2">    :Acumen ({{c.acumen.dice}}):</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or skill in c.acumen.skills %}{</span><span class="si">% i</span><span class="s2">f c.acumen[skill] %}{{ skill }} {{c.acumen[skill]}}{</span><span class="si">% i</span><span class="s2">f not loop.last %}, {</span><span class="si">% e</span><span class="s2">ndif %}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}</span>
+
+<span class="s2">    :Charisma ({{c.charisma.dice}}):</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or skill in c.charisma.skills %}{</span><span class="si">% i</span><span class="s2">f c.charisma[skill] %}{{ skill }} {{c.charisma[skill]}}{</span><span class="si">% i</span><span class="s2">f not loop.last %}, {</span><span class="si">% e</span><span class="s2">ndif %}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}</span>
+
+<span class="s2">    :Extranormal ({{c.extranormal.dice}}):</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or skill in c.extranormal.skills %}{</span><span class="si">% i</span><span class="s2">f c.extranormal[skill] %}{{ skill }} {{c.extranormal[skill]}}{</span><span class="si">% i</span><span class="s2">f not loop.last %}, {</span><span class="si">% e</span><span class="s2">ndif %}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}</span>
+
+<span class="s2">    :Advantages:</span>
+<span class="s2">        {{c.advantages}}</span>
+
+<span class="s2">    :Disadvantages:</span>
+<span class="s2">        {{c.disadvantages}}</span>
+
+<span class="s2">    :Special Abilities:</span>
+<span class="s2">        {{c.special_abilities}}</span>
+
+<span class="s2">    :Strength Damage: {{c.strength_damage}}</span>
+<span class="s2">    :Move: {{c.move}}</span>
+<span class="s2">    :Fate Points: {{c.fate_points}}</span>
+<span class="s2">    :Character Points: {{c.character_points}}</span>
+<span class="s2">    :Body Points: {{c.body}}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">character_template</span> <span class="o">=</span> <span class="s1">&#39;{</span><span class="si">% e</span><span class="s1">xtends &quot;base.rst&quot; %}&#39;</span>
+
+    <span class="n">character_list_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or c in book -%}</span>
+<span class="s2">        {</span><span class="si">%- s</span><span class="s2">et n = c.name %}</span>
+<span class="s2">        {</span><span class="si">%- i</span><span class="s2">nclude &quot;character.rst&quot; with context %}</span>
+
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">character_dict_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or n, c in book.items() -%}</span>
+<span class="s2">        {</span><span class="si">%- i</span><span class="s2">nclude &quot;character.rst&quot; with context %}</span>
+
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;base.rst&quot;</span><span class="p">:</span> <span class="n">base_template</span><span class="p">,</span>
+        <span class="s2">&quot;character.rst&quot;</span><span class="p">:</span> <span class="n">character_template</span><span class="p">,</span>
+        <span class="s2">&quot;character_list.rst&quot;</span><span class="p">:</span> <span class="n">character_list_template</span><span class="p">,</span>
+        <span class="s2">&quot;character_dict.rst&quot;</span><span class="p">:</span> <span class="n">character_dict_template</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="CharacterWriter.pad">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter.pad">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">pad</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">empty</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pad a line of text on the right&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">size</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">text</span> <span class="o">+</span> <span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">))</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">text</span><span class="p">[:</span><span class="n">size</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">empty</span> <span class="o">*</span> <span class="n">size</span></div>
+
+
+<div class="viewcode-block" id="CharacterWriter.lpad">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter.lpad">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lpad</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">empty</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pad a line of text on the left&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">size</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">))</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">text</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">text</span><span class="p">[:</span><span class="n">size</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">empty</span> <span class="o">*</span> <span class="n">size</span></div>
+
+
+<div class="viewcode-block" id="CharacterWriter.line">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter.line">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">line</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">22</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Emits a single line of a multi-line block of text.</span>
+
+<span class="sd">        :param lines: Block of text</span>
+<span class="sd">        :param num: Line number</span>
+<span class="sd">        :param width: width of the column</span>
+<span class="sd">        :return: Always returns a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">lines</span><span class="p">[</span><span class="n">num</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">width</span></div>
+
+
+<div class="viewcode-block" id="CharacterWriter.if_none">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter.if_none">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">if_none</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">otherwise</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A function that can be installed in Jinja to</span>
+<span class="sd">        replace None values with a string.</span>
+
+<span class="sd">        :param value: value to include in a template</span>
+<span class="sd">        :param otherwise: value to include if ``value`` is ``None`` or an empty string</span>
+<span class="sd">        :return: value or otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">otherwise</span>
+        <span class="k">if</span> <span class="n">text</span> <span class="o">:=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">text</span>
+        <span class="k">return</span> <span class="n">otherwise</span></div>
+
+
+<div class="viewcode-block" id="CharacterWriter.col_3">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter.col_3">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">col_3</span><span class="p">(</span>
+        <span class="n">character</span><span class="p">:</span> <span class="n">Character</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">equipment</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">markup</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rst&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;For some displays, the third column is a mix of various things.</span>
+<span class="sd">        It does not trivially align with other attributes and skills in the first two columns.</span>
+
+<span class="sd">        This is extracted from the character details, and cached within</span>
+<span class="sd">        the character to slightly optimize the way the content is generated.</span>
+<span class="sd">        The output template can then laminate rows of these rows with rows from other collections of skills.</span>
+
+<span class="sd">        :param character: The Character instance from which to gather details.</span>
+<span class="sd">        :param equipment: True to include equipment</span>
+<span class="sd">        :param markup: Either &quot;rst&quot; or &quot;html&quot; for markup to use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bolding</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;html&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;&lt;b&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;/b&gt;&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;rst&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;**&quot;</span><span class="p">,</span> <span class="s2">&quot;**&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;latex&quot;</span><span class="p">:</span> <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\textbf{&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;}&quot;</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="n">bold_on</span><span class="p">,</span> <span class="n">bold_off</span> <span class="o">=</span> <span class="n">bolding</span><span class="p">[</span><span class="n">markup</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="s2">&quot;_col3&quot;</span><span class="p">):</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">bold_on</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># OptionList types...</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bold_on</span><span class="si">}</span><span class="s2">Advantages</span><span class="si">{</span><span class="n">bold_off</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">adv</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">adv</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">character</span><span class="o">.</span><span class="n">advantages</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">width</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bold_on</span><span class="si">}</span><span class="s2">Disadvantages</span><span class="si">{</span><span class="n">bold_off</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dis</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">dis</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">character</span><span class="o">.</span><span class="n">disadvantages</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">width</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bold_on</span><span class="si">}</span><span class="s2">Special Abilities</span><span class="si">{</span><span class="n">bold_off</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">spec</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">character</span><span class="o">.</span><span class="n">special_abilities</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">width</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="c1"># NoteList types...</span>
+            <span class="k">if</span> <span class="n">equipment</span><span class="p">:</span>
+                <span class="n">all_eq</span> <span class="o">=</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">character</span><span class="o">.</span><span class="n">weapons</span> <span class="o">+</span> <span class="n">character</span><span class="o">.</span><span class="n">armor</span> <span class="o">+</span> <span class="n">character</span><span class="o">.</span><span class="n">equipment</span>
+                <span class="p">)</span>
+                <span class="n">text</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bold_on</span><span class="si">}</span><span class="s2">Equipment</span><span class="si">{</span><span class="n">bold_off</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">all_eq</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">width</span><span class="p">,</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="c1"># Text</span>
+            <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
+                <span class="n">text</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bold_on</span><span class="si">}</span><span class="s2">Description</span><span class="si">{</span><span class="n">bold_off</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">width</span><span class="p">,</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="s2">&quot;_col3&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">character</span><span class="p">,</span> <span class="s2">&quot;_col3&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="p">:</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span>
+            <span class="c1"># autoescape=select_autoescape()</span>
+            <span class="c1"># undefined=jinja2.DebugUndefined  # Helps when debugging.</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">filters</span> <span class="o">|=</span> <span class="p">{</span>
+            <span class="s2">&quot;pad&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad</span><span class="p">,</span>
+            <span class="s2">&quot;lpad&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lpad</span><span class="p">,</span>
+            <span class="s2">&quot;line&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="p">,</span>
+            <span class="s2">&quot;if_none&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">if_none</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">globals</span> <span class="o">|=</span> <span class="p">{</span>
+            <span class="s2">&quot;col_3&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_3</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="c1"># Scan class attributes for the &quot;*_template&quot; variables...</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">):</span>
+                <span class="n">templates</span> <span class="o">|=</span> <span class="n">parent</span><span class="o">.</span><span class="n">templates</span>
+        <span class="n">templates</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">DictLoader</span><span class="p">(</span><span class="n">templates</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CharacterWriter.report">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter.report">[docs]</a>
+    <span class="nd">@singledispatchmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">:</span> <span class="n">Character</span><span class="p">,</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;character&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;RST-format for publication.&quot;&quot;&quot;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">template_name</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="n">character</span><span class="p">)</span></div>
+
+
+    <span class="nd">@report</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Character</span><span class="p">],</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;character_list&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">template_name</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">book</span><span class="o">=</span><span class="n">book</span><span class="p">)</span>
+
+    <span class="nd">@report</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">book</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Character</span><span class="p">],</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;character_dict&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">template_name</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">book</span><span class="o">=</span><span class="n">book</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CharacterWriter_Short">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter_Short">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterWriter_Short</span><span class="p">(</span><span class="n">CharacterWriter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Short-form -- no identity block header.&quot;&quot;&quot;</span>
+
+    <span class="n">character_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">xtends &quot;base.rst&quot; -%}</span>
+<span class="s2">    {%- block preface %}**{{ n }}**:{</span><span class="si">% e</span><span class="s2">ndblock -%}</span>
+<span class="s2">    {%- block identity %}{</span><span class="si">% e</span><span class="s2">ndblock -%}</span>
+<span class="s2">    {%- block attributes -%}</span>
+<span class="s2">    {</span><span class="si">%- s</span><span class="s2">et comma = &#39;&#39; -%}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.agility.dice %}{</span><span class="si">% s</span><span class="s2">et comma = &#39;, &#39; %}Agility {{ c.agility.dice }}{</span><span class="si">% f</span><span class="s2">or skill in c.agility.skills %}{</span><span class="si">% i</span><span class="s2">f c.agility[skill] %}, {{ skill }} {{c.agility[skill]}}{</span><span class="si">% e</span><span class="s2">ndif %}{</span><span class="si">% e</span><span class="s2">ndfor %}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.coordination.dice %}{{ comma }}{</span><span class="si">% s</span><span class="s2">et comma = &#39;, &#39; %}Coordination {{ c.coordination.dice }}{</span><span class="si">% f</span><span class="s2">or skill in c.coordination.skills %}{</span><span class="si">% i</span><span class="s2">f c.coordination[skill] %}, {{ skill }} {{c.coordination[skill]}}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.physique.dice %}{{ comma }}{</span><span class="si">% s</span><span class="s2">et comma = &#39;, &#39; %}Physique {{ c.physique.dice }}{</span><span class="si">% f</span><span class="s2">or skill in c.physique.skills %}{</span><span class="si">% i</span><span class="s2">f c.physique[skill] %}, {{ skill }} {{ c.physique[skill] }}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.intellect.dice %}{{ comma }}{</span><span class="si">% s</span><span class="s2">et comma = &#39;, &#39; %}Intellect {{ c.intellect.dice }}{</span><span class="si">% f</span><span class="s2">or skill in c.intellect.skills %}{</span><span class="si">% i</span><span class="s2">f c.intellect[skill] %}, {{ skill }} {{c.intellect[skill]}}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.acumen.dice %}{{ comma }}{</span><span class="si">% s</span><span class="s2">et comma = &#39;, &#39; %}Acumen {{ c.acumen.dice }}{</span><span class="si">% f</span><span class="s2">or skill in c.acumen.skills %}{</span><span class="si">% i</span><span class="s2">f c.acumen[skill] %}, {{ skill }} {{c.acumen[skill]}}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.charisma.dice %}{{ comma }}{</span><span class="si">% s</span><span class="s2">et comma = &#39;, &#39; %}Charisma {{ c.charisma.dice }}{</span><span class="si">% f</span><span class="s2">or skill in c.charisma.skills %}{</span><span class="si">% i</span><span class="s2">f c.charisma[skill] %}, {{ skill }} {{c.charisma[skill]}}{</span><span class="si">%e</span><span class="s2">ndif%}{</span><span class="si">%e</span><span class="s2">ndfor%}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.extranormal.dice %}{{ comma }}Extranormal {{ c.extranormal.dice }}{</span><span class="si">% f</span><span class="s2">or skill in c.extranormal.skills %}{</span><span class="si">% i</span><span class="s2">f c.extranormal[skill] %}, {{ skill }} {{c.extranormal[skill]}}{</span><span class="si">% e</span><span class="s2">ndif %}{</span><span class="si">% e</span><span class="s2">ndfor %}{</span><span class="si">% e</span><span class="s2">ndif %}.</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f c.advantages %}</span>
+<span class="s2">    *Advantages*: {{ c.advantages }}, </span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif %}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f c.disadvantages %}</span>
+<span class="s2">    *Disadvantages*: {{ c.disadvantages }}, </span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif %}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f c.special_abilities %}</span>
+<span class="s2">    *Special Abilities*: {{ c.special_abilities }}, </span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndif %}</span>
+<span class="s2">    *Move*: {{ c.move }}, </span>
+<span class="s2">    *Strength Damage*: {{ c.strength_damage }}, </span>
+<span class="s2">    *Fate Points*: {{ c.fate_points }}, </span>
+<span class="s2">    *Character Points*: {{ c.character_points }}, </span>
+<span class="s2">    *Body Points*: {{ c.body }}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f c.equipment or c.armor or c.weapons %}, *Equipment*: {{ (c.armor + c.weapons + c.equipment)|join(&quot;; &quot;) }}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f c.description %}, *Description*: {{ c.description }}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f c.natural_abilities %}, *Natural Abilities*: {{ c.natural_abilities|join(&quot;; &quot;) }}{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
+<span class="s2">    {</span><span class="si">%- i</span><span class="s2">f c.note %}, *Note*: {{ c.note }}{</span><span class="si">% e</span><span class="s2">ndif -%}.</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;character.rst&quot;</span><span class="p">:</span> <span class="n">character_template</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="CharacterWriter_Long2">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter_Long2">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterWriter_Long2</span><span class="p">(</span><span class="n">CharacterWriter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Long-form -- Base with no identity block header.&quot;&quot;&quot;</span>
+
+    <span class="n">character_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">xtends &quot;base.rst&quot; -%}</span>
+<span class="s2">    {%- block preface %}{</span><span class="si">% e</span><span class="s2">ndblock -%}</span>
+<span class="s2">    {%- block identity %}{</span><span class="si">% e</span><span class="s2">ndblock -%}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;character.rst&quot;</span><span class="p">:</span> <span class="n">character_template</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="CharacterWriter_Table">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter_Table">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterWriter_Table</span><span class="p">(</span><span class="n">CharacterWriter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Long-form -- with three-column table for attributes and skills.&quot;&quot;&quot;</span>
+
+    <span class="n">character_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">xtends &quot;base.rst&quot; %}</span>
+
+<span class="s2">    {% block attributes %}</span>
+<span class="s2">    {</span><span class="si">%- s</span><span class="s2">et c_col_3 = col_3(c) %}</span>
+<span class="s2">    +------------------------------+------------------------------+------------------------------+</span>
+<span class="s2">    | Agility {{c.agility.dice|if_none(&quot;_____&quot;)|lpad(30-10)}} | Intellect {{c.intellect.dice|if_none(&quot;_____&quot;)|lpad(30-12)}} | {{&quot; &quot;|lpad(30-2)}} |                 </span>
+<span class="s2">    +------------------------------+------------------------------+------------------------------+</span>
+<span class="s2">    {</span><span class="si">%- f</span><span class="s2">or r in range(0, 13) %}</span>
+<span class="s2">    | {{c.agility.row(r, 28)|lpad(28, &quot; &quot;)}} | {{c.intellect.row(r, 28)|lpad(28, &quot; &quot;)}} | {{c_col_3|line(r)|pad(28)}} |</span>
+<span class="s2">    |                              |                              |                              |</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    +------------------------------+------------------------------+                              +</span>
+<span class="s2">    | Coordination {{c.coordination.dice|if_none(&quot;_____&quot;)|lpad(30-15)}} | Acumen {{c.acumen.dice|if_none(&quot;_____&quot;)|lpad(30-9)}} | {{c_col_3|line(13)|pad(28)}} |                 </span>
+<span class="s2">    +------------------------------+------------------------------+                              +</span>
+<span class="s2">    {</span><span class="si">%- f</span><span class="s2">or r in range(0, 13) %}</span>
+<span class="s2">    | {{c.coordination.row(r, 28)|lpad(28, &quot; &quot;)}} | {{c.acumen.row(r, 28)|lpad(28, &quot; &quot;)}} | {{c_col_3|line(r+14)|pad(28)}} |</span>
+<span class="s2">    |                              |                              |                              |</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    +------------------------------+------------------------------+                              +</span>
+<span class="s2">    | Physique {{c.physique.dice|if_none(&quot;_____&quot;)|lpad(30-11)}} | Charisma {{c.charisma.dice|if_none(&quot;_____&quot;)|lpad(30-11)}} | {{c_col_3|line(27)|pad(28)}} |                 </span>
+<span class="s2">    +------------------------------+------------------------------+                              +</span>
+<span class="s2">    {</span><span class="si">%- f</span><span class="s2">or r in range(0, 13) %}</span>
+<span class="s2">    | {{c.physique.row(r, 28)|lpad(28, &quot; &quot;)}} | {{c.charisma.row(r, 28)|lpad(28, &quot; &quot;)}} | {{c_col_3|line(r+28)|pad(28)}} |</span>
+<span class="s2">    |                              |                              |                              |</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    +------------------------------+------------------------------+------------------------------+</span>
+<span class="s2">    | Extranormal {{c.extranormal.dice|if_none(&quot;_____&quot;)|lpad(30-14)}} | {{&quot; &quot;|lpad(30-2)}} | {{&quot; &quot;|lpad(30-2)}} |                 </span>
+<span class="s2">    +------------------------------+------------------------------+------------------------------+</span>
+<span class="s2">    | {{c.extranormal.row(0, 28)|lpad(28, &quot; &quot;)}} | Str Damage {{c.strength_damage|if_none(&quot;_____&quot;)|lpad(30-13)}} | Body Points {{c.body|if_none(&quot;_____&quot;)|pad(30-13)}}|</span>
+<span class="s2">    |                              |                              |                              |</span>
+<span class="s2">    | {{c.extranormal.row(1, 28)|lpad(28, &quot; &quot;)}} | Move {{c.move|string|lpad(30-7)}} | [ ] Stunned   {{c.wounds[&#39;Stunned&#39;]|string|pad(30-15)}}|</span>
+<span class="s2">    |                              |                              |                              |</span>
+<span class="s2">    | {{c.extranormal.row(2, 28)|lpad(28, &quot; &quot;)}} | Fate Pts      {{c.fate_points|string|pad(30-16)}} | [ ] Wounded   {{c.wounds[&#39;Wounded&#39;]|string|pad(30-15)}}|</span>
+<span class="s2">    |                              |                              |                              |</span>
+<span class="s2">    | {{c.extranormal.row(3, 28)|lpad(28, &quot; &quot;)}} | Character Pts {{c.character_points|string|pad(30-16)}} | [ ] Severe    {{c.wounds[&#39;Severe&#39;]|string|pad(30-15)}}|</span>
+<span class="s2">    |                              |                              |                              |</span>
+<span class="s2">    | {{c.extranormal.row(4, 28)|lpad(28, &quot; &quot;)}} | Funds {{c.funds|string|pad(30-8)}} | [ ] Incapac&#39;d {{c.wounds[&#39;Incapacitated&#39;]|string|pad(30-15)}}|</span>
+<span class="s2">    |                              |                              |                              |</span>
+<span class="s2">    | {{c.extranormal.row(5, 28)|lpad(28, &quot; &quot;)}} | Silver {{c.silver|string|pad(30-9)}} | [ ] Mortal    {{c.wounds[&#39;Mortal&#39;]|string|pad(30-15)}}|</span>
+<span class="s2">    |                              |                              |                              |</span>
+<span class="s2">    |                              |                              | [ ] Dead                     |</span>
+<span class="s2">    +------------------------------+------------------------------+------------------------------+</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;character.rst&quot;</span><span class="p">:</span> <span class="n">character_template</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="CharacterWriter_Literal">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter_Literal">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterWriter_Literal</span><span class="p">(</span><span class="n">CharacterWriter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Long-form -- with three-column table for attributes and skills.</span>
+
+<span class="sd">    The table is indented into a ``::`` code-block directive to create an RST display of the source for the table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">character_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">xtends &quot;base.rst&quot; %}</span>
+<span class="s2">    {% block preface %}</span>
+<span class="s2">    ..  rubric:: OpenD6 Fantasy</span>
+
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    {% block attributes %}</span>
+<span class="s2">    {</span><span class="si">%- s</span><span class="s2">et c_col_3 = col_3(c) %}</span>
+<span class="s2">    ::</span>
+
+<span class="s2">        +----------------------+----------------------+----------------------+</span>
+<span class="s2">        | Agility {{c.agility.dice|string|lpad(22-10)}} | Intellect {{c.intellect.dice|string|lpad(22-12)}} | {{&quot; &quot;|lpad(22-2)}} |</span>
+<span class="s2">        +----------------------+----------------------+----------------------+</span>
+<span class="s2">        {</span><span class="si">%- f</span><span class="s2">or r in range(0, 13) %}</span>
+<span class="s2">        | {{c.agility.row(r)|lpad(20)}} | {{c.intellect.row(r)|lpad(20)}} |{{c_col_3|line(r)|pad(22)}}|</span>
+<span class="s2">        {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">        +----------------------+----------------------+{{c_col_3|line(13)|pad(22)}}|</span>
+<span class="s2">        | Coordination {{c.coordination.dice|string|lpad(22-15)}} | Acumen {{c.acumen.dice|string|lpad(22-9)}} |{{c_col_3|line(14)|pad(22)}}|</span>
+<span class="s2">        +----------------------+----------------------+{{c_col_3|line(15)|pad(22)}}|</span>
+<span class="s2">        {</span><span class="si">%- f</span><span class="s2">or r in range(0, 13) %}</span>
+<span class="s2">        | {{c.coordination.row(r)|lpad(20)}} | {{c.acumen.row(r)|lpad(20)}} |{{c_col_3|line(r+16)|pad(22)}}|</span>
+<span class="s2">        {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">        +----------------------+----------------------+{{c_col_3|line(27)|pad(22)}}|</span>
+<span class="s2">        | Physique {{c.physique.dice|string|lpad(22-11)}} | Charisma {{c.charisma.dice|string|lpad(22-11)}} |{{c_col_3|line(28)|pad(22)}}|</span>
+<span class="s2">        +----------------------+----------------------+{{c_col_3|line(29)|pad(22)}}|</span>
+<span class="s2">        {</span><span class="si">%- f</span><span class="s2">or r in range(0, 13) %}</span>
+<span class="s2">        | {{c.physique.row(r)|lpad(20)}} | {{c.charisma.row(r)|lpad(20)}} |{{c_col_3|line(r+30)|pad(22)}}|</span>
+<span class="s2">        {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">        +----------------------+----------------------+----------------------+</span>
+<span class="s2">        | {{c.extranormal.name|pad(11)}} {{c.extranormal.dice|string|lpad(22-14)}} | {{&quot; &quot;|lpad(22-2)}} | {{&quot; &quot;|lpad(22-2)}} |</span>
+<span class="s2">        +----------------------+----------------------+----------------------+</span>
+<span class="s2">        | {{c.extranormal.row(0)|lpad(20)}} | Str Damage {{c.strength_damage|string|lpad(22-13)}} | Body Points {{c.body|string|pad(22-13)}}|</span>
+<span class="s2">        | {{c.extranormal.row(1)|lpad(20)}} | Move {{c.move|string|lpad(22-7)}} | [ ] Stunned   {{c.wounds[&#39;Stunned&#39;]|string|pad(22-15)}}|</span>
+<span class="s2">        | {{c.extranormal.row(2)|lpad(20)}} | Fate Pts      {{c.fate_points|string|pad(22-16)}} | [ ] Wounded   {{c.wounds[&#39;Wounded&#39;]|string|pad(22-15)}}|</span>
+<span class="s2">        | {{c.extranormal.row(3)|lpad(20)}} | Character Pts {{c.character_points|string|pad(22-16)}} | [ ] Severe    {{c.wounds[&#39;Severe&#39;]|string|pad(22-15)}}|</span>
+<span class="s2">        | {{c.extranormal.row(4)|lpad(20)}} | Funds {{c.funds|string|pad(22-8)}} | [ ] Incapac&#39;d {{c.wounds[&#39;Incapacitated&#39;]|string|pad(22-15)}}|</span>
+<span class="s2">        | {{c.extranormal.row(5)|lpad(20)}} | Silver {{c.silver|string|pad(22-9)}} | [ ] Mortal    {{c.wounds[&#39;Mortal&#39;]|string|pad(22-15)}}|</span>
+<span class="s2">        |                      |                      | [ ] Dead             |</span>
+<span class="s2">        +----------------------+----------------------+----------------------+</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;character.rst&quot;</span><span class="p">:</span> <span class="n">character_template</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="CharacterWriter_HTML1">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter_HTML1">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterWriter_HTML1</span><span class="p">(</span><span class="n">CharacterWriter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Report a character for publication.</span>
+
+<span class="sd">    This creates HTML that can be converted to PDF.</span>
+
+<span class="sd">    The structure is a 1-page, 3-column layout to create PDF&#39;s for player&#39;s sheets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;.html&quot;</span>
+
+    <span class="c1"># Note px = 1/96 in; pt = 1/72 in.</span>
+    <span class="n">style1_css</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    @page {size: letter portrait; margin: 36pt; }</span>
+<span class="s2">    body {font-size: 10pt; font-family: serif; line-height: 1.0;}</span>
+<span class="s2">    table.full {width: 100%;}</span>
+<span class="s2">    table.box {border-bottom-color: black; border-bottom-style: solid; border-bottom-width: 1px; border-collapse: collapse;}</span>
+<span class="s2">    table.box tr {border-bottom-color: black; border-bottom-style: solid; border-bottom-width: 1px; border-collapse: collapse;}</span>
+<span class="s2">    table th {text-align: start;}</span>
+<span class="s2">    table td {vertical-align: top; margin-top: 12pt; padding-top: 12pt;}</span>
+<span class="s2">    table.box td {vertical-align: top; margin-top: 1pt; padding-top: 1pt;}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">style_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    &lt;style type=&quot;text/css&quot;&gt;</span>
+<span class="s2">        {</span><span class="si">% i</span><span class="s2">nclude &quot;style1.css&quot; %}</span>
+<span class="s2">    &lt;/style&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">base_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {%- block preface %}</span>
+<span class="s2">    &lt;h1&gt;OpenD6 Fantasy&lt;/h1&gt;</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    </span>
+<span class="s2">    &lt;table class=&quot;full&quot;&gt;</span>
+<span class="s2">    {%- block identity %}</span>
+<span class="s2">    &lt;thead&gt;</span>
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">        &lt;td style=&quot;width: 33%;&quot;&gt;&lt;/td&gt;</span>
+<span class="s2">        &lt;td style=&quot;width: 33%;&quot;&gt;&lt;/td&gt;</span>
+<span class="s2">        &lt;td style=&quot;width: 34%;&quot;&gt;&lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    &lt;/thead&gt;</span>
+<span class="s2">    &lt;tbody&gt;</span>
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">        &lt;td colspan=2&gt;</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td colspan=&quot;6&quot;&gt;&lt;b&gt;Character Name&lt;/b&gt; {{ c.name }}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td colspan=&quot;6&quot;&gt;&lt;b&gt;Occupation&lt;/b&gt; {{ c.occupation }}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;b&gt;Race&lt;/b&gt; {{ c.race }}&lt;/td&gt; &lt;td colspan=&quot;3&quot;&gt;&lt;b&gt;Gender&lt;/b&gt; {{ c.gender }}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Age&lt;/b&gt; {{ c.age }}&lt;/td&gt;   &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Height&lt;/b&gt; {{ c.height }}&lt;/td&gt;  &lt;td colspan=&quot;2&quot;&gt;&lt;b&gt;Weight&lt;/b&gt; {{ c.weight }}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td colspan=&quot;6&quot;&gt;&lt;b&gt;Physical Description&lt;/b&gt; {{ c.physical_description }}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td colspan=&quot;6&quot;&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">        &lt;/td&gt;</span>
+<span class="s2">        &lt;td&gt;</span>
+<span class="s2">            &amp;nbsp;</span>
+<span class="s2">        &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+
+<span class="s2">    {% block attributes %}</span>
+<span class="s2">    {</span><span class="si">%- s</span><span class="s2">et c_col_3 = col_3(c, markup=&quot;html&quot;) %}</span>
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Agility&lt;/b&gt; {{ c.agility.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.agility.row(r) %}&lt;br/&gt;{{ c.agility.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Intellect&lt;/b&gt; {{ c.intellect.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.intellect.row(r) %}&lt;br/&gt;{{ c.intellect.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c_col_3[r] %}&lt;br/&gt;{{ c_col_3[r] }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}        </span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Coordination&lt;/b&gt; {{ c.coordination.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.coordination.row(r) %}&lt;br/&gt;{{ c.coordination.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Acumen&lt;/b&gt; {{ c.acumen.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.acumen.row(r) %}&lt;br/&gt;{{ c.acumen.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            {{ c_col_3[13] }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c_col_3[r+14] %}&lt;br/&gt;{{ c_col_3[r+14] }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}        </span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Physique&lt;/b&gt; {{ c.physique.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.physique.row(r) %}&lt;br/&gt;{{ c.physique.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Charisma&lt;/b&gt; {{ c.charisma.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.charisma.row(r) %}&lt;br/&gt;{{ c.charisma.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            {{ c_col_3[27] }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c_col_3[r+28] %}&lt;br/&gt;{{ c_col_3[r+28] }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}        </span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    </span>
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;{{ c.extranormal.name }}&lt;/b&gt; {{ c.extranormal.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(7) %}</span>
+<span class="s2">            &lt;br/&gt;{{ c.extranormal.row(r)|if_none(&quot;&amp;nbsp;&quot;) }}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">                 &lt;b&gt;Str Damage&lt;/b&gt;    {{ c.strength_damage }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Move&lt;/b&gt;          {{ c.move }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Fate Pts&lt;/b&gt;      {{ c.fate_points }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Character Pts&lt;/b&gt; {{ c.character_points }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Funds&lt;/b&gt;         {{ c.funds }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Silver&lt;/b&gt;        {{ c.silver }}  </span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">                 &lt;b&gt;Body Points&lt;/b&gt;        {{ c.body }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Stunned&lt;/b&gt;        {{ c.wounds[&#39;Stunned&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Wounded&lt;/b&gt;        {{ c.wounds[&#39;Wounded&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Severe&lt;/b&gt;         {{ c.wounds[&#39;Severe&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Incapacitated&lt;/b&gt;  {{ c.wounds[&#39;Incapacitated&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Mortal&lt;/b&gt;         {{ c.wounds[&#39;Mortal&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Dead&lt;/b&gt;</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    &lt;/tbody&gt;</span>
+<span class="s2">    &lt;/table&gt;</span>
+<span class="s2">    {% block page2 %}{</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">sheet_template</span> <span class="o">=</span> <span class="s1">&#39;{</span><span class="si">% e</span><span class="s1">xtends &quot;base.html&quot; %}&#39;</span>
+
+    <span class="n">character_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    &lt;html&gt;</span>
+<span class="s2">    &lt;head&gt;</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">nclude &quot;style.html&quot; %}</span>
+<span class="s2">    &lt;/head&gt;</span>
+<span class="s2">    &lt;body&gt;</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">nclude &quot;sheet.html&quot; with context %}</span>
+<span class="s2">    &lt;/body&gt;</span>
+<span class="s2">    &lt;/html&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">character_list_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    &lt;html&gt;</span>
+<span class="s2">    &lt;head&gt;</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">nclude &quot;style.html&quot; %}</span>
+<span class="s2">    &lt;/head&gt;</span>
+<span class="s2">    &lt;body&gt;</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or c in book -%}</span>
+<span class="s2">        {</span><span class="si">%- s</span><span class="s2">et n = c.name %}</span>
+<span class="s2">        {</span><span class="si">%- i</span><span class="s2">nclude &quot;sheet.html&quot; with context %}</span>
+<span class="s2">        &lt;br/&gt;</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/body&gt;</span>
+<span class="s2">    &lt;/html&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">character_dict_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    &lt;html&gt;</span>
+<span class="s2">    &lt;head&gt;</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">nclude &quot;style.html&quot; %}</span>
+<span class="s2">    &lt;/head&gt;</span>
+<span class="s2">    &lt;body&gt;</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or n, c in book.items() -%}</span>
+<span class="s2">        {</span><span class="si">%- i</span><span class="s2">nclude &quot;sheet.html&quot; with context %}</span>
+<span class="s2">        &lt;br/&gt;</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/body&gt;</span>
+<span class="s2">    &lt;/html&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;style1.css&quot;</span><span class="p">:</span> <span class="n">style1_css</span><span class="p">,</span>
+        <span class="s2">&quot;style.html&quot;</span><span class="p">:</span> <span class="n">style_template</span><span class="p">,</span>
+        <span class="s2">&quot;base.html&quot;</span><span class="p">:</span> <span class="n">base_template</span><span class="p">,</span>
+        <span class="s2">&quot;sheet.html&quot;</span><span class="p">:</span> <span class="n">sheet_template</span><span class="p">,</span>
+        <span class="s2">&quot;character.html&quot;</span><span class="p">:</span> <span class="n">character_template</span><span class="p">,</span>
+        <span class="s2">&quot;character_list.html&quot;</span><span class="p">:</span> <span class="n">character_list_template</span><span class="p">,</span>
+        <span class="s2">&quot;character_dict.html&quot;</span><span class="p">:</span> <span class="n">character_dict_template</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="CharacterWriter_HTML2">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter_HTML2">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterWriter_HTML2</span><span class="p">(</span><span class="n">CharacterWriter_HTML1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Report a character for publication.</span>
+
+<span class="sd">    This creates HTML that can be converted to PDF by the **xhtml2pdf** tool.</span>
+
+<span class="sd">    The structure is a 2-page, 3-column layout to create PDF&#39;s for player handouts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">style2_css</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">        td.col2 {padding-left: 1em;}        </span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">style_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    &lt;style&gt;</span>
+<span class="s2">        {</span><span class="si">%- i</span><span class="s2">nclude &quot;style1.css&quot; %}</span>
+<span class="s2">        {</span><span class="si">% i</span><span class="s2">nclude &quot;style2.css&quot; %}</span>
+<span class="s2">    &lt;/style&gt;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">sheet_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">xtends &quot;base.html&quot; -%}</span>
+<span class="s2">    </span>
+<span class="s2">    {% block attributes %}</span>
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Agility&lt;/b&gt; {{ c.agility.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.agility.row(r) %}&lt;br/&gt;{{ c.agility.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Intellect&lt;/b&gt; {{ c.intellect.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.intellect.row(r) %}&lt;br/&gt;{{ c.intellect.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Coordination&lt;/b&gt; {{ c.coordination.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.coordination.row(r) %}&lt;br/&gt;{{ c.coordination.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Acumen&lt;/b&gt; {{ c.acumen.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.acumen.row(r) %}&lt;br/&gt;{{ c.acumen.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Advantages&lt;/b&gt;</span>
+<span class="s2">            {</span><span class="si">%- i</span><span class="s2">f c.advantages %}{</span><span class="si">% f</span><span class="s2">or adv in c.advantages %}</span>
+<span class="s2">            &lt;br/&gt;{{ adv }}</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndfor -%}</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Disadvantages&lt;/b&gt;</span>
+<span class="s2">            {</span><span class="si">%- i</span><span class="s2">f c.disadvantages %}{</span><span class="si">% f</span><span class="s2">or disad in c.disadvantages %}</span>
+<span class="s2">            &lt;br/&gt;{{ disad }}</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndfor -%}</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Physique&lt;/b&gt; {{ c.physique.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.physique.row(r) %}&lt;br/&gt;{{ c.physique.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Charisma&lt;/b&gt; {{ c.charisma.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.charisma.row(r) %}&lt;br/&gt;{{ c.charisma.row(r) }}{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Special Abilities&lt;/b&gt;</span>
+<span class="s2">            {</span><span class="si">%- i</span><span class="s2">f c.special_abilities %}{</span><span class="si">% f</span><span class="s2">or spec in c.special_abilities %}</span>
+<span class="s2">            &lt;br/&gt;{{ spec }}</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndfor -%}</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    </span>
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;{{ c.extranormal.name }}&lt;/b&gt; {{ c.extranormal.dice }}</span>
+<span class="s2">            {</span><span class="si">%- f</span><span class="s2">or r in range(7) %}</span>
+<span class="s2">            &lt;br/&gt;{{ c.extranormal.row(r)|if_none(&quot;&amp;nbsp;&quot;) }}</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">                 &lt;b&gt;Str Damage&lt;/b&gt;    {{ c.strength_damage }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Move&lt;/b&gt;          {{ c.move }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Fate Pts&lt;/b&gt;      {{ c.fate_points }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Character Pts&lt;/b&gt; {{ c.character_points }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Funds&lt;/b&gt;         {{ c.funds }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;Silver&lt;/b&gt;        {{ c.silver }}  </span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;td&gt;</span>
+<span class="s2">                 &lt;b&gt;Body Points&lt;/b&gt;        {{ c.body }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Stunned&lt;/b&gt;        {{ c.wounds[&#39;Stunned&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Wounded&lt;/b&gt;        {{ c.wounds[&#39;Wounded&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Severe&lt;/b&gt;         {{ c.wounds[&#39;Severe&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Incapacitated&lt;/b&gt;  {{ c.wounds[&#39;Incapacitated&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Mortal&lt;/b&gt;         {{ c.wounds[&#39;Mortal&#39;] }}</span>
+<span class="s2">            &lt;br/&gt;&lt;b&gt;[ ] Dead&lt;/b&gt;</span>
+<span class="s2">    &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    </span>
+<span class="s2">    {% block page2 %}</span>
+<span class="s2">    &lt;!-- xhmtl2pdf page break --&gt;</span>
+<span class="s2">    &lt;pdf:nextpage/&gt;</span>
+<span class="s2">    </span>
+<span class="s2">    &lt;table&gt;</span>
+<span class="s2">    &lt;thead&gt;</span>
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">        &lt;td style=&quot;width: 50%;&quot;&gt;&lt;/td&gt;</span>
+<span class="s2">        &lt;td style=&quot;width: 50%;&quot;&gt;&lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    &lt;/thead&gt;</span>
+<span class="s2">    &lt;tbody&gt;</span>
+
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">        &lt;td&gt;</span>
+<span class="s2">            &lt;b&gt;Character Name: &lt;/b&gt;{{ c.name|if_none(&quot;____________________&quot;) }}</span>
+<span class="s2">        &lt;/td&gt;</span>
+<span class="s2">        &lt;td&gt;&amp;nbsp;&lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">        &lt;td&gt;</span>
+<span class="s2">            &lt;p&gt;&lt;b&gt;Armor&lt;/b&gt;&lt;p&gt;</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.armor %}</span>
+<span class="s2">            &lt;p&gt;{{ c.armor }}</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;/p&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;th style=&quot;width: 30%;&quot;&gt;Type&lt;/th&gt;&lt;th style=&quot;width: 15%;&quot;&gt;AV&lt;/th&gt;&lt;th style=&quot;width: 55%;&quot;&gt;Notes&lt;/th&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">            &lt;p&gt;&lt;b&gt;Weapons&lt;/b&gt;&lt;p&gt;</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.weapons %}</span>
+<span class="s2">            &lt;p&gt;{{ c.weapons }}</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt; Ammo ( )( )( ) ( )( )( ) ( )( )( ) </span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt; Ammo ( )( )( ) ( )( )( ) ( )( )( ) </span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt; Ammo ( )( )( ) ( )( )( ) ( )( )( ) </span>
+<span class="s2">            &lt;/p&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;th style=&quot;width: 30%;&quot;&gt;Type&lt;/th&gt;&lt;th style=&quot;width: 15%;&quot;&gt;Dmg&lt;/th&gt;&lt;th style=&quot;width: 55%;&quot;&gt;Range S/M/L&lt;/th&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;b&gt;Ammo&lt;/b&gt;( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;b&gt;Ammo&lt;/b&gt;( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;b&gt;Ammo&lt;/b&gt;( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;b&gt;Ammo&lt;/b&gt;( )( )( )( )( )( )( )( )( )( )( )( )( )( )( )&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">        &lt;/td&gt;</span>
+<span class="s2">        &lt;td class=&quot;col2&quot;&gt;</span>
+<span class="s2">            &lt;p&gt;&lt;b&gt;{</span><span class="si">% i</span><span class="s2">f c.extranormal %}{{ c.extranormal.name }}{</span><span class="si">% e</span><span class="s2">lse %}Magic{</span><span class="si">% e</span><span class="s2">ndif %}&lt;/b&gt;&lt;p&gt;</span>
+<span class="s2">            {</span><span class="si">%- i</span><span class="s2">f c.spells|length &gt; 0 %}</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">            {</span><span class="si">% f</span><span class="s2">or s in c.spells %}</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;{{ s }}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">            {</span><span class="si">% f</span><span class="s2">or x in range(c.spells|length, 15) %}</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;th style=&quot;width: 30%;&quot;&gt;Name&lt;/th&gt;&lt;th style=&quot;width: 15%;&quot;&gt;Diff&lt;/th&gt;&lt;th style=&quot;width: 55%;&quot;&gt;Notes&lt;/th&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">            {</span><span class="si">%- e</span><span class="s2">ndif %}</span>
+<span class="s2">        &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    &lt;tr&gt;</span>
+<span class="s2">        &lt;td&gt;</span>
+<span class="s2">            &lt;p&gt;&lt;b&gt;Other Equipment&lt;/b&gt;&lt;p&gt;</span>
+<span class="s2">            {</span><span class="si">% i</span><span class="s2">f c.equipment %}</span>
+<span class="s2">            &lt;p&gt;{{ c.equipment }}</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;br/&gt;______________________________</span>
+<span class="s2">            &lt;/p&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;th style=&quot;width: 30%;&quot;&gt;Type&lt;/th&gt;&lt;th style=&quot;width: 70%;&quot;&gt;Notes&lt;/th&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">                &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">        &lt;/td&gt;</span>
+<span class="s2">        &lt;td class=&quot;col2&quot;&gt;</span>
+<span class="s2">            &lt;p&gt;&lt;b&gt;Personality&lt;/b&gt;&lt;p&gt;</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">            &lt;p&gt;&lt;b&gt;Objectives&lt;/b&gt;&lt;p&gt;</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">            &lt;p&gt;&lt;b&gt;Native Language&lt;/b&gt;&lt;p&gt;</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">            &lt;p&gt;&lt;b&gt;Notes&lt;/b&gt;&lt;p&gt;</span>
+<span class="s2">            &lt;table class=&quot;full box&quot;&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">            &lt;/table&gt;</span>
+<span class="s2">        &lt;/td&gt;</span>
+<span class="s2">    &lt;/tr&gt;</span>
+<span class="s2">    &lt;/table&gt;</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;style2.css&quot;</span><span class="p">:</span> <span class="n">style2_css</span><span class="p">,</span>
+        <span class="s2">&quot;style.html&quot;</span><span class="p">:</span> <span class="n">style_template</span><span class="p">,</span>
+        <span class="s2">&quot;sheet.html&quot;</span><span class="p">:</span> <span class="n">sheet_template</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="CharacterWriter_LaTeX">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.CharacterWriter_LaTeX">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterWriter_LaTeX</span><span class="p">(</span><span class="n">CharacterWriter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Report a character for publication.</span>
+
+<span class="sd">    This creates HTML that can be converted to PDF by the **xhtml2pdf** tool.</span>
+
+<span class="sd">    The structure is a 2-page, 3-column layout to create PDF&#39;s for player handouts.</span>
+
+<span class="sd">    ..  TODO:: Refactor the data into a form that can be readily tabularized by LaTeX.</span>
+
+<span class="sd">        Specifically, page 2 items form a large grid with 5 sections:</span>
+
+<span class="sd">        Armor | Magic</span>
+<span class="sd">        Weapons |</span>
+<span class="sd">        Other Equipment | etc.</span>
+
+<span class="sd">        OR... Switch to \\usepackage{multicol}</span>
+
+<span class="sd">        Page 1 is (potentially) {multicols}{3}, but... there&#39;s the top-right corner</span>
+<span class="sd">        issue: a place for a figure that spans two columns.</span>
+
+<span class="sd">        Page 2 is \\begin{multicols}{2}</span>
+<span class="sd">        Armor</span>
+<span class="sd">        Weapons</span>
+<span class="sd">        Other Eq.</span>
+<span class="sd">        \\columnbreak</span>
+<span class="sd">        Magic</span>
+<span class="sd">        Etc.</span>
+<span class="sd">        \\end{multicols}</span>
+
+
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;.tex&quot;</span>
+
+    <span class="n">character_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        % Preamble</span>
+<span class="s2">        {% block preamble %}</span>
+<span class="s2">        \documentclass[10pt]</span><span class="si">{article}</span>
+<span class="s2">        </span>
+<span class="s2">        % Packages</span>
+<span class="s2">        \usepackage</span><span class="si">{amsmath}</span>
+<span class="s2">        \usepackage</span><span class="si">{amssymb}</span>
+<span class="s2">        \usepackage</span><span class="si">{array}</span>
+<span class="s2">        \usepackage</span><span class="si">{layout}</span>
+<span class="s2">        \usepackage</span><span class="si">{fancyhdr}</span>
+<span class="s2">        \usepackage</span><span class="si">{multicol}</span>
+<span class="s2">        {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">        </span>
+<span class="s2">        % See https://www.overleaf.com/learn/latex/Articles</span><span class="si">%2F</span><span class="s2">A_visual_guide_to_LaTeX’s_page_layout_parameters</span>
+<span class="s2">        % Paper width = 612 pt height = 792 pt</span>
+<span class="s2">        </span><span class="si">% 1i</span><span class="s2">n offset means \pagewidth = 72pt + \hoffset + \evensidemargin + Book_IM + DeltaX</span>
+<span class="s2">        \setlength{\marginparwidth}</span><span class="si">{0pt}</span>
+<span class="s2">        \setlength{\marginparsep}</span><span class="si">{0pt}</span>
+<span class="s2">        \setlength{\textwidth}</span><span class="si">{504pt}</span><span class="s2">   % 468 = 6.5 in, 504=7in</span>
+<span class="s2">        \setlength{\textheight}</span><span class="si">{620pt}</span><span class="s2">  % 8.6 in</span>
+<span class="s2">        \setlength{\evensidemargin}</span><span class="si">{6pt}</span>
+<span class="s2">        \setlength{\oddsidemargin}</span><span class="si">{6pt}</span>
+<span class="s2">        \setlength{\topmargin}</span><span class="si">{6pt}</span>
+<span class="s2">        \setlength{\headheight}</span><span class="si">{12pt}</span>
+<span class="s2">        \setlength{\headsep}</span><span class="si">{12pt}</span>
+<span class="s2">        </span>
+<span class="s2">        {% block title %}</span>
+<span class="s2">        \title{OpenD6 Fantasy Character Sheet}</span>
+<span class="s2">        {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">        </span>
+<span class="s2">        % Document</span>
+<span class="s2">        \begin</span><span class="si">{document}</span>
+<span class="s2">        \pagestyle</span><span class="si">{fancy}</span>
+<span class="s2">        \fancyhf</span><span class="si">{}</span>
+<span class="s2">        \fancyhead[L]{\textit{OpenD6 Fantasy Character}}</span>
+<span class="s2">        \fancyfoot[R]{\thepage}</span>
+<span class="s2">        \renewcommand{\headrulewidth}</span><span class="si">{0pt}</span>
+<span class="s2">        </span>
+<span class="s2">        {</span><span class="si">% i</span><span class="s2">nclude &quot;details_2.tex&quot; %}</span>
+<span class="s2">        </span>
+<span class="s2">        \end</span><span class="si">{document}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">details_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        \cleardoublepage</span>
+<span class="s2">        % \textwidth of 468 pt = 144pt * 3 + 36pt</span>
+<span class="s2">        % \textwidth of 504 pt = 156pt * 3 + 36pt</span>
+<span class="s2">        {%- block page1 %}</span>
+<span class="s2">        \begin</span><span class="si">{table}</span>
+<span class="s2">        \begin</span><span class="si">{tabular}</span><span class="s2">{m</span><span class="si">{156pt}</span><span class="s2"> m</span><span class="si">{156pt}</span><span class="s2"> m</span><span class="si">{156pt}</span><span class="s2">}</span>
+<span class="s2">            \multicolumn</span><span class="si">{2}{l}</span><span class="s2">{\textbf{Character Name}: {{ c.name }} \hrulefill} \\</span>
+<span class="s2">            \multicolumn</span><span class="si">{2}{l}</span><span class="s2">{\textbf</span><span class="si">{Occupation}</span><span class="s2">: {{ c.occupation }} \hrulefill} \\</span>
+<span class="s2">            \multicolumn</span><span class="si">{2}{l}</span><span class="s2">{\textbf</span><span class="si">{Race}</span><span class="s2">: {{ c.race }} \hrulefill \hspace</span><span class="si">{1em}</span><span class="s2"> \textbf</span><span class="si">{Gender}</span><span class="s2">: {{ c.gender }} \hrulefill} \\</span>
+<span class="s2">            \multicolumn</span><span class="si">{2}{l}</span><span class="s2">{\textbf</span><span class="si">{Age}</span><span class="s2">: {{ c.age }} \hrulefill \hspace</span><span class="si">{1em}</span><span class="s2"> \textbf</span><span class="si">{Height}</span><span class="s2">: {{ c.height }} \hrulefill \hspace</span><span class="si">{1em}</span><span class="s2">  \textbf</span><span class="si">{Weight}</span><span class="s2">: {{ c.weight }} \hrulefill } \\</span>
+<span class="s2">            \multicolumn</span><span class="si">{2}{l}</span><span class="s2">{\textbf{Physical Description}: {{ c.physical_description }} \hrulefill } \\</span>
+<span class="s2">            \multicolumn</span><span class="si">{2}{l}</span><span class="s2">{ \hrulefill } \\</span>
+<span class="s2">         &amp; &amp; \\</span>
+<span class="s2">        {</span><span class="si">%- s</span><span class="s2">et c_col_3 = col_3(c, equipment=False, description=False, markup=&quot;latex&quot;) %}</span>
+<span class="s2">        \textbf</span><span class="si">{Agility}</span><span class="s2">: {{ c.agility.dice }} \hrulefill      &amp; \textbf</span><span class="si">{Intellect}</span><span class="s2">: {{ c.intellect.dice }} \hrulefill  &amp;                             \\</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">        {{ c.agility.row(r) }} \hrulefill &amp; {{ c.intellect.row(r) }} \hrulefill &amp; \\</span>
+<span class="s2">        {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">                                          </span>
+<span class="s2">        \textbf</span><span class="si">{Coordination}</span><span class="s2">: {{ c.coordination.dice }} \hrulefill &amp; \textbf</span><span class="si">{Acumen}</span><span class="s2">: {{ c.acumen.dice }} \hrulefill     &amp; \hrulefill \\</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or r in range(13) %}</span>
+<span class="s2">        {{ c.coordination.row(r) }} \hrulefill &amp; {{ c.acumen.row(r) }} \hrulefill &amp; {{ c_col_3[r] }} \hrulefill \\</span>
+<span class="s2">        {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">        </span>
+<span class="s2">        \textbf</span><span class="si">{Physique}</span><span class="s2">: {{ c.physique.dice }} \hrulefill &amp; \textbf</span><span class="si">{Charisma}</span><span class="s2">: {{ c.charisma.dice }} \hrulefill     &amp; {{ c_col_3[13] }} \hrulefill \\</span>
+<span class="s2">        {</span><span class="si">% f</span><span class="s2">or r in range(8) %}</span>
+<span class="s2">        {{ c.physique.row(r) }} \hrulefill &amp; {{ c.charisma.row(r) }} \hrulefill &amp; {{ c_col_3[r+14] }} \hrulefill \\</span>
+<span class="s2">        {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">                                          &amp;                                 &amp;                             \\</span>
+<span class="s2">        {{ &#39;\\textbf{&#39; }}{{ c.extranormal.name }} {{ &#39;}&#39; }}: {{ c.extranormal.dice }} \hrulefill  &amp;                                 &amp;                             \\</span>
+<span class="s2">        {{ c.extranormal.row(0) }} \hrulefill &amp; \textbf{Strength Damage}: {{ c.strength_damage }} \hrulefill                             &amp; \textbf{Body Points}: {{ c.body }} \hrulefill \\</span>
+<span class="s2">        {{ c.extranormal.row(1) }} \hrulefill                        &amp; \textbf</span><span class="si">{Move}</span><span class="s2">:             {{ c.move }}             \hrulefill    &amp; $\Box$ Stunned \footnotesize{(80\%)} \hfill {{ c.wounds[&#39;Stunned&#39;] }} \\</span>
+<span class="s2">        {{ c.extranormal.row(2) }} \hrulefill                        &amp; \textbf{Fate Points}:      {{ c.fate_points }}      \hrulefill    &amp; $\Box$ Wounded \footnotesize{(60\%)} \hfill {{ c.wounds[&#39;Wounded&#39;] }} \\</span>
+<span class="s2">        {{ c.extranormal.row(3) }} \hrulefill                        &amp; \textbf{Character Points}: {{ c.character_points }} \hrulefill    &amp; $\Box$ Severely Wounded \footnotesize{(40\%)} \hfill {{ c.wounds[&#39;Severe&#39;] }} \\</span>
+<span class="s2">        {{ c.extranormal.row(4) }} \hrulefill                        &amp; \textbf</span><span class="si">{Funds}</span><span class="s2">:            {{ c.funds }}            \hrulefill    &amp; $\Box$ Incapacitated \footnotesize{(20\%)} \hfill {{ c.wounds[&#39;Incapacitated&#39;] }} \\</span>
+<span class="s2">        {{ c.extranormal.row(5) }} \hrulefill                        &amp; \textbf</span><span class="si">{Silver}</span><span class="s2">:           {{ c.silver }}           \hrulefill    &amp; $\Box$ Mortally Wounded \footnotesize{(10\%)} \hfill {{ c.wounds[&#39;Mortal&#39;] }} \\</span>
+<span class="s2">        {{ c.extranormal.row(5) }} \hrulefill                        &amp;  \hrulefill                                                       &amp; $\Box$ Dead   \\</span>
+<span class="s2">        \end</span><span class="si">{tabular}</span>
+<span class="s2">        \end</span><span class="si">{table}</span>
+<span class="s2">        {</span><span class="si">%- e</span><span class="s2">ndblock page1 %}</span>
+<span class="s2">        {%- block page2 %}</span>
+<span class="s2">        \newpage</span>
+<span class="s2">        \begin</span><span class="si">{table}</span>
+<span class="s2">        \begin</span><span class="si">{tabular}</span><span class="s2">{m</span><span class="si">{216pt}</span><span class="s2"> m</span><span class="si">{216pt}</span><span class="s2">}</span>
+<span class="s2">            \textbf{Character Name}: \hrulefill &amp; \\</span>
+<span class="s2">            &amp; \\</span>
+<span class="s2">        \textbf</span><span class="si">{Armor}</span><span class="s2">                &amp; \textbf{Magic Spells/Miracles}   \\</span>
+<span class="s2">            Type \hskip 4em AV \hskip 3em Notes             &amp; Name \hskip 4em Difficulty \hskip 3em Notes            \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">                                      &amp; \hrulefill                       \\</span>
+<span class="s2">        \textbf</span><span class="si">{Weapons}</span><span class="s2">              &amp; \hrulefill                       \\</span>
+<span class="s2">            Type \hskip 4em Dmg \hskip 3em Range: S/M/L     &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$  &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$ &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$ &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$  &amp; \hrulefill                       \\</span>
+<span class="s2">                                      &amp; \hrulefill                       \\</span>
+<span class="s2">        \textbf{Other Equipment}      &amp; \textbf</span><span class="si">{Personality}</span><span class="s2">: \hrulefill \\</span>
+<span class="s2">            Type \hskip 4em Notes     &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \textbf</span><span class="si">{Objectives}</span><span class="s2">: \hrulefill \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \textbf{Native Language}: \hrulefill \\</span>
+<span class="s2">            \hrulefill                &amp;  \\</span>
+<span class="s2">            \hrulefill                &amp; \textbf{Other Information}: \hrulefill  \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">            \hrulefill                &amp; \hrulefill                       \\</span>
+<span class="s2">        \end</span><span class="si">{tabular}</span>
+<span class="s2">        \end</span><span class="si">{table}</span>
+<span class="s2">        {</span><span class="si">%- e</span><span class="s2">ndblock page2 %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">details_2_template</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    {</span><span class="si">%- e</span><span class="s2">xtends &quot;details.tex&quot; %}</span>
+<span class="s2">    {%- block page2 %}</span>
+<span class="s2">    % \newpage </span>
+<span class="s2">    \cleardoublepage</span>
+
+<span class="s2">    \begin</span><span class="si">{multicols}{2}</span>
+<span class="s2">    \textbf{Character Name:} \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \vspace</span><span class="si">{24pt}</span>
+<span class="s2">    </span>
+<span class="s2">    \textbf</span><span class="si">{Armor}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or line in c.armor %}</span>
+<span class="s2">    </span>
+<span class="s2">    {{ line }}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.armor|length &lt; 4 %}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or n in range(c.armor|length, 4) %}</span>
+
+<span class="s2">    \hrulefill</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">    </span>
+<span class="s2">    \vspace</span><span class="si">{24pt}</span>
+<span class="s2">    </span>
+<span class="s2">    \textbf</span><span class="si">{Weapons}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or line in c.weapons %}</span>
+<span class="s2">    </span>
+<span class="s2">    {{ line }}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.weapons|length &lt; 6 %}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or n in range(c.weapons|length, 6) %}</span>
+
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    Ammo: $\Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box \Box$ </span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+
+<span class="s2">    \vspace</span><span class="si">{24pt}</span>
+
+<span class="s2">    \textbf{Other Equipment}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or line in c.equipment %}</span>
+<span class="s2">    </span>
+<span class="s2">    {{ line }}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f c.equipment|length &lt; 18 %}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or n in range(c.equipment|length, 18) %}</span>
+
+<span class="s2">    \hrulefill</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+
+<span class="s2">    \columnbreak</span>
+
+<span class="s2">    \vspace*</span><span class="si">{24pt}</span>
+
+<span class="s2">    {{ &#39;\\textbf{&#39; }}{{ c.extranormal.name }} {{ &#39;}&#39; }}</span>
+<span class="s2">    </span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or s in c.spells %}</span>
+<span class="s2">    {{ s.name }} {{ s.difficulty }}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or n in range(c.spells|length, 15) %}</span>
+
+<span class="s2">    \hrulefill</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    </span>
+<span class="s2">    \vspace</span><span class="si">{24pt}</span>
+<span class="s2">    </span>
+<span class="s2">    \textbf</span><span class="si">{Personality}</span><span class="s2">: \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \textbf</span><span class="si">{Objectives}</span><span class="s2">: \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    </span>
+<span class="s2">    \textbf{Native Language}: \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \textbf{Other Information}: \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \hrulefill</span>
+<span class="s2">    </span>
+<span class="s2">    \end</span><span class="si">{multicols}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">templates</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;character.tex&quot;</span><span class="p">:</span> <span class="n">character_template</span><span class="p">,</span>
+        <span class="s2">&quot;details.tex&quot;</span><span class="p">:</span> <span class="n">details_template</span><span class="p">,</span>
+        <span class="s2">&quot;details_2.tex&quot;</span><span class="p">:</span> <span class="n">details_2_template</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="Format">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.Format">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Format</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">LONG</span> <span class="o">=</span> <span class="n">CharacterWriter</span>
+    <span class="n">LONG2</span> <span class="o">=</span> <span class="n">CharacterWriter_Long2</span>
+    <span class="n">SHORT</span> <span class="o">=</span> <span class="n">CharacterWriter_Short</span>
+    <span class="n">TABLE</span> <span class="o">=</span> <span class="n">CharacterWriter_Table</span>
+    <span class="n">LITERAL</span> <span class="o">=</span> <span class="n">CharacterWriter_Literal</span>
+    <span class="n">HTML</span> <span class="o">=</span> <span class="n">CharacterWriter_HTML1</span>
+    <span class="n">PLAYER</span> <span class="o">=</span> <span class="n">CharacterWriter_HTML2</span>
+    <span class="n">LATEX</span> <span class="o">=</span> <span class="n">CharacterWriter_LaTeX</span></div>
+
+
+
+<span class="n">FORMAT_OPTIONS</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span>
+    <span class="s2">&quot;LONG&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LONG2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SHORT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TABLE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LITERAL&quot;</span><span class="p">,</span>  <span class="c1"># RST</span>
+    <span class="s2">&quot;HTML&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PLAYER&quot;</span><span class="p">,</span>  <span class="c1"># HTML</span>
+    <span class="s2">&quot;LATEX&quot;</span><span class="p">,</span>  <span class="c1"># LaTeX</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="detail">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.detail">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">detail</span><span class="p">(</span>
+    <span class="n">character</span><span class="p">:</span> <span class="n">Character</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Character</span><span class="p">]</span> <span class="o">|</span> <span class="n">CharacterDict</span><span class="p">,</span>
+    <span class="n">form</span><span class="p">:</span> <span class="n">Format</span> <span class="o">=</span> <span class="n">Format</span><span class="o">.</span><span class="n">TABLE</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A character sheet, formatted for publication, using one of the defined formats.</span>
+
+<span class="sd">    The HTML formats can be run through **xhtml2pdf** to create PDF files.</span>
+
+<span class="sd">    :param character: The Character (or list or dictionary of characters) or Creature.</span>
+<span class="sd">    :param form: The format to use.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">writer_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">CharacterWriter</span><span class="p">]</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">writer_class</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">character</span><span class="p">))</span></div>
+
+
+
+<span class="c1"># A legacy function definition</span>
+<span class="n">sheet</span> <span class="o">=</span> <span class="n">detail</span>
+
+
+<div class="viewcode-block" id="summary">
+<a class="viewcode-back" href="../../../reference/character.html#opend6_tools.character.output.summary">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="n">characters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Character</span><span class="p">],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">TextIO</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write CSV summary.</span>
+
+<span class="sd">    ..  todo:: CSV summary of characters. Not sure which attributes to show.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>  <span class="c1"># pragma: no cover</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">OpenD6 Tools</a></h1>
+
+
+
+
+
+
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation and Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../applications.html">Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, S.Lott.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

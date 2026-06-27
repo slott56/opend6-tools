@@ -5,17 +5,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Notes on DSL Design &#8212; OpenD6 Tools 1.0 documentation</title>
+    <title>Notes on DSL Design &#8212; OpenD6 Tools 2026.6.24.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
-    <script src="_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/documentation_options.js?v=aba8670e"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Miscellaneous Computations" href="computations.html" />
+    <link rel="prev" title="Miscellaneous Applications" href="reference/computations.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -37,35 +37,42 @@
 <span id="dsl-design"></span><h1>Notes on DSL Design<a class="headerlink" href="#notes-on-dsl-design" title="Link to this heading">¶</a></h1>
 <p>Table-Top Role-Playing Games (TTRPG’s) like <em>OpenD6</em>
 are examples of semi-structured data.
-There is a spectrum of “structure” for data.
-At one end of the structure spectrum is highly structured schema-based data.
-For this, automated validation checks are practical.
-JSON Schema and XSD are ways to describe structured data.</p>
-<p>At the other end of the structure spectrum is unstructured data: prose and poetry.
+This means some software can be written to process it, but there is the possibility of ambiguity and complexity.</p>
+<p>Outside TTRPG’s, a great many documents are semi-structured.
+Contracts are often semi-structured, and a “smart contract” seeks to impose more structure.
+Information security policies often start as a semi-structured statements, derived from contracts, legislation, and even case law and consent decrees.
+These, often need to be refined into a DSL that makes automated security checks on software and data.</p>
+<p>One end of the structure spectrum is highly structured, schema-based data.
+An external schema defines valid data, and automated validation checks are practical.
+JSON Schema (<a class="reference external" href="https://json-schema.org">https://json-schema.org</a>) and XSD (<a class="reference external" href="https://www.w3.org/XML/Schema">https://www.w3.org/XML/Schema</a>) are ways to describe structured data.</p>
+<p>At the other end of the structure spectrum is unstructured data; examples include prose and poetry.
 This kind of data cannot be validated.
-(One can argue – at length – over nuances.)</p>
-<p>TTRPG rules are called semi-structured because there are some contraints and some goals subject to validation.
-In some cases tests can be performed to make sure a statement in a game context is consistent with other rules.
-In other case, however, it can be difficult to create a clear test case for consistency among statements.
-While the rules often describe the general flow of a role-playing game, they rarely specify how play works in the kind of detail that permits automation; there are often numerous unstated assumptions about the nature of role-playing games.</p>
-<p>As a general observation, the <em>OpenD6</em> rules seem to partition play into two modes:</p>
+It can be discussed and debated, but there’s no sensible way to establish that it’s “valid.”</p>
+<p>We’ve called the <em>OpenD6</em> TTRPG rules semi-structured because there are some constraints and some goals that are subject to validation.
+In some cases, tests can be performed to make sure a statement in a game context is consistent with a set of rules.
+There remain cases where it can be difficult to create a clear test case for consistency with the rules.</p>
+<p>Further, this TTRPG game system lacks some details that could lead directly to automation of game play or validation of extensions to the rules.
+The rules are often riddled with unstated assumptions (or expectations) about the nature of role-playing games and social interaction.
+An extension to <em>OpenD6</em> may not conform to the rules because of a small misunderstanding of an obscure effect; or it might fail to integrate with the essential mechanics of play.</p>
+<p>The idea of a DSL is to codify the rules so that an extension – a new Spell, a new Creature, a new Item – will be valid.
+A well-designed DSL can help assure that other attributes – specifically difficulty – are computed correctly.</p>
+<p>Before looking at the DSL for magical spells, it’s important to look at the rules more broadly.
+We can partition <em>OpenD6</em> play into two modes:</p>
 <ul class="simple">
-<li><p>Combat. This mode of play is defined by <strong>Rigorous Rules</strong>. These include structured data with a formal schema. A DSL flows directly from the rules with little additional interpretation required.</p></li>
-<li><p>Non-Combat. This mode of play involves rules with less rigor than combat. The rules have semi-structured data without a clear schema.  This is where magic and invocations appear. The DSL isn’t very clear.</p></li>
+<li><p>Combat mode is defined by rigorous and detailed rules.
+These are backed by structured data with a clear schema.
+A DSL can flow directly from the rules with little additional interpretation required.</p></li>
+<li><p>Non-Combat mode involves rules with less rigor and detail.
+The rules are backed by semi-structured data, much of which is pure text.</p></li>
 </ul>
-<p>Before looking at the DSL for magical spells, it’s important to look at the rules more broadly.</p>
-<p>The Combat mode involves those situations where characters are fighting and the outcome includes loss of body points.
-When body points are reduced to zero, the character is dead.
-In this mode of play, a great deal is at stake.</p>
-<p>The non-combat mode involves use of skills and attributes distinct from those used in combat.
-In some game scenarios, the non-combat situations serve to create a context where combat is inevitable because combat is how the story advances.
-In other scenarios, however, combat may be incidental or avoidable, and the non-combat situations drive the story forward.</p>
-<p>In order to better understand DSL, we need to look at
-combat mode, and what makes it unique.
-We can then turn to non-combat mode, magic, and the complications of a DSL.</p>
-<section id="combat-mode">
-<h2>Combat Mode<a class="headerlink" href="#combat-mode" title="Link to this heading">¶</a></h2>
-<p>Before we can look at DSL complications, we need to look at two questions related to the combat mode of play:</p>
+<p>Magic spans both modes.
+Magic can be used in combat, and many spells have explicit combat effects, and integrate with other rules regarding weapons and armor.
+Not all spells are so clearly defined; many other spells lack the clarity of combat mode.</p>
+<p>The rigorous definition of combat mode can help as a starting point for understanding DSL’s.
+We can then turn to non-combat mode, the nature of magic, and the complications of a DSL to cover these less-rigorous aspects of play.</p>
+<section id="rigor-and-modes-of-play">
+<h2>Rigor and Modes of Play<a class="headerlink" href="#rigor-and-modes-of-play" title="Link to this heading">¶</a></h2>
+<p>Before we can look at DSL complications, we need to look at some additional questions related to the combat mode of play:</p>
 <ul class="simple">
 <li><p>What makes combat mode unique?</p></li>
 <li><p>What is the schema that defines a DSL for combat?</p></li>
@@ -74,32 +81,32 @@ We can then turn to non-combat mode, magic, and the complications of a DSL.</p>
 In combat, the character’s life is on the line.</p>
 <p>The non-combat mode doesn’t entirely avoid loss of a character’s body points.
 Starvation, dehydration, asphyxiation, disease, etc., are all non-combat situations that can damage a character.
-Death is still possible, and perhaps even likely, in a scenario devoid of combat.
+Death is still possible outside combat.
 For this reason, the loss of body points is not what makes combat distinct from non-combat.</p>
 <p>A more useful central question appears to be “How well-defined are the actions?”
 The rules for combat involve weapons and armor with narrowly-defined features.
 The attack and defense moves are (in principle) well-understood.
-Consider the various olympic sports (fencing, javelin, discus, shot-put, etc.) that evolved from combat to sport.
+Consider the various olympic sports (fencing, javelin, discus, shot-put, hammer toss, etc.) that evolved from combat into sport.
 Fencing, in particular, involves both attack and defense.
-There are defined ways to use a foil or epée; with distinct ways to use a sabre.
-The target lines lead to specific attack and defense techniques.
+The fencers have well-defined ways to use a foil, epée, and sabre.
+The target lines lead to specific attack and defense techniques that help someone learn the sport.
 This careful formalization around these weapons has reached a level where fencing attack areas have simple numeric designations: sixte, quarte, octave, and septieme.</p>
-<p>The deep analysis of combat via sports like fencing leads to TTRPG combat rules that involve three mechanics:</p>
+<p>The deep analysis of combat via sports like fencing leads to <em>OpenD6</em> combat rules with three essential mechanics:</p>
 <ul class="simple">
 <li><p>Can the attacker hit the defender?
-In the <em>OpenD6</em> rules, there are two parts to hitting.</p>
+There are two parts to making contact with a weapon.</p>
 <ul>
-<li><p><strong>Initiative</strong>. The characters roll handfuls of dice based on their Acumen attribute and related skills.</p></li>
-<li><p><strong>Attack</strong>. The attacher has a handful of dice based on their Agility and related skills. This may be modified by weapon choice, and any defensive actions.</p></li>
+<li><p><strong>Initiative</strong>. The player and GM roll handfuls of dice based on their Acumen attributes and related skills to seize the initiative.</p></li>
+<li><p><strong>Accuracy</strong>. The attacker rolls a handful of dice based on their Agility and related skills to overcome the any difficulties related to completing the attack.
+Skill dice and difficulty thresholds may be modified by weapon choice, defensive actions, and overall game context (i.e., visibility, clutter, etc.)</p></li>
 </ul>
 </li>
-<li><p><strong>Damage</strong>. What is the magnitude of the damage subtracted from the defender’s body.
-The attacker rolls a handful of dice based on Physique and the weapon being used.
+<li><p><strong>Damage</strong>. The attacker rolls a handful of dice based on Physique and the weapon being used to determine the magnitude of damage done.
 The net damage depends on Physique, weapon, armor, and any defensive actions.
-The outcome reduces a character’s body; there may be additional complications like being disabled or knocked unconscious.</p></li>
+The outcome reduces a character’s body; there may be additional complications like being disabled or being knocked unconscious.</p></li>
 </ul>
 <p>The effect of weapon and armor choices are characterized by structured data (in tables) that lead to relatively simple handfuls of dice and numeric comparisons.
-The tabular structure is the schema.</p>
+The tabular structure of these tables provides a schema that looks like the following illustration:</p>
 <p class="plantuml">
 <img src="_images/plantuml-72a8ab86ccc6c6c4d080e0a426df7bb594776b1f.png" alt="&#64;startuml
     'https://plantuml.com/class-diagram
@@ -153,138 +160,148 @@ Character o-- Armor
 </p>
 <p>The values for attributes and skills are – in effect – purchased by the player to create the character in the <em>OpenD6</em> system.
 There’s a finite budget of dice that can be applied to create a character.</p>
-<p>The weapons and armor are defined by the rules.
-They are chosen from a menu of alternatives.
-Weapons and amor have a price; a character has a probability of being able to meet the price.
+<p>The weapons and armor are defined in detail by the rules.
 The damage effect for manual weapons are enumerated.
-The range difficulty offsets and damage effect for missiles are also   enumerated in the rules.</p>
-<p>Creating a DSL for weapons and armor is straight-forward.
-A CSV-format table contains the source data.
+The range difficulty offsets and damage effect for missiles are also detailed in the rules.
+Creating a DSL for weapons and armor is straight-forward because the data model is complete an unambiguous.
+A CSV-format table can contain the source data.
 This can be restated in a variety of useful formats.</p>
-<p>Creating a DSL for the combat aspects of characters is as trivial as a DSL for weapons.
-There are few complications.</p>
-<p>The rules are clear enough that formalization into software seems like a possibility.
-Creating an application for combat – generally – isn’t necessary.
-The structure of the dice mechanics make the use of software more trouble than help.
-Combat situations are fluid, and players make clever last-minute choices that a gamemaster must handle smoothly and equitably.</p>
+<p>Creating a DSL for the combat aspects of characters is as trivial as creating a DSL to define weapons.
+There are few complications.
+The structure of the dice mechanics mean software tools to expand or clarify the rules is needless overhead.</p>
+<p>This serves as a basis for understanding non-combat mode and the less complete definition of magical spells.</p>
 </section>
 <section id="non-combat-mode">
 <h2>Non-Combat Mode<a class="headerlink" href="#non-combat-mode" title="Link to this heading">¶</a></h2>
-<p>For non-combat play mode, the interactions are less rigorously defined than for combat.
-They do, however, follow a similar pattern that expands on the combat pattern.</p>
+<p>Outside combat mode, the interactions are less rigorously defined than for combat.
+They do, however, follow the combat pattern.
+We’ll detail this general play cycle to provide some context for DSL development.</p>
+<p>Here is the general flow for all <em>OpenD6</em> interactions:</p>
 <p class="plantuml">
-<img src="_images/plantuml-6e32c52f54ea3436b0ef34567b3253a4f45e46d3.png" alt="&#64;startuml
+<img src="_images/plantuml-5c3f872fcf708fefb1382b38af0bd7de760ba7f3.png" alt="&#64;startuml
     'https://plantuml.com/sequence-diagram
 
-title Non-Combat Mode Sequence of Interactions
+title OpenD6 Character Action Sequence
 
 actor player
 actor GM
 collections rules as &quot;Rules&quot;
 collections state as &quot;Game State&quot;
 
-player -&gt; GM : intended action and skill(s) used
+player -&gt; GM : State action and skill(s) used
 GM -&gt; rules : Difficulties?
 rules -&gt; GM : base threshold
-GM -&gt; player : disclose base difficulty threshold
+GM -&gt; player : base difficulty threshold
 GM -&gt; state : Extra Difficulties?
 state -&gt; GM : extra difficulties
 opt optional
-    player -&gt; GM : spend character or fate points for extra dice
+    player -&gt; GM : Spend character or fate points for extra dice
 end
-player -&gt; GM : rolls dice
-GM -&gt; player : disclose difficulties and result action
+player -&gt; GM : Roll dice
+GM -&gt; player : detail difficulties and outcome
 
 opt if needed
-    player -&gt; GM : roll for magnitude of result
+    player -&gt; GM : Roll for magnitude of effect
 end
+
+GM -&gt; state : Update game state
 
 &#64;enduml"/>
 </p>
+<p>Here’s how play evolves:</p>
 <ul class="simple">
 <li><p>The player describes an <strong>intended action</strong>, specifying the character’s skills that will be employed.</p>
 <ul>
-<li><p>The GM will disclose the obvious level of difficulty to the player.</p></li>
+<li><p>The GM will disclose the obvious level of difficulty to the player.
+This is based on the rules, and doesn’t involve too much controversy or clarification.</p></li>
 <li><p>The GM will know of additional difficulties based on game state or other information private to the GM, and may – or may not – disclose these.</p></li>
 </ul>
 </li>
-<li><p>The player may invest character points or fate points to boost the number of dice rolled to overcome the difficulties.
+<li><p>The player may invest character points or fate points to boost the number of dice rolled to overcome the difficulties, both disclosed and undisclosed.
 There are other adjustments, including getting help, using better tools, taking more time that can improve the number of dice being rolled.</p></li>
 <li><p>The roll for success is much like the roll to hit in combat.
-If the roll exceeds the difficulty threshold, the GM describes the <strong>actual result</strong>, which may or may not match the <strong>intended action</strong>.</p></li>
+If the roll exceeds the difficulty threshold, the GM may disclose additional difficulties as part of describing the <strong>actual outcome</strong>.
+The outcome may or may not match the <strong>intended action</strong>.</p></li>
 <li><p>The result may involve more dice-rolling to determine the magnitude of the effect.
-This parallels computing combat damage.
-However, it also <em>fails</em> to parallel combat damage, because the changes to character state and game state are not limited to loss of body points.</p></li>
+This parallels computing combat damage.</p></li>
 </ul>
-<p>An essential complication for non-combat mode is the open-ended nature of the results.</p>
+<p>What’s important here is non-combat actions also <em>fail</em> to parallel combat actions in one important way.
+The changes to character state and game state are not limited to loss of body points.
+An essential complication for non-combat mode is the open-ended nature of the outcome.</p>
 <p>Some skills – e.g., healing – reverse combat damage, making them relatively simple to map to the rigorous combat-mode rules.
-Other skills – e.g., persuasion – will modify the behavior of another character (often a non-player character).</p>
+Other skills – e.g., persuasion – will modify the behavior of another character (often a non-player character).
+These are adjacent to combat, but lack the simple clarity of a body point mechanic.</p>
 <p>Beyond the normal effects of actions like persuading a character, there are the extra-normal effects of magic.
-For the most part, the rules of the <em>OpenD6</em> system attempt to map extranormal effects to concrete effects that update the game state.</p>
+For the most part, the rules of the <em>OpenD6</em> system attempt describe extranormal effects using concrete effects that make well-defined changes to the game  state.
+The few cases where this doesn’t seem to be true seem to be editorial or play-testing problems.</p>
+<p>Here’s the suite of Effects deduced from a corpus of spells.</p>
 <p class="plantuml">
-<img src="_images/plantuml-260d9a96b2c9653d0ece42b43ee2076ab3afad8b.png" alt="&#64;startuml
-    'https://plantuml.com/class-diagram
+<img src="_images/plantuml-f9f7a47b1d53e582dac481d062b9bbe1795cd8ed.png" alt="&#64;startuml
+'https://plantuml.com/class-diagram
+'v3 of spell definitions
 
-    title Effect Class Diagram
+title Overview of Effect classes
 
-    scale 750 width
+class Spell {
+    effect: Effect
+}
 
-    abstract class Unit
-    Unit &lt;|-- DieUnit
-    Unit &lt;|-- TimeUnit
-    Unit &lt;|-- DistUnit
-    Unit &lt;|-- MassUnit
-    Unit &lt;|-- VolumeUnit
+class Aspect {
+    + difficulty: int
+    + description: str
+}
 
-    abstract class Effect
-    'Aspect &lt;|-- Effect'
+Spell *-- &quot;1,m&quot; Aspect
 
-    abstract class MeasureEffect
-    Effect &lt;|-- MeasureEffect
-    MeasureEffect --- DieUnit
+class Effect {
+    skill() -&gt; str
+}
+Aspect &lt;|-- Effect
 
-    class DamageEffect
-    MeasureEffect &lt;|-- DamageEffect
-    DamageEffect --- DieUnit
+abstract class MeasureEffect
+Effect &lt;|-- MeasureEffect
 
-    class ProtectionEffect
-    MeasureEffect &lt;|-- ProtectionEffect
-    ProtectionEffect --- DieUnit
+class DamageEffect
+MeasureEffect &lt;|-- DamageEffect
 
-    class SkillEffect
-    MeasureEffect &lt;|-- SkillEffect
-    SkillEffect --- DieUnit
+class ProtectionEffect
+MeasureEffect &lt;|-- ProtectionEffect
 
-    class AttributeEffect
-    SkillEffect &lt;|-- AttributeEffect
+class SkillEffect
+MeasureEffect &lt;|-- SkillEffect
 
-    class SpecialAbilityEffect
-    Effect &lt;|-- SpecialAbilityEffect
+class AttributeEffect
+MeasureEffect &lt;|-- AttributeEffect
 
-    class DisadvantageEffect
-    Effect &lt;|-- DisadvantageEffect
+class SpecialAbilityEffect
+Effect &lt;|-- SpecialAbilityEffect
 
-    class TimeEffect
-    MeasureEffect &lt;|-- TimeEffect
-    TimeEffect -- TimeUnit
+class DisadvantageEffect
+Effect &lt;|-- DisadvantageEffect
 
-    class MassEffect
-    MeasureEffect &lt;|-- MassEffect
-    MassEffect -- MassUnit
+class TimeEffect
+MeasureEffect &lt;|-- TimeEffect
 
-    class VolumeEffect
-    MeasureEffect &lt;|-- VolumeEffect
-    VolumeEffect -- VolumeUnit
+class DistanceEffect
+MeasureEffect &lt;|-- DistanceEffect
 
-    class CompositeEffect {
-        list[Effect]
-    }
-    CompositeEffect *-- Effect
-    Effect &lt;|-- CompositeEffect
+class MassEffect
+MeasureEffect &lt;|-- MassEffect
+
+/'class VolumeEffect
+MeasureEffect &lt;|-- VolumeEffect
+VolumeUnit &lt;|--- VolumeEffect'/
+
+class CompositeEffect
+Effect &lt;|-- CompositeEffect
+CompositeEffect *-- &quot;2..n&quot; Effect
 
 &#64;enduml"/>
 </p>
-<p>While there are a lot of effects, they mostly fall into the following categories that map directly to the well-defined combat rules.</p>
+<p>While there are a lot of effects, they mostly fall into several categories.
+Some of these map directly to the well-defined combat rules.
+Others map to other well-define effects.
+Here’s a view of these effects:</p>
 <ul class="simple">
 <li><p>Combat-related:</p>
 <ul>
@@ -315,106 +332,227 @@ These have generic names:</p>
 </ul>
 <p>Finally, there’s a purely technical consideration: a <code class="docutils literal notranslate"><span class="pre">CompositeEffect</span></code> class.
 This <strong>can</strong> be a simple <code class="docutils literal notranslate"><span class="pre">list[Effect]</span></code> structure, or it can be a more specialized container that includes <code class="docutils literal notranslate"><span class="pre">Effect</span></code> instances.</p>
+<p>Now that we’ve seen a little of how the <em>OpenD6</em> system works, we can turn to the design of a DSL that helps define spells and their difficulties.</p>
+</section>
 <section id="dsl-syntax">
-<h3>DSL Syntax<a class="headerlink" href="#dsl-syntax" title="Link to this heading">¶</a></h3>
-<p>There are two syntax approaches to a Domain-Specific Language (DSL.)</p>
+<h2>DSL Syntax<a class="headerlink" href="#dsl-syntax" title="Link to this heading">¶</a></h2>
+<p>There are two general approaches to defining the syntax for a DSL:</p>
 <ul class="simple">
 <li><p>Invent your own.  This requires writing a lexical scanner and parser.</p></li>
 <li><p>Use an existing syntax.
 This has a number of alternatives.</p>
 <ul>
-<li><p>TOML (or HUML, or HCL: an established, generic markup language)
-In this case, common libraries are available.</p></li>
+<li><p>TOML (HUML, HCL, YAML, JSON, or even XML): an established, generic markup language.
+In this case, libraries are available for parsing.
+From the parsed input, more useful spell definition data structures can be built.</p></li>
 <li><p>Python. In this case, parsing can be ignored, since the DSL is code, parsed by the Python run-time.</p></li>
 </ul>
 </li>
 </ul>
 <p>While both work nicely, the Python version means the Spell definition <strong>is</strong> Python.
-No additional processing is required to define a Spell or Character.
-Using TOML means the spell definition must be ingested and transformed into Python objects for validation, testing, and publication.</p>
-<p>For parsing documents and understanding the basics of spell design, TOML can be useful.
-Avoiding Python means semantics of constructs can be left flexible as one comes to understand how the rules need to be implemented.</p>
-<p>For the long-term development of spells, and the publication of rules using spells, the Python syntax is a bit simpler and more direct.
-The flexible semantics become undesirable once a body of spells has been defined.
-(It also saves us from defining parsers for strings and numbers; they’re already part of Python.)</p>
+No additional processing to create a useful data structure from parsed input.</p>
+<p>For some aspects of parsing source document PDF files, TOML can be useful.
+It’s helpful when searching for an understanding of spell design
+Avoiding Python means the semantics of some spell constructs can be left flexible.
+Flexibility can also lead to ambiguity.
+Ambiguity is already part of parsing TTRPG rules written in a natural language like English.
+Too much ambiguity is the problem we’re trying to solve with a DSL.</p>
+<p>For the long-term development of spells, and the publication of rules using spells, the Python syntax offers the advantage of simplicity.
+It reduces the flexibility somewhat, helping to avoid ambiguity.</p>
+<p>(It also saves us from defining parsers for strings and numbers; they’re already part of Python.)</p>
+<p>How do we move from a pile of TTRPG rules, including narrative text and spell examples, to a DSL?</p>
 </section>
-<section id="two-phase-dsl-design">
-<h3>Two-Phase DSL Design<a class="headerlink" href="#two-phase-dsl-design" title="Link to this heading">¶</a></h3>
+<section id="phased-dsl-design">
+<h2>Phased DSL Design<a class="headerlink" href="#phased-dsl-design" title="Link to this heading">¶</a></h2>
 <p>Given a corpus of spells in legacy rule books, we want a DSL to represent spells, and help a GM create new spells.
-The formal DSL statements have two goals:</p>
+The formal DSL statements have several goals:</p>
 <ul class="simple">
-<li><p>Validate the difficulty computation. This aso validates the representation of rules in the DSL.</p></li>
-<li><p>Present the spell in details to help debug representation issues.
-This also helps to debug game design problems.</p></li>
-<li><p>Present the spell in a form suitable for for publication.</p></li>
+<li><p>The DSL makes it possible for software tools to do computations consistently.
+In <em>OpenD6</em>, the difficulty computation is onerous.
+The corpus of published spells helps validate the representation of rules in the DSL.
+(It may also uncover errors in the published corpus.)</p></li>
+<li><p>Tools can present spell details in ways that can help a designer debug game design problems.
+For example, redesigning spells that are too difficult or not difficult enough.</p></li>
+<li><p>Present the spell in a format suitable for for publication without manual transformation or copy-and-paste from one tool to another.
+Manually copying from a spread-sheet to a word-processor is error prone.
+Worse, it can be overlooked: the designer may tweak a spreadsheet and fail to copy and paste the revised spell into the campaign rules.</p></li>
 </ul>
-<p>If the DSL representation captures <strong>all</strong> of the details, then the difficulty value will match the published difficulty.</p>
-<p>The DSL for the <em>OpenD6</em> TTRPG rules has a mixture of combat and non-combat situations.</p>
-<p>Further, a DSL designer won’t have a proper perspective on the problem domain defined by semi-structured and unstructured data.
-It’s easy for the designer to get overwhelmed with one feature of one spell,  imposing needless complexities on other spells because of vague or incomplete rules.</p>
+<p>Unless the DSL designer is also a rule author, the DSL designer won’t start the effort with a deep perspective of the problem domain.
+The structured data is clear, but the semi-structured and unstructured data are difficult obstacles.
+It’s easy for a DSL designer to get overwhelmed with a detail, imposing needless complexities on other spells because of vague or incomplete rules.
+It’s also easy for a DSL designer to miss some obscure feature that may have a profound impact on the entire corpus of spells.
+Finally, it’s easy to provide a very general solution that doesn’t actually fit with the conventions and expectations of potential users.</p>
 <p>A workable strategy seems to be this:</p>
-<ol class="arabic simple">
-<li><p>Create a minimal DSL to capture some initial base of knowledge.</p></li>
-<li><p>Refine the initial DSL to create v2, improving the quality of the language as the understanding of the problem domain matures.</p></li>
+<ol class="arabic">
+<li><p>Create a minimal (version one) DSL to capture the initial base of knowledge.
+This may involve a lot of text, and few Python-specific features.
+This can be used to represent a corpus of spells, providing confirmation that the automated computations and presentations are useful.</p>
+<p>As noted in <a class="reference internal" href="architecture.html#architecture"><span class="std std-ref">Architecture</span></a>, specifically, the <a class="reference internal" href="architecture.html#architecture-opend6-challenges"><span class="std std-ref">OpenD6 Challenges</span></a>, there are a number of challenges
+to getting all of the text into a useful form.</p>
+</li>
+<li><p>Refine the initial DSL to create version two, with a focus on completeness of the language and the associated tooling.
+This reflects a growing understanding of the problem domain.
+This should use more Python features and less text.
+The computations and publication processing should be refined and expanded.</p></li>
+<li><p>Refine the DSL to create version three, using as many Pythonic features as practical to create a reasonably fluent DSL.
+At this point, string processing left over from version one <em>could</em> be deprecated and replaced with pure Python.
+Or, the string processing could be left in place to ease migration of content to the newer version.</p></li>
 </ol>
-<p>There are a few grammar and syntax issues that need to be addressed as part of creating a DSL.</p>
+<p>We’ll start with the minimal DSL to capture the corpus of spells (or items, or creatures.)</p>
 </section>
 <section id="phase-i-capture">
-<h3>Phase I – Capture<a class="headerlink" href="#phase-i-capture" title="Link to this heading">¶</a></h3>
-<p>The initial Phase of DSL design captures the spell definitions in a format useful to confirm the details have been parsed well enough to do two things:</p>
+<h2>Phase I – Capture<a class="headerlink" href="#phase-i-capture" title="Link to this heading">¶</a></h2>
+<p>The initial phase of DSL design captures the spell definitions in a format useful to confirm the details have been parsed.
+There are two goals:</p>
 <ul class="simple">
-<li><p>to reproduce a version of the difficulty computation.</p></li>
-<li><p>to emit a formatted representation for publication.</p></li>
+<li><p>To reproduce a version of the difficulty computation.
+Looking at the overall use cases, this is part of the <strong>Change-Compute-Consider</strong> cycle.
+It’s not a complete solution, since the difficulties are parsed, not computed from details.</p></li>
+<li><p>To emit a formatted representation for publication.</p></li>
 </ul>
-<p>This minimal language can be dataclass definitions that  hold some text.
-Since the source documents include a published difficulty value, this can be simply parsed and included.
-The rules for computing this, however, will be a bit mysterious, and require more work as part of creating subsequent versions of the DSL.</p>
+<p>As an example, consider this spell description from the rules:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CHARM</span>
+<span class="o">-----</span>
+<span class="n">Skill</span> <span class="n">Used</span><span class="p">:</span> <span class="n">Alteration</span>
+<span class="n">Difficulty</span><span class="p">:</span> <span class="mi">5</span>
+<span class="n">Effect</span><span class="p">:</span> <span class="mi">18</span> <span class="p">(</span><span class="n">charm</span> <span class="n">skill</span> <span class="n">bonus</span> <span class="n">of</span> <span class="o">+</span><span class="mi">4</span><span class="n">D</span><span class="p">)</span>
+<span class="n">Range</span><span class="p">:</span> <span class="n">Self</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">Speed</span><span class="p">:</span><span class="mi">0</span>
+<span class="n">Duration</span><span class="p">:</span> <span class="mi">1</span> <span class="n">minute</span> <span class="p">(</span><span class="o">+</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">Casting</span> <span class="n">Time</span><span class="p">:</span> <span class="mi">1</span> <span class="nb">round</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">Other</span> <span class="n">Aspects</span><span class="p">:</span>
+<span class="n">Gesture</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span> <span class="n">Smile</span> <span class="ow">and</span> <span class="n">make</span> <span class="n">a</span> <span class="n">gesture</span> <span class="n">of</span> <span class="n">welcome</span> <span class="ow">or</span> <span class="n">admiration</span>
+<span class="n">Unreal</span> <span class="n">Effect</span> <span class="p">(</span><span class="o">-</span><span class="mi">9</span><span class="p">):</span> <span class="n">Difficulty</span> <span class="n">to</span> <span class="n">disbelieve</span> <span class="ow">is</span> <span class="mi">13</span>
+<span class="n">Other</span> <span class="n">Conditions</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span> <span class="n">May</span> <span class="n">only</span> <span class="n">be</span> <span class="n">used</span> <span class="n">on</span> <span class="n">humanoids</span> <span class="n">who</span> <span class="n">understand</span> <span class="n">the</span> <span class="n">caster</span><span class="s1">&#39;s language and can hear the caster</span>
+<span class="n">With</span> <span class="n">a</span> <span class="n">smile</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">friendly</span> <span class="n">gesture</span><span class="p">,</span> <span class="n">the</span> <span class="n">caster</span> <span class="n">improves</span> <span class="n">his</span> <span class="n">charm</span>
+<span class="n">skill</span> <span class="n">by</span> <span class="k">for</span> <span class="n">one</span> <span class="n">minute</span><span class="o">.</span> <span class="p">(</span><span class="n">If</span> <span class="n">he</span> <span class="n">no</span> <span class="n">charm</span> <span class="n">skill</span><span class="p">,</span> <span class="n">add</span> <span class="n">the</span> <span class="n">bonus</span> <span class="n">to</span> <span class="n">the</span>
+<span class="n">character</span><span class="s1">&#39;s Charisma attribute.) As this is an illusory spell, if the</span>
+<span class="n">intended</span> <span class="n">target</span> <span class="n">of</span> <span class="n">the</span> <span class="n">charm</span> <span class="n">disbelieves</span> <span class="n">it</span><span class="p">,</span> <span class="nb">any</span> <span class="n">effect</span> <span class="n">the</span> <span class="n">charm</span>
+<span class="n">attempt</span> <span class="n">had</span> <span class="n">wears</span> <span class="n">off</span> <span class="n">immediately</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This minimal language can be Python <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> definitions that  hold the parsed text.
+There are a number of textual variations:</p>
+<ul class="simple">
+<li><p>Effect has a difficulty and a description in ()’s.</p></li>
+<li><p>The “core” aspects (range, speed, duration, casting, time) mostly have a description with the difficulty in ()’s. Except Speed.</p></li>
+<li><p>The other aspects have a difficulty in ()’s, a :, and then the description.</p></li>
+<li><p>Finally, a large blob of text has notes about the spell.</p></li>
+</ul>
+<p>This is reasonably consistent throughout the rules. Regular expressions can be used to tease this apart.</p>
+<p>Since the source documents include a published difficulty value for each individual aspect of a spell, this value can be included in the detailed spell aspects.
+The spell definition – as a whole – is limited to doing the final summary calculation from the individual aspect difficulty values.
+(Some errors will be found at this level.)
+The computed results can be compared with the stated difficulty attribute of the spell.</p>
+<p>Some of the rules for computing the detailed aspect difficulties are – initially – a bit mysterious.
+The subsequent phase will seek to resolve those mysteries to make a more complete DSL.</p>
 <p>There are a few variations in how parts of the spell are displayed.
-These <em>should</em> be handled cleanly by using templates for the output.</p>
-<p>What’s important is to create a unit test suite.
-This assures that the DSL statements are valid, and the difficulty computations are complete and reasonably consistent with the published rules.</p>
-<p>Errors and problems will be uncovered. The <em>OpenD6</em> rounding rules are generally clear. It appears they are not checked carefully during editing and play-testing, leading to DSL computations that differ from published results in inconsistent ways.</p>
+This <em>should</em> be handled cleanly by using templates for the output.
+These templates will expand and shift as more spells are represented.
+Further, moving to version 2 of the DSL means the source data for the template will change.</p>
+<p>What’s important is to create a test suite with two parts:</p>
+<ol class="arabic simple">
+<li><p>Unit test for the Python DSL components in isolation: Spell, Aspect, Effect, etc.</p></li>
+<li><p>An acceptance test suite based on the corpus of spells with their published difficulty values.</p></li>
+</ol>
+<p>The first part assures that the DSL language elements work, and the difficulty computations work.
+The second part assures the computations are reasonably consistent with the published rules.</p>
+<p>Errors and problems in the published rules will be uncovered.
+While <em>OpenD6</em> rounding rules are generally clear, it appears the rounding was not checked carefully during editing and play-testing.
+This leads to some DSL computations that differ from published results by 1 difficulty point.
+Other errors will lead to bigger errors in a few places.</p>
 </section>
-<section id="phase-ii-expressiveness">
-<h3>Phase II – Expressiveness<a class="headerlink" href="#phase-ii-expressiveness" title="Link to this heading">¶</a></h3>
-<p>The first phase of spell definition wrapped a great deal of detail into data structures that will (generally) prove to be too simple.
-The initial structures often fail to capture details that aren’t initially visible.
-There are several examples of places where details are elided.</p>
+<section id="phase-ii-completeness">
+<h2>Phase II – Completeness<a class="headerlink" href="#phase-ii-completeness" title="Link to this heading">¶</a></h2>
+<p>The first phase of spell definition wrapped a great deal of detail into data structures that are dependent on pre-computed values.
+This fails to capture details that aren’t initially visible as part of the final, published text.
+There are several examples of places where details are elided:</p>
 <ul class="simple">
 <li><p>Spell effects can be quite complicated.
 Some effects are composites, but the difficulty was summarized as a single value in the published summary.</p></li>
 <li><p>Spell aspects have a number of unique attributes, and unique computations of difficulty.
-Again, the Phase I data model relied on the difficulties shown in the text, and did not define the difficulty computations.</p></li>
+The Phase I data model relied on the difficulties shown in the text, and did not define the difficulty computations.</p></li>
 </ul>
-<p>This is an important distinction, summarized as:</p>
+<p>This is an important distinction:</p>
 <ul class="simple">
-<li><p>Phase 1 had difficulties captured from source, provided as literal values.</p></li>
-<li><p>Phase 2 needs to compute difficulties from the rules.</p></li>
+<li><p>Phase 1 had difficulties captured from source, provided as literal values.
+Any change required a manual computation of the aspect’s new difficulty.
+Only the overall spell difficulty was computed.</p></li>
+<li><p>Phase 2 will compute detailed aspect difficulties from the rules.</p></li>
 </ul>
 <p>Additionally, there are some other changes required:</p>
 <ul class="simple">
-<li><p>A “composite effect” is required to combine several individual effects.
+<li><p>A “composite effect” definition is required to combine several individual effects.
 This is not a feature of the rules, but a technical necessity to capture rule details.</p></li>
 <li><p>Some aspects are derived from the difficulties of other aspects (or the effect).
-These computations imply a dependency ordering among the apects of a spell.</p></li>
+These computations imply a dependency ordering among the aspects of a spell.</p></li>
 </ul>
-<p>Additionally, the phase 1 definition omitted important relationships between <strong>measure</strong>, <strong>value</strong>, and <strong>modifier</strong>.
-A <strong>measure</strong> is given in physical units: kilograms, meters, seconds, etc.
-A difficuly <strong>value</strong> is derived from a measure, <span class="math notranslate nohighlight">\(v = \lceil 5
-\times \log_{10}(m) \rceil\)</span>.
-A <strong>modifier</strong> is difficulty value adjustment, applied after any measure-to-value conversion is done.</p>
+<p>Additionally, the phase 1 definition omitted important distinctions between <strong>measure</strong>, <strong>value</strong>, and <strong>modifier</strong>:</p>
+<ul class="simple">
+<li><p>A <strong>measure</strong> is given in physical units: kilograms, meters, seconds, etc.</p></li>
+<li><p>A difficulty <strong>value</strong> is derived from a measure, <span class="math notranslate nohighlight">\(v = \lceil 5 \times \log_{10}(m) \rceil\)</span>.</p></li>
+<li><p>A <strong>modifier</strong> is difficulty value adjustment, applied after any measure-to-value conversion is done.</p></li>
+</ul>
 <p>(Further, there are multiplicative <strong>factors</strong> that can apply to values and modifiers. Fortunately, these are rarely used.)</p>
-<p>This leads to a much richer (and more complicated) set of class definitions.
-It also means there needs to be explicit migration from phase 1 definitions to phase 2 definitions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">charm</span> <span class="o">=</span> <span class="n">Spell</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Charm&quot;</span><span class="p">,</span>
+    <span class="n">skill</span><span class="o">=</span><span class="s2">&quot;Alteration&quot;</span><span class="p">,</span>
+    <span class="n">notes</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;With a smile and a friendly gesture, the caster improves his charm skill by for one minute. (If he no charm skill, add the bonus to the character’s Charisma attribute.) As this is an illusory spell, if the intended target of the charm disbelieves it, any effect the charm attempt had wears off immediately.&quot;</span>
+    <span class="p">],</span>
+    <span class="n">effect</span><span class="o">=</span><span class="n">SkillEffect</span><span class="p">(</span><span class="s2">&quot;charm skill&quot;</span><span class="p">,</span> <span class="s2">&quot;+4D&quot;</span><span class="p">),</span>  <span class="c1"># ❶</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">DurationAspect</span><span class="p">(</span><span class="n">measure</span><span class="o">=</span><span class="s2">&quot;1 minute&quot;</span><span class="p">),</span>
+    <span class="nb">range</span><span class="o">=</span><span class="n">RangeAspect</span><span class="p">(</span><span class="n">measure</span><span class="o">=</span><span class="s2">&quot;self&quot;</span><span class="p">),</span>
+    <span class="n">casting_time</span><span class="o">=</span><span class="n">CastingTimeAspect</span><span class="p">(</span><span class="n">measure</span><span class="o">=</span><span class="s2">&quot;1 round&quot;</span><span class="p">),</span>
+    <span class="n">speed</span><span class="o">=</span><span class="n">SpeedAspect</span><span class="o">.</span><span class="n">based_on</span><span class="p">((</span><span class="s2">&quot;range&quot;</span><span class="p">,),</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>  <span class="c1"># ❷</span>
+    <span class="n">other_aspects</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;gesture&quot;</span><span class="p">:</span> <span class="n">GesturesAspect</span><span class="p">(</span>
+            <span class="s2">&quot;Smile and make a gesture of welcome or admiration&quot;</span><span class="p">,</span> <span class="s2">&quot;simple&quot;</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;unreal_effect&quot;</span><span class="p">:</span> <span class="n">UnrealEffectAspect</span><span class="o">.</span><span class="n">based_on</span><span class="p">((</span><span class="s2">&quot;effect&quot;</span><span class="p">,),</span>
+                                                     <span class="s2">&quot;difficulty 13&quot;</span><span class="p">),</span>  <span class="c1"># ❸</span>
+    <span class="p">},</span>
+    <span class="n">other_conditions</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">GenericAspect</span><span class="p">(</span>
+            <span class="n">difficulty</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># ❹</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;May only be used on humanoids who understand the caster’s language and can hear the caster&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Some important things to note:</p>
+<ul class="simple">
+<li><p>The ❶ line shows two pieces of text which should be replaced with Python objects.
+The various skills should be enumerated. The dice expression should be <code class="docutils literal notranslate"><span class="pre">4</span> <span class="pre">*</span> <span class="pre">D</span></code>, not the string <code class="docutils literal notranslate"><span class="pre">&quot;+4D&quot;</span></code>.</p></li>
+<li><p>The ❷ and ❸ lines use the <code class="docutils literal notranslate"><span class="pre">based_on()</span></code> feature to define an aspect with a difficulty derived from another aspect.
+This feature means these aspects cannot be computed until other aspects have been computed.
+This complicates the overall definition of a Spell object.</p></li>
+<li><p>The ❹ line shows how to handle those cases where the difficulty isn’t derived from a measure or die code.</p></li>
+</ul>
+<p>Phase II created a much richer set of class definitions.
+It also meant an explicit migration from phase 1 definitions to phase 2 definitions.
+Moving to Phase III is somewhat easier.</p>
 </section>
-<section id="phase-iii-optimization">
-<h3>Phase III – Optimization<a class="headerlink" href="#phase-iii-optimization" title="Link to this heading">¶</a></h3>
-<p>During the development of content using the phase 2 definitions, a large number
-of fixed keywords with specific measures, values, or modification values were uncovered.
-These started as strings.
-They can be replaced with enumerations of strings, creating a strongly-typed data model.</p>
-<p>As part of game design, more subtle issues of spell “template” were uncovered.</p>
+<section id="phase-iii-fluency">
+<h2>Phase III – Fluency<a class="headerlink" href="#phase-iii-fluency" title="Link to this heading">¶</a></h2>
+<p>There are two fluency changes noted above.</p>
+<ul class="simple">
+<li><p>Changing strings to explicit enumerations.
+This will replace <code class="docutils literal notranslate"><span class="pre">&quot;charm</span> <span class="pre">skill&quot;</span></code> with something like <code class="docutils literal notranslate"><span class="pre">CharismaSkill.charm</span></code>.</p></li>
+<li><p>Changing strings to Die Expressions. This replaces <code class="docutils literal notranslate"><span class="pre">&quot;4D&quot;</span></code> with <code class="docutils literal notranslate"><span class="pre">4*D</span></code> to make an explicit computation that doesn’t require string parsing.</p></li>
+</ul>
+<p>This isn’t mandatory; in some cases, the string version is easier for spell designers to use.
+However, the use of enumerations creates a DSL where a static type checker can – to an extent – assure that
+the various combinations of values are consistent with the rules.</p>
+<p>What’s important here is the incremental nature of the change.
+A mixture of legacy strings can be used adjacent to newer, explicit enumerations.</p>
 </section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h2>
+<p>Arriving at a collection of DSLs to represent spells, items, character, and creatures is an incremental process.
+It’s difficult to foresee all of the features present in the published content.</p>
+<p>The more productive approach is to define a series of languages that capture the details and support tools that support the design process as well as publication.</p>
 </section>
 </section>
 
@@ -438,7 +576,7 @@ They can be replaced with enumerations of strings, creating a strongly-typed dat
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="computations.html" title="previous chapter">Miscellaneous Computations</a></li>
+      <li>Previous: <a href="reference/computations.html" title="previous chapter">Miscellaneous Applications</a></li>
   </ul></li>
 </ul>
 </div>
@@ -453,24 +591,21 @@ They can be replaced with enumerations of strings, creating a strongly-typed dat
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="applications.html">Applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
-<li class="toctree-l1"><a class="reference internal" href="computations.html">Miscellaneous Computations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Notes on DSL Design</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#combat-mode">Combat Mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#non-combat-mode">Non-Combat Mode</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#dsl-syntax">DSL Syntax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#two-phase-dsl-design">Two-Phase DSL Design</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phase-i-capture">Phase I – Capture</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phase-ii-expressiveness">Phase II – Expressiveness</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#phase-iii-optimization">Phase III – Optimization</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#rigor-and-modes-of-play">Rigor and Modes of Play</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#non-combat-mode">Non-Combat Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dsl-syntax">DSL Syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phased-dsl-design">Phased DSL Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-i-capture">Phase I – Capture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-ii-completeness">Phase II – Completeness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-iii-fluency">Phase III – Fluency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a></li>
 </ul>
 </li>
 </ul>
@@ -484,7 +619,7 @@ They can be replaced with enumerations of strings, creating a strongly-typed dat
       &#169;2025, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

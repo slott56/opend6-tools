@@ -8,14 +8,16 @@
 
 import sys
 from pathlib import Path
+import tomli
 
-sys.path.insert(0, str(Path.cwd().parent.resolve()))
+sys.path.insert(0, str((Path.cwd().parent / "src" / "opend6_tools").resolve()))
 sys.path.insert(0, str((Path.cwd().parent / "src").resolve()))
+pypa = tomli.loads((Path.cwd().parent/"pyproject.toml").read_text())
 
 project = "OpenD6 Tools"
 copyright = "2025, S.Lott"
 author = "S.Lott"
-release = "1.0"
+release = pypa['project']['version']  # "2025.12.20.dev2"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -33,7 +35,7 @@ extensions = [
 plantuml = f"java -jar {Path.cwd().parent}/plantuml-gplv2-1.2025.7.jar"
 
 templates_path = ["_templates"]
-exclude_patterns = []
+exclude_patterns = ["demo/*"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

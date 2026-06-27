@@ -4,21 +4,67 @@
  ``magic2``
 #######################
 
-..  py:module:: opend6_tools.magic2
+..  py:module:: opend6_tools.magic2.dice
     :no-index:
 
-The Spell (and Miracle) DSL
+The :py:class:`opend6_tools.magic2` package provides the DSL definitions for spells.
+It also defines a small DSL for dice.
+The package has a number of modules for creating formatted displays of spells, working with a spellbook as command-line application, and extracting definitions from a Jupyter Lab notebook.
+
+We'll start with the :py:mod:`opend6_tools.magic2.dice` module, because the spell definition DSL relies on this module as a foundation.
+
+The ``magic2.dice`` Module
+==========================
+
+The :py:mod:`opend6_tools.magic2.dice` module defines a small DSL used to define Dice Rolls.
+A class definition implements operators to support
+*n* ``*D``, where *n* is a number, and ``D+`` *n*.
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/component-diagram
+
+    title magic2.dice module
+
+    class DiceCode {
+    __mul__(int) -> DiceCode
+    __add__(int) -> DiceCode
+    }
+
+    object D
+
+    D --> DiceCode
+
+    @enduml
+
+The global object ``D`` is the essential ingredient here.
+It permits an expression like::
+
+    DamageEffect("Attack", 3*D+2)
+
+The :py:mod:`opend6_tools.magic2.dice` module is used by the :py:mod:`opend6_tools.magic2.spells` module as part of the larger Spell DSL.
+
+..  py:module:: opend6_tools.magic2.spells
+    :no-index:
+
+The ``magic2.spells`` Module
 ===================================
 
-Spells are defined in Python modules.
-This makes testing and publication relatively straightforward.
+The :py:mod:`opend6_tools.magic2.spells` module provides the definitions for the spells DSL.
+We'll start by looking at the overall context in which spells are defined.
+Then we can look at the details of how the :py:class:`spells.Spell` class is designed.
 
--   An application imports the definitions and applies ordinary software testing techniques to be sure the syntax is correct. A small computation can assure the difficulties match expectations.
+Defining Spells
+---------------
 
--   The module is an application that emits RST-format files for publication.
+The DSL for spells creates :py:class:`Spell` objects.
+These objects can be collected into lists for validation and publication.
+The publication pipeline relies on the **make** tool, which works with collections of individual files.
+It helps to organize the spell definition into "spell books": collections of spells with some organizing principle like a common skill or a common difficulty rank.
+A software architect might call the module with these books an "aggregate root."
 
-The top-level organization of Spell modules in the context of campaign books looks like this.
-The source is a ``spells_subsection.py`` file with the Python version of the spell definitions.
+The top-level organization of the :py:mod:`opend6_tools.spell` module in the context of a collection of campaign documents looks like this.
 
 ..  uml::
 
@@ -29,18 +75,20 @@ The source is a ``spells_subsection.py`` file with the Python version of the spe
 
     package python {
         package opend6_tools {
-            component magic2.py
+            component magic2
         }
     }
 
     package document_source {
+        artifact index.rst <<RST>>
         artifact magic.rst <<RST>>
+        index.rst -> magic.rst : """toctree::"" directive"
         package spells {
             component spells_subsection.py <<app>> {
                 component SomeSpell
             }
             artifact spells_subsection.txt <<RST>>
-            spells_subsection.py ..> magic2.py : import
+            spells_subsection.py ..> magic2 : import
         }
         spells_subsection.txt <- spells_subsection.py : "Run with 'display'"
         magic.rst --> spells_subsection.txt : """include::"" directive"
@@ -48,117 +96,191 @@ The source is a ``spells_subsection.py`` file with the Python version of the spe
 
     @enduml
 
-Often, the spells are created interactively, using Jupyter Lab.
-This means the :py:mod:`opend6_tools.notebook_extract` builds the module from the notebook.
-For more information, see :ref:`notebook_extract_app`.
+The source documents include manually-prepared ``.rst`` files with ordinary text, tables, examples, etc.
+Some portion of these documents will be references to specific spells.
+This is best done with a docutil ``..  include::`` directive to include the spell details from a separate file, created by the OpenD6 tools.
 
-The structure within the spell definition module is a Python list object.
+The ``.txt`` file uses RST markup to define the display text for a spell.
+
+The source material for this display text is a ``.py`` file. In thd diagram, it's the generic ``spells_subsection.py`` file. This has Spell DSL statements that define the spells. (And do the computations, and prepare the RST output for display.)
+
+
+Often, the spells are created interactively, using Jupyter Lab.
+This means the :py:mod:`opend6_tools.notebook_extract` application will build the Python module from the notebook's DSL statements.
+For more information, see the :ref:`notebook_extract_app` section.
+
+The organization of :py:class:`spells.Spell` objects with a spell definition module is a Python ``list`` object.
 A book of spells is a ``list[Spell]``.
-A Spell (or a Miracle) is an object with an ``Effect`` and a number of other ``Aspects``.
+The following diagram illustrates this structure within the module.
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
 
-        title Spell Module Components
+    title magic2.spell module overview
 
-        object "list[Spell]" as book
+    object "list[Spell]" as book
 
-        object Spell {
-            name: str
-            effect: Effect
-            duration: Aspect
-            range: Aspect
-            speed: Aspect
-            casting_time: Aspect
-            other_aspects: dict[str, Aspect]
-            other_conditions: list[Aspect]
-        }
-        book *-- "1..m" Spell
+    object Spell {
+        name: str
+        effect: Effect
+        duration: Aspect
+        range: Aspect
+        speed: Aspect
+        casting_time: Aspect
+        other_aspects: dict[str, Aspect]
+        other_conditions: list[Aspect]
+    }
+    book *-- "1..m" Spell
 
-        object Effect {
-            description
-            difficulty
-        }
-        Spell -- "1" Effect
+    object Effect {
+        description
+        difficulty
+    }
+    Spell -- "1" Effect
 
-        object Aspect {
-            description
-            difficulty
-        }
-        Spell *-- "4..m" Aspect
+    object Aspect {
+        description
+        difficulty
+    }
+    Spell *-- "4..m" Aspect
 
-        object "~_~_test~_~_" as test
-        book <.. test
+    object "~_~_test~_~_" as test
+    book <.. test
 
-        object app
-        book <.. app
+    object app {
+        display
+        debug
+    }
+    book <.. app
 
     @enduml
 
-The details of ``Effect`` and ``Aspect`` objects are rather complicated.
-We'll start by looking at the top-level class, :py:class:`Spell`.
+Additionally, a module should also have a ``__test__`` object to validate the spell's have the expected difficulty, and an ``app`` object containing the top-level CLI applications.
 
+There's a Jupyter Lab notebook to help write the ``__test__`` examples.
 
-Spell
-------
+We'll start by looking at the top-level class, :py:class:`spells.Spell`.
 
-A Spell definition (and a Miracle and a Cantrip) is a collection of an :py:class:`Effect` object and a number of distinct :py:class:`Aspect` objects.
+The Spell Class
+---------------
+
+A Spell definition (as well as a Miracle and a Cantrip definition) is a collection of an :py:class:`Effect` object and a number of distinct :py:class:`Aspect` objects.
+This structure is defined with the Spell DSL, a Python-based language that builds the required objects.
+
+The rules state that a spell has eight characterstics.
+See :external:ref:`fantasy.magic.characteristics`.
+Pragmatically, a spell is a bit more complicated.
+
+Here's the list of aspects from the rules:
+
+:skill:
+    The essential skill used. Sometimes, this can be deduced from the effect.
+    This is a string value.
+
+:dificulty:
+    Computed from the effect and aspects.
+
+:effect:
+    An instance of one of the :py:class:`spells.Effect` subclasses.
+
+:duration:
+    An instance of the :py:class:`spells.DurationAspect` class.
+
+:range:
+    An instance of the :py:class:`spells.RangeAspect` class.
+
+:speed:
+    An instance of the :py:class:`spells.SpeedAspect` class.
+
+:casting_time:
+    An instance of the :py:class:`spells.CastingTimeAspect` class.
+
+:other_aspects:
+    A mapping of aspect names to
+    one of the :py:class:`spells.Aspect` subclasses.
+    This is formalized by the :py:class:`spells.OtherAspects` typed dictionary definition.
+
+Note that some of the
+Here's a depiction of this essential structure, including some additional characterstics that are implied by the rules, but not stated.
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
+
+    title Spell class structure
 
     class Spell {
         name: str
+        effect: Effect
+        aspects: dict[str, Aspect]
+        other_aspects: dict[str, Aspect]
+        other_conditions: list[Aspect]
         notes: str
         skill: str
-        effect: Effect
-        duration: DurationAspect
-        range: RangeAspect
-        casting_time: CastingTimeAspect
-        speed: SpeedAspect
-        other_aspects: OtherAspects
-        other_conditions: list[GenericAspect]
-        .. computed ..
         difficulty: int
-        --
-        finalize() -> int
+        source(): str
     }
-
-    Spell -- Effect
-    Spell -- DurationAspect
-    Spell -- RangeAspect
-    Spell -- CastingTimeAspect
-    Spell -- SpeedAspect
-    Spell -- OtherAspects
-    OtherAspects *-- Aspect
-    Spell *-- GenericAspect
-
-    class OtherAspects <<TypedDict>>
-
-    abstract class Aspect {
-        description
-        difficulty
+    class Aspect {
+        incr_decr: Sign
+        base: NormalizedAspect
+        difficulty() -> Decimal
+        description() -> str
     }
-    Aspect <|-- DurationAspect
-    Aspect <|-- RangeAspect
-    Aspect <|-- CastingTimeAspect
-    Aspect <|-- SpeedAspect
-    Aspect <|-- GenericAspect
-
-    abstract class Effect {
-        description
-        difficulty
+    class NormalizedAspect {
+        sign: Sign
+        details : dict[type[Parser], list[DetailValue]]
+        notes: list[str]
+        difficulty() -> Decimal
+        description() -> str
     }
+    class Effect
+    Aspect <|-- Effect
 
-    class Miracle
-    Spell <|--- Miracle
+    abstract class Parser {
+        parse(*args) -> DetailValue
+    }
+    Aspect *-- "1..p" Parser
 
-    class Cantrip
-    Spell <|--- Cantrip
+    class DetailValue
+
+    class Measure {
+        measure: Decimal
+        difficulty: Decimal
+        description: str
+        {static} m2v(int) -> Decimal
+    }
+    DetailValue <|-- Measure
+    class Modifier {
+        difficulty: Decimal
+        description: str
+    }
+    DetailValue <|-- Modifier
+    class Factor {
+        factor: Decimal
+        description: str
+    }
+    DetailValue <|-- Factor
+
+    Spell *-- "4" Aspect : aspects
+    Spell *-- "0..a" Aspect : other_aspects
+    Spell *-- "0..c" Aspect : other_conditions
+    Aspect *-- "1" NormalizedAspect
+    NormalizedAspect *-- "1..m" DetailValue
+
+    /'
+    class DurationAspect
+    class RangeAspect
+    class CastingTimeAspect
+    class SpeedAspect
+
+    Aspect <|--- DurationAspect
+    Aspect <|--- RangeAspect
+    Aspect <|--- CastingTimeAspect
+    Aspect <|--- SpeedAspect
+    '/
 
     @enduml
 
@@ -166,144 +288,175 @@ There are a lot of specializations of the :py:class:`Aspect` class.
 There are also a number of specializations of the :py:class:`Effect` class.
 What's important is that each specialization has unique rules for the units of measure that are permitted for that aspect or effect.
 
-We'll start by looking at the possible Effects of a spell.
+The final difficulty computation is based on the difficulties of the individual ``Aspect`` and ``Effect`` instances associated with the ``Spell``.
+We'll start with a formal definition of the algorithm
 
-Effects
--------
+A spell, :math:`S`, is a
+set of attributes, :math:`a_x`. :math:`S = \{a_0, a_1, a_2, \dots, a_n\}`.
+There are a number of mandatory aspects, including the effect, and a number of optional aspects.
 
-There are a surprising variety of effect definitions.
-Any of a character's attributes or skills can be changed magically.
-Doing damage (and protecting from damage) are specialized combat-like
+The :math:`\operatorname{sign}(a_x)` extracts an algebraic sign for the aspect. The domain is two values; :math:`\operatorname{sign}(a_x) \in \{\texttt{Increase}, \texttt{Decrease}\}`.
+
+The :math:`d(a_x)` is the difficulty associated with the aspect. This is an unsigned number.
+
+The overall difficulty of the spell, :math:`d(S)` is based on two subsets of the aspects. Those aspects which increase the difficulty, :math:`E`, and those aspects which decrease the difficulty, :math:`A`.
+
+..  math::
+
+    I &= \{a_x | a_x \in S \textbf{ and $\operatorname{sign}(a_x) = \texttt{Increase}$}\} \\
+    D &= \{a_x | a_x \in S \textbf{ and $\operatorname{sign}(a_x) = \texttt{Decrease}$}\} \\
+
+The algorithm for the difficulty of a spell, :math:`d(S)`, is based on the difficulties of each element of :math:`I` and :math:`D`.
+
+..  math::
+
+    d(S) = \frac
+    {\sum_\limits{a_x \in I} d(a_x) - \sum_\limits{a_x \in D} d(a_x)}
+    {2}
+
+This examines all of the Aspects of a Spell, including the Effect, the core Aspects, the Other Aspects and the Other Conditions.
+It classifies each difficulty based on the enumerated value of the :py:class:`Sign`.
+It sums the difficulty of each aspect, :math:`d(a)`, to get the *Spell Total*, :math:`I`, and the sum of the *Negative Modifiers*, :math:`D`.
+From this, the net difficulty for the spell is computed.
+
+
+There are a number of possible Effects of a spell.
+
+Effect Classes
+---------------
+
+There are nine essential ``Effect`` definitions.
+These cover things like changing
+a character's attributes, skills, special abilities, or disadvantages.
+Effects also include doing damage (and protecting from damage) are specialized combat-like
 magical properties.
+
+Further, a composite effect permits a single effect to have multiple constituent sub-effects.
+This allows spell to have dramatic results.
+
+Here's a depiction of the specialized Effects available.
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
+    'v3 of spell definitions
 
-        interface IncreasesDifficulty
+    title Overview of Effect classes
 
-        class Spell {
-            effect: Effect
-        }
+    interface IncreasesDifficulty
 
-        abstract class Aspect {
-            difficulty() -> int
-            points() -> int
-            description() -> str
-        }
+    class Spell {
+        effect: Effect
+    }
 
-        abstract class Effect {
-            skill() -> str
-        }
-        IncreasesDifficulty <|--- Effect
-        Aspect <|-- Effect
+    class Aspect {
+        + difficulty: int
+        + description: str
+        - parser_cls: Parser
+        - comp_difficulty(NormalizedAspect) -> Decimal
+        - comp_description(NormalizedAspect) -> str
+    }
 
-        Spell *--- Effect
+    Spell *- Aspect
 
-        abstract class MeasureEffect
-        Effect <|-- MeasureEffect
+    class NormalizedAspect {
+        details: dict[Parser, list[DetailValue]]
+        difficulty
+        description
+    }
 
-        class DamageEffect
-        MeasureEffect <|-- DamageEffect
-        DieUnit <|--- DamageEffect
+    Aspect *-- NormalizedAspect
 
-        class ProtectionEffect
-        MeasureEffect <|-- ProtectionEffect
-        DieUnit <|--- ProtectionEffect
+    class Parser {
+        parse(Args) -> DetailValue
+    }
 
-        class SkillEffect
-        MeasureEffect <|-- SkillEffect
-        DieUnit <|--- SkillEffect
+    Aspect o-- Parser
 
-        class AttributeEffect
-        SkillEffect <|-- AttributeEffect
+    class Effect {
+        skill() -> str
+    }
+    IncreasesDifficulty <|--- Effect
+    Aspect <|-- Effect
 
-        class SpecialAbilityEffect
-        Effect <|-- SpecialAbilityEffect
-        SpecialAbilityLookup <|--- SpecialAbilityEffect
+    abstract class MeasureEffect
+    Effect <|-- MeasureEffect
 
-        class SpecialAbilityLookup
-        AbilityLookup <|-- SpecialAbilityLookup
+    class DamageEffect
+    MeasureEffect <|-- DamageEffect
 
-        class AbilityLookup
-        Lookup <|-- AbilityLookup
+    class ProtectionEffect
+    MeasureEffect <|-- ProtectionEffect
 
-        class DisadvantageEffect
-        Effect <|-- DisadvantageEffect
+    class SkillEffect
+    MeasureEffect <|-- SkillEffect
 
-        class TimeEffect
-        MeasureEffect <|-- TimeEffect
-        TimeUnit <|--- TimeEffect
+    class AttributeEffect
+    MeasureEffect <|-- AttributeEffect
 
-        class DistanceEffect
-        MeasureEffect <|-- DistanceEffect
-        DistUnit <|-- DistanceEffect
+    class SpecialAbilityEffect
+    Effect <|-- SpecialAbilityEffect
 
-        class MassEffect
-        MeasureEffect <|-- MassEffect
-        MassUnit <|--- MassEffect
+    class DisadvantageEffect
+    Effect <|-- DisadvantageEffect
 
-        class VolumeEffect
-        MeasureEffect <|-- VolumeEffect
-        VolumeUnit <|--- VolumeEffect
+    class TimeEffect
+    MeasureEffect <|-- TimeEffect
 
-        class CompositeEffect
-        IncreasesDifficulty <|-- CompositeEffect
-        Aspect <|-- CompositeEffect
-        CompositeEffect *-- "2..n" Effect
+    class DistanceEffect
+    MeasureEffect <|-- DistanceEffect
 
-        class Unit
-        Lookup <|-- Unit
-        class DieUnit
-        Unit <|-- DieUnit
-        class TimeUnit
-        Unit <|-- TimeUnit
-        class MassUnit
-        Unit <|-- MassUnit
-        class DistUnit
-        Unit <|-- DistUnit
-        class VolumeUnit
-        Unit <|-- VolumeUnit
+    class MassEffect
+    MeasureEffect <|-- MassEffect
+
+    /'class VolumeEffect
+    MeasureEffect <|-- VolumeEffect
+    VolumeUnit <|--- VolumeEffect'/
+
+    class CompositeEffect
+    Effect <|-- CompositeEffect
+    CompositeEffect *-- "2..n" Effect
 
     @enduml
 
-The central idea is that all effects have two common features:
+All Effect classes have a number of common features:
 
--   They all increase the difficulty of a spell.
+-   They increase the difficulty of a spell.
 
--   They all have a difficulty and a description.
+-   They use one or more :py:class:`Spells.Parser` classes to transform the given parameters into the detailed ``DetailValue`` objects.
 
-This commonality stems from all effects actually being based on the a general foundational definition of :py:class:`Aspect`.
+-   They all have a difficulty and a description. These are computed by the underlying :py:class:`spells.NormalizedAspect`.
 
 The effect details differ in the details of how the difficulty is computed from the description.
-There are two parts to this:
+There are several steps in the difficulty and description processing:
 
--   The general :py:class:`MeasureEffect` defines effect difficulty based on some measure in standard Kilogram-Meter-Second physical units.
-    This is a two-step computation.
-    Given descriptive text, :math:`t`, the measure, :math:`m`, is derived from the description, :math:`m(t)`.
-    The difficulty, :math:`d`, is computed from the measure, :math:`d(m(t))`.
+1.  An ``Aspect`` has a number of ``Parser`` references.
+    Each ``Parser`` extracts ``DetailValue`` instances.
+    This includes :py:class:`spells.Measure`,
+    :py:class:`spells.Modifier`, and :py:class:`spells.Factor` objects.
 
--   A specific :py:class:`Unit` converts unit text to standardized measure values.
+2.  The ``DetailValue`` instances are collected into the ``NormalizedAspect`` in a uniform structure.
 
-For subclasses of :py:class:`Unit`, there is a unit of measure, and a value associated with that.
+3.  Each ``Aspect`` has two methods to compute the difficulty and the description from the ``NormalizedAspect`` details.
 
-For subclass of :py:class:`Lookup`, there is a fixed list of valid values.
+4.  The final values for difficulty and description are cached in the ``NormalizedAspect``.
+    The public methods of the ``Aspect`` class delegate the work to the ``NormalizedAspect``.
 
-The :py:class:`CompositeEffect` is a container for two or more individual :py:class:`Effect` instances.
+Since the effects are based on Aspect definitions, it makes sense to turn to Aspect definitions next.
 
+Aspect Classes
+--------------
 
-Aspects
--------
+The aspects are based on a hierarchy of classes, rooted at :py:class:`spells.Aspect`.
+There are three groupings of :py:class:`spells.Aspect` subclasses:
 
-The aspects are based on a hierarchy of classes, rooted at :py:class:`Aspect`.
-There are three groupings of :py:class:`Aspect` subclasses:
+-   The four core Aspects (duration, range, speed, and casting time.) Three of these increase the overall difficulty, while one -- :py:class:`spells.CastingTimeAspect` decreases the overall difficulty.
 
--   The four core Aspects. Three of these increase the overall difficulty, while one -- :py:class:`CastingTimeAspect` decreases the overall difficulty.
+-   Most of the remaining aspects decrease the difficulty.
 
--   Other Aspects that increase the difficulty.
+-   Any ``Aspect`` in the ``other_aspects`` list is will generally increase the difficulty.
 
--   Aspects that decrease the difficulty.
 
 First, the "Core Aspects".
 Most of these increase difficulty.
@@ -312,39 +465,43 @@ The exception is :py:class:`CastingTimeAspect`.
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
+
+    title The Core Aspect classes
 
     interface IncreasesDifficulty
     interface DecreasesDifficulty
 
     class Spell {
         effect: Effect
-        duration: DurationAspect
-        range: RangeAspect
-        speed: SpeedAspect
-        casting_time: CastingTimeAspect
+        aspects: dict[str, Aspect]
     }
 
     abstract class Aspect {
-        difficulty() -> int
-        points() -> int
-        description() -> str
+        difficulty -> Decimal
+        description -> str
     }
 
-    abstract class TimeAspect
-    Aspect <|-- TimeAspect
-    TimeUnit <|-- TimeAspect
+    abstract class ParsedAspect
+    Aspect <|-- ParsedAspect
+
+    abstract class MeasureAspect
+    ParsedAspect <|-- MeasureAspect
+
+    class TimeAspect
+    MeasureAspect <|-- TimeAspect
+    TimeUnit --o TimeAspect
 
     abstract class DistanceAspect
-    Aspect <|-- DistanceAspect
-    DistUnit <|-- DistanceAspect
+    MeasureAspect <|-- DistanceAspect
+    DistUnit --o DistanceAspect
 
     class RangeAspect
     DistanceAspect <|-- RangeAspect
     IncreasesDifficulty <|-- RangeAspect
 
     class SpeedAspect
-    TimeAspect <|-- SpeedAspect
+    DistanceAspect <|-- SpeedAspect
     IncreasesDifficulty <|-- SpeedAspect
 
     class DurationAspect
@@ -371,45 +528,23 @@ These are the "Other Aspects" that will increase the difficulty of a spell.
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
+
+    title Aspects that Increase Difficulty
 
     interface IncreasesDifficulty
     'interface DecreasesDifficulty
 
-    class ChoiceStringMatch {
-        parse_str()
-    }
-    class ChoiceStringPattern{
-        parse_str()
-    }
-
-    abstract class BaseLookup {
-        choices
-        parse()
-    }
-    class Lookup {
-        parse()
-        value()
-    }
-    ChoiceStringMatch <|-- Lookup
-    BaseLookup <|-- Lookup
-
-    class Modifier {
-        values()
-    }
-    Lookup <|-- Modifier
-    note "modifies difficulty directly;\nno measure conversion" as note_1
-    note_1 .. Modifier
-
     abstract class Aspect {
-        difficulty() -> int
-        points() -> int
-        description() -> str
+        difficulty -> Decimal
+        description -> str
     }
 
-    class GenericAspect
-    Aspect <|-- GenericAspect
-    GenericAspect --|> IncreasesDifficulty
+    abstract class ParsedAspect
+    Aspect <|-- ParsedAspect
+
+    abstract class MeasureAspect
+    ParsedAspect <|-- MeasureAspect
 
     /' abstract class TimeAspect
     Aspect <|-- TimeAspect
@@ -421,30 +556,17 @@ These are the "Other Aspects" that will increase the difficulty of a spell.
     DistUnit <|-- DistanceAspect
     '/
 
-    class AreaModifier
-    Modifier <|-- AreaModifier
-    ChoiceStringPattern <|-- AreaModifier
-
     class AreaEffectAspect
     AreaEffectAspect --|> IncreasesDifficulty
-    AreaModifier <|-- AreaEffectAspect
-    Aspect <|-- AreaEffectAspect
-
-    class TargetModifier
-    Modifier <|-- TargetModifier
+    MeasureAspect <|-- AreaEffectAspect
 
     class ChangeTargetAspect
     ChangeTargetAspect --|> IncreasesDifficulty
-    TargetModifier <|-- ChangeTargetAspect
-    Aspect <|-- ChangeTargetAspect
-
-    class ChargesUnit
-    Unit <|-- ChargesUnit
+    ParsedAspect <|-- ChangeTargetAspect
 
     class ChargesAspect
     ChargesAspect --|> IncreasesDifficulty
-    ChargesUnit <|-- ChargesAspect
-    Aspect <|-- ChargesAspect
+    ParsedAspect <|-- ChargesAspect
 
     'Community
     'Component
@@ -459,38 +581,26 @@ These are the "Other Aspects" that will increase the difficulty of a spell.
     'Gestures
     'Incantations
 
-    class MultiTargetsModifier
-    Modifier <|-- MultiTargetsModifier
-
     class MultipleTargetAspect
     MultipleTargetAspect --|> IncreasesDifficulty
-    MultiTargetsModifier <|-- MultipleTargetAspect
-    Aspect <|-- MultipleTargetAspect
+    ParsedAspect <|-- MultipleTargetAspect
 
     'UnrealEffect
 
-    class VariableDurationModifier
-    Modifier <|-- VariableDurationModifier
-
     class VariableDurationAspect
     VariableDurationAspect --|> IncreasesDifficulty
-    VariableDurationModifier <|-- VariableDurationAspect
-    Aspect <|-- VariableDurationAspect
+    ParsedAspect <|-- VariableDurationAspect
 
     class VariableEffectAspect
     VariableEffectAspect --|> IncreasesDifficulty
     Aspect <|-- VariableEffectAspect
 
-    class VariableMovementModifier
-    Modifier <|-- VariableMovementModifier
-
     class VariableMovementAspect
     IncreasesDifficulty  <|--- VariableMovementAspect
-    VariableMovementModifier  <|-- VariableMovementAspect
-    Aspect <|-- VariableMovementAspect
+    ParsedAspect <|-- VariableMovementAspect
 
     class ArcaneKnowledgeAspect
-    GenericAspect <|-- ArcaneKnowledgeAspect
+    Aspect <|-- ArcaneKnowledgeAspect
 
     @enduml
 
@@ -501,100 +611,367 @@ These are the "Other Aspects" that will decrease the difficulty of a spell.
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
+
+    title Aspects that Decrease Difficulty
 
     ' interface IncreasesDifficulty
     interface DecreasesDifficulty
 
     abstract class Aspect {
-        difficulty() -> int
-        points() -> int
-        description() -> str
+        difficulty -> Decimal
+        description -> str
     }
 
-    class Lookup {
-        parse()
-        value()
-    }
-    class Factor
-    Lookup <|-- Factor
+    abstract class ParsedAspect
+    Aspect <|-- ParsedAspect
+
+    abstract class MeasureAspect
+    ParsedAspect <|-- MeasureAspect
+
+    class TimeAspect
+    MeasureAspect <|-- TimeAspect
+
+    class GenericAspect
+    Aspect <|-- GenericAspect
+    GenericAspect --|> DecreasesDifficulty
 
     class CommunityAspect
-    Aspect <|-- CommunityAspect
+    ParsedAspect <|-- CommunityAspect
     CommunityAspect ---|> DecreasesDifficulty
 
-    class CommunityModifier
-    Unit <|-- CommunityModifier
-    class CommunityDifficulty
-    Unit <|-- CommunityDifficulty
-    class CommunityParticipationFactor
-    Factor <|-- CommunityParticipationFactor
-
-    CommunityAspect -- CommunityModifier
-    CommunityAspect -- CommunityDifficulty
-    CommunityAspect -- CommunityParticipationFactor
-
-
-    class ComponentsModifier
-    Modifier <|-- ComponentsModifier
-
-    class ComponentsFactor
-    Factor <|-- ComponentsFactor
-    ComponentsAspect -- ComponentsFactor
-
     class ComponentsAspect
-    Aspect <|-- ComponentsAspect
+    ParsedAspect <|-- ComponentsAspect
     ComponentsAspect ---|> DecreasesDifficulty
 
     class ConcentrationAspect
-    Aspect <|-- ConcentrationAspect
+    TimeAspect <|-- ConcentrationAspect
     ConcentrationAspect ---|> DecreasesDifficulty
 
-    class CountenanceModifier
-    Modifier <|-- CountenanceModifier
-
     class CountenanceAspect
-    Aspect <|-- CountenanceAspect
-    CountenanceModifier <|-- CountenanceAspect
+    ParsedAspect <|-- CountenanceAspect
     CountenanceAspect  ---|> DecreasesDifficulty
 
     class FeedbackAspect
     Aspect <|-- FeedbackAspect
-    Modifier <|-- FeedbackAspect
     FeedbackAspect  ---|> DecreasesDifficulty
 
-    class GesturesModifier
-    Modifier <|-- GesturesModifier
-
     class GesturesAspect
-    Aspect <|-- GesturesAspect
-    GesturesModifier <|-- GesturesAspect
+    ParsedAspect <|-- GesturesAspect
     GesturesAspect ---|> DecreasesDifficulty
 
-    class IncantationsModifier
-    Modifier <|-- IncantationsModifier
-
     class IncantationsAspect
-    Aspect <|-- IncantationsAspect
-    IncantationsModifier <|-- IncantationsAspect
+    ParsedAspect <|-- IncantationsAspect
     IncantationsAspect ---|> DecreasesDifficulty
-
-    class UnrealFactor
-    Factor <|-- UnrealFactor
 
     class UnrealEffectAspect
     Aspect <|-- UnrealEffectAspect
-    UnrealFactor <|-- UnrealEffectAspect
     UnrealEffectAspect ---|> DecreasesDifficulty
 
     @enduml
 
-There is little commonality among these aspects of a spell.
+There is little commonality among these aspects of a spell, outside their contribution to decreasing the overall difficulty of the spell.
+
+Aspect Creation
+----------------
+
+The :py:class:`Aspect` base class is a wrapper that contains
+the unique features of an aspect.
+Here's a summary that applies to many Aspect definitions:
+
+-   The computation for difficulty for this type of aspect.
+
+-   The computation for descriptive text for this type of aspect.
+
+-   A collection of :py:class:`Parser` references to
+    parse Measure, Modifier, and Factor values.
+
+-   A :py:class:`NormalizedAspect` object with the :py:class:`DetailValue` objects created during the parsing operation.
+    These values are input to the difficulty and description computations.
+
+The following diagram shows the typical set of relationships for those
+aspects that are not based on other aspects.
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/class-diagram
+
+    title Common Aspect structure
+
+    class Aspect {
+        origin: ""tuple[class, args, kwargs]""
+        base: NormalizedAspect
+        __init__(*args) -> None
+        compute_diff(Aspect) -> Decimal
+        compute_descr(Aspect) -> str
+    }
+    class NormalizedAspect {
+        aspect: ""Aspect""
+        details: ""dict[type[Parser], list[DetailValue]]""
+        notes: ""list[str]""
+        populate_details(parsers, args) -> Self
+        difficulty() -> Decimal
+        description() -> str
+    }
+
+    Aspect *-- NormalizedAspect : base
+
+    NormalizedAspect -[dotted]-> Aspect : "<<weakref>>\naspect"
+
+    abstract class Parser {
+        {abstract} parse(*args) -> DetailValue
+    }
+
+    Aspect *-- "1, m" Parser
+
+    class Effect
+    Aspect <|-- Effect
+
+    @enduml
+
+There are three ways to create an ``Aspect``.
+
+-   Directly, with a stand-alone, or independent set of argument values.
+
+-   Indirectly, or "based-on" one or more other aspects. In this case, the aspect's details depend on details of other aspects of the containing :py:class:`Spell`.
+    Commonly, the *speed* aspect of a spell is based on the *range* aspect to create an instantaneous effect.
+    There are three other common examples: *Concentration*, *Focus*, and *Unreal Effect* aspects.
+
+-   Copied from another Spell. This spell is a template, with details provided by
+    some other spell.
+
+This expands the definition of the :py:class:`Aspect` class to include proxies and references.
+These are used as part of a two-step computation of the final value of the :py:class:`NormalizedAspect`.
+Here's the expanded view of an ``Aspect``.
+
+..  uml::
+
+    @startuml
+
+    'https://plantuml.com/class-diagram
+
+    title Expanded Aspect structure
+
+    class Aspect {
+        base: NormalizedAspect
+        proxy: NormalizedAspectProxy
+        reference: NormalizedAspectReference
+        __init__(*args) -> None
+        compute_diff(Aspect) -> Decimal
+        compute_descr(Aspect) -> str
+    }
+    class NormalizedAspect  {
+        details: ""dict[type[Parser], list[DetailValue]]""
+        notes: ""list[str]""
+        aspect: ""Aspect""
+        populate_details(parsers, args) -> Self
+        difficulty() -> Decimal
+        description() -> str
+    }
+    Aspect *-- "0..1" NormalizedAspect : base
+
+    class NormalizedAspectProxy  {
+        attr_paths: list[str]
+    }
+    Aspect *-- "0..1" NormalizedAspectProxy : proxy
+
+    class NormalizedAspectReference {
+        attr_path: str
+    }
+    Aspect *-- "0..1" NormalizedAspectReference : reference
+
+    NormalizedAspect -[dotted]-> Aspect : "<<weakref>>\naspect"
+
+    abstract class Parser {
+        {abstract} parse(*args) -> DetailValue
+    }
+
+    Aspect *--- "1, m" Parser
+
+    @enduml
+
+The indirect creation of a :py:class:`NormalizedAspect` based on a :py:class:`NormalizedAspectProxy` happens in two phases:
+
+1.  Initialization of the proxy, via :py:meth:`Aspect.based_on`.
+    This creates a instance of the ``Aspect`` with a proxy that will be supplemented with a :py:class:`NormalizedAspect` during finalization.
+
+2.  Finalization happens at the end of spell creation, via the :py:meth:`Spell.finalize` method. This will invoke :py:meth:`Aspect.init_dependencies` to build the dependent :py:class:`NormalizedAspect` instances based on other aspects of the ``Spell``.
+
+The finalization leads to a state change in the ``Aspect``. It starts with a proxy and no base. It ends with both a proxy and a base. Here's an illustration of this change:
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/state-diagram
+
+    title Aspect state transition
+
+    [*] --> proxy : ""Aspect.based_on()""\n""Aspect.~_~_init__(proxy=)""
+    [*] --> finalized : ""Aspect.~_~_init__()""
+    proxy --> finalized : ""Spell.finalize()""\n""Aspect.init_dependencies()""
+    finalized --> [*]
+
+    proxy : proxy: ""NormalizedAspectProxy""
+    proxy : base: ""None""
+    finalized : proxy: ""NormalizedAspectProxy | None""
+    finalized : base: ""NormalizedAspect""
+
+    @enduml
+
+On the left side, a "based-on" ``Aspect`` creates a proxy. During finalization, a proper normalized aspect is created.
+On the right side, an independent ``Aspect`` creates a normalized aspect directly. During finaization, there's no change.
+
+Most spells are self-contained.
+In the rare case of a "based-on-spell" relationship,
+finalization can't be completed until the template is shaped by a spell
+from which it can copy the aspect details.
+
+For most spells, the initial creation has the following sequence of interactions:
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/sequence-diagram
+
+    title Independent Aspect Creation
+
+    source --> Aspect : ~_~_init__(args)
+    activate Aspect
+    Aspect --> NormalizedAspect : ~_~_init__()
+    Aspect --> NormalizedAspect : populate_details(args)
+    NormalizedAspect --> Aspect : proxy
+    deactivate Aspect
+
+    @enduml
+
+The initialiation of the :py:class:`NormalizedAspect` is broken into two explicit steps to permit easier extension to the process for more complicated relationships.
+
+For a "based-on" Aspect, processing breaks into two phases. Here's the first portion:
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/sequence-diagram
+
+    title "based-on" Aspect Creation
+
+    source --> Aspect : based_on(ref)
+    activate Aspect
+    Aspect --> NormalizedAspectProxy : ~_~_init__(args)
+    NormalizedAspectProxy --> Aspect : proxy
+    Aspect --> Aspect : Aspect.~_~_init__(proxy=)
+    deactivate Aspect
+
+    @enduml
+
+The ``Spell.finalize()`` method sets the
+``Aspect.base`` to a ``NormalizedAspect`` object
+using the :py:class:`Aspect.init_dependencies` method.
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/sequence-diagram
+
+    title "based-on" Aspect Finalization
+
+    Spell --> Spell : finalize()
+    activate Spell
+    NormalizedAspectProxy --> Spell : dependencies, args
+    activate Aspect
+    Spell --> Aspect : init_dependencies(depends_on, self)
+    Aspect --> Aspect : derive_args()
+    Aspect --> NormalizedAspect : ~_~_init__()
+    Aspect --> NormalizedAspect : populate_details(args)
+    NormalizedAspect --> Aspect : base
+    deactivate Aspect
+    deactivate Spell
+
+    @enduml
+
+The ``Spell`` doesn't have any proper state change.
+The based-on ``Aspect`` undergoes the state change.
+
+The :py:class:`Aspect` class definition provides
+the computation for creating the arguments from the dependencies.
+A :py:meth:`Aspect.derive_args` method builds the argument values required to create the dependent ``NormalizedAspect``.
+
+The state definitions involve three, distinct attributes:
+
+-   ``base is not None``.
+    This is a finalized ``Aspect``; all details are present.
+
+-   ``base is None and proxy is not None``.
+    This is a proxy, waiting to be finalized.
+
+-   ``base is None and reference is not None``.
+    This is a reference to another spell.
+    This spell is a template, waiting to the shaped by another spell.
+
+An important consequence of this is the possibility of spelling mistakes in the aspect references.
+The "based-on" aspect name is a string; if this doesn't match an actual attribute, finalization can't be completed.
+
+These Aspect definitions are based on a number of foundational definitions.
 
 Foundational Definitions
 ------------------------
 
 These are classes for the atomic attributes of an ``Aspect`` or ``Effect``.
+We'll look at the :py:class:`DetailValue` classes, and the :py:class:`DifficultyAdjustment` classes.
+We'll also look at the :py:class:`Parser` hierarchy.
+We'll conclude with the :py:class:`AreaVolumeUnit` parser, which is rather complicated.
+
+There are three kinds of ``DetailValue`` classes which hold the results of parsing the argument values to an Aspect or Effeect.
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/class-diagram
+
+    title The DetailValue classes
+
+    abstract class DetailValue
+
+    class Measure {
+        measure: Decimal
+        difficulty: Decimal
+        description: str
+        {static} m2v(Decimal) -> Decimal
+    }
+    DetailValue <|-- Measure
+
+    class Modifier {
+        difficulty: Decimal
+        description: str
+    }
+    DetailValue <|-- Modifier
+
+    class Factor {
+        factor: Decimal
+        description: str
+    }
+    DetailValue <|-- Factor
+
+    @enduml
+
+The :py:func:`spells.m2v` computation converts
+measures (in KMS) units to difficulty values.
+
+..  math::
+
+    v = \begin{cases}
+     &\lceil 5 \log_{10}(m) \rceil_{u} \textbf{ if $m < 10$}\\
+     &\lceil 5 \log_{10}(m) \rceil \textbf{ if $m \geq 10$}
+    \end{cases}
+
+Where :math:`\rceil_{u}` uses ``decimal.ROUND_UP``,
+and :math:`\rceil` uses ``decimal.ROUND_HALF_UP``.
+
+The effects describe what the spell does.
+These contribute to the overall difficulty.
+The remaining aspects may add to or reduce the overall difficulty.
+
 
 First, the ubiquitous mixin class definitions to increase or decrease the difficulty.
 Each of these adds a single attribute value to a class definition.
@@ -602,225 +979,311 @@ Each of these adds a single attribute value to a class definition.
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
 
-        enum Sign {
-            Increase
-            Decrease
-        }
+    title DifficultyAdjustment Definitions
 
-        interface DifficultyAdjustment {
-            incr_decr: Sign
-        }
-        class IncreasesDifficulty {
-            incr_decr = Sign.Increase
-        }
-        class DecreasesDifficulty {
-            incr_decr = Sign.Decrease
-        }
-        DifficultyAdjustment <|-- IncreasesDifficulty
-        DifficultyAdjustment <|-- DecreasesDifficulty
-        Sign --- IncreasesDifficulty
-        Sign --- DecreasesDifficulty
+    enum Sign {
+        Increase
+        Decrease
+    }
 
-        class Aspect
-        class Effect
+    interface DifficultyAdjustment {
+        incr_decr: Sign
+    }
+    class IncreasesDifficulty {
+        incr_decr = Sign.Increase
+    }
+    class DecreasesDifficulty {
+        incr_decr = Sign.Decrease
+    }
+    DifficultyAdjustment <|-- IncreasesDifficulty
+    DifficultyAdjustment <|-- DecreasesDifficulty
+    Sign --- IncreasesDifficulty
+    Sign --- DecreasesDifficulty
 
-        IncreasesDifficulty <|-- Effect
-        IncreasesDifficulty <|-- Aspect
-        DecreasesDifficulty <|-- Aspect
+    class Aspect
+    class Effect
 
-        class Spell {
-            finalize()
-        }
-        Spell -- Effect
-        Spell *-- "4..m" Aspect
+    IncreasesDifficulty <|-- Effect
+    IncreasesDifficulty <|-- Aspect
+    DecreasesDifficulty <|-- Aspect
 
     @enduml
 
-The :py:meth:`Spell.finalize` method makes use of this to compute the final difficulty.
-
-In essence, the algorithm for the difficulty of a spell, :math:`d(S)`, is this:
-
-..  math::
-
-    E &= \{d(a) | a \in S \textbf{ and $\operatorname{sign}(a) = \texttt{Increase}$}\} \\
-    A &= \{d(a) | a \in S \textbf{ and $\operatorname{sign}(a) = \texttt{Decrease}$}\} \\
-    d(S) &= \frac{(\sum E - \sum A)}{2}
-
-This examines all of the Aspects of a Spell, including the Effect, the core Aspects, the Other Aspects and the Other Conditions.
-It classifies each difficulty based on the enumerated value of the :py:class:`Sign`.
-It sums the difficulty of each aspect, :math:`d(a)`, to get the Spell Total, :math:`E`, and a Negative Modifiers, :math:`A`.
-From this, the net difficulty is computed.
+The :py:meth:`Spell.finalize` method makes use of these objects to compute the final difficulty.
+The ``incr_decr`` attribute partitions the various ``Aspect`` into increase and decrease buckets.
 
 Here are some additional foundational class definitions.
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
 
-        abstract class BaseLookup {
-            choices
-            parse(text)
-        }
+    title Some elements of the Parser structure
 
-        abstract class Lookup {
-            choices: dict[name, Any]
-            parse(text)
-            value(measure)
-        }
+    class Parser {
+        parse(args) -> DetailValue
+    }
 
-        class ChoiceStringMatch {
-            parse_str(text)
-        }
+    class Lookup
+    Parser <|-- Lookup
 
-        ChoiceStringMatch <|-- Lookup
-        BaseLookup <|-- Lookup
+    class QualifiedLookup
+    Lookup <|-- QualifiedLookup
 
-        class Modifier {
-            value(measure)
-        }
-        Lookup <|-- Modifier
+    class Unit
+    Parser <|-- Unit
 
-        class Factor
-        Lookup <|-- Factor
+    enum Time
 
-        class Unit {
-            value(measure)
-        }
-        Lookup <|-- Unit
+    class TimeUnit
+    Unit <|-- TimeUnit
+    TimeUnit --> Time
+
+    enum Mass
+
+    class MassUnit
+    Unit <|-- MassUnit
+    MassUnit --> Mass
+
+    enum Distance
+
+    class DistUnit
+    Unit <|-- DistUnit
+    DistUnit --> Distance
+
+    enum Volume
+
+    class VolumeUnit
+    Unit <|-- VolumeUnit
+    VolumeUnit --> Volume
+
+    class AreaVolumeUnit
+    Unit <|-- AreaVolumeUnit
+
+    class DieCode
+
+    class DiceUnit
+    Unit <|-- DiceUnit
+    DiceUnit --> DieCode
 
     @enduml
 
-A Unit is a measure (kilogram, meter, second-based).
-There's a transformation from the measure to a difficulty value.
-This is approximately :math:`v = \lceil 5 \log_{10}(m) \rceil`.
+Many of the ``Unit`` parsers work with measures (kilogram, meter, second-based).
+The results are ``Measure`` objects with a conversion to a difficulty-related value.
 
-A Modifier is a difficulty value provided by the rules.
+The DiceUnit parser result is a ``Modifier``.
+This value is already difficulty-related.
 
-A Factor is a multiplier applied to a difficulty modifier or the value created from a measure.
+A number of specializations of Lookup and QualifiedLookup produce ``Factor`` objects.
+This is a dimensionless multiplier applied to a difficulty modifier or the value created from a measure.
 
-A DieUnit is a special unit that maps DieCodes to values.
-Each ``1D`` has a value of 3.
-
-Units: Mass, Distance, Time
+Unit Parsing
 -----------------------------
 
-The Measures have three specific Units for mass, distance, and time.
+The Measures have specific Units for mass, distance, and time.
+A little-used unit of volume is also present.
 These are based on kilograms, meters, and seconds.
-We can define specific subclasses for the *OpenD6* rules.
+In addition, there are two more units that are similar, but don't deal with physical units.
 
 These measures are part of a number of Aspects.
 They also figure into many of the Effects.
-Here are the Aspect relationships:
+There are two distinct ways to make use of a ``Unit``.
+
+-   Provide a string, for example: "40m" to set a distance of 42 meters.
+
+-   Provide a number and a value from the unit enumeration. For example: ``40, Distance.m``.
+
+The :py:class:`DieUnit` doesn't have a Kilogram-Meter-Second physical unit, but instead has values that can be provided two ways.
+
+-   As a string, using ``nD+p`` pattern, for example, ``"3D+2"``.
+
+-   Using the DieCode DSL. For example ``3*D+2``.
+    This value is not a String.
+
+The :py:class:`spells.AreaVolumeUnit` parsing handles a mixture
+of area and volume specifications used for :py:class:`spells.AreaEffectAspect`, the Area of Effect aspect.
+
+This has a simple grammar defined as follows:
+
+..  productionlist::
+    shape_spec: dimension+ SHAPE
+    dimension: NUMBER UNIT AXIS | AXIS | NUMBER UNIT
+
+This is based on a number of terminal tokens:
+
+..  productionlist::
+    WHITESPACE: ' ' | 'and'
+    NUMBER: DIGIT+
+    UNIT: 'm' | 'meter' | 'meters'
+    AXIS: 'radius' | 'length' | 'base' | 'height' | 'width' | 'depth'
+    SHAPE: 'circle' | 'sphere' | 'hemisphere' | 'cone' | 'wall | 'cuboid' | 'divination sphere'
+
+The parser is a bit more complicated than others.
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
 
-        interface DifficultyAdjustment {
-            incr_decr: Sign
-        }
+    title The AreaVolumeUnit parser structure
 
-        abstract class Lookup {
-            choices: dict[name, Any]
-            parse(text)
-            value(measure)
-        }
+    class Unit {
+        parse(args) -> DetailValue
+    }
 
-        class Unit {
-            value(measure)
-        }
-        Lookup <|-- Unit
+    class AreaVolumeUnit {
+        parse(args) -> DetailValue
+        parse_str(str) -> (Decimal, Str)
+        raw_tokens(str) -> Iterator[Token]
+        parse_shape_spec(Tokenizer) -> ShapeSpace
+        parse_dimension(Tokenizer) -> ShapeSpace
+        axis_expansion(ShapeSpace) -> dict[str, Decimal]
+        shape_difficulty(ShapeSpace) -> (Decimal, str)
+    }
 
-        class TimeUnit {
-            choices: dict[name, Any]
-        }
-        Unit <|-- TimeUnit
+    Unit <|-- AreaVolumeUnit
 
-        class DistUnit {
-            choices: dict[name, Any]
-        }
-        Unit <|-- DistUnit
+    class Token
+    AreaVolumeUnit ..> Token : Creates
+    class Number
+    Token <|-- Number
+    class Shape
+    Token <|-- Shape
+    class UnitName
+    Token <|-- UnitName
+    class Axis
+    Token <|-- Axis
 
-        DifficultyAdjustment <|-- Aspect  : "Mixin"
-        Aspect -- Factor : "Strategy"
+    class Tokenizer {
+        next() -> Token
+        unget() -> None
+    }
+    Tokenizer o-- Token : Iterates Over
 
-        class TimeAspect
-        TimeUnit <|-- TimeAspect : "Mixin"
-        Aspect <|-- TimeAspect
+    AreaVolumeUnit *-- Tokenizer
 
-        class DistanceAspect
-        DistUnit <|-- DistanceAspect : "Mixin"
-        Aspect <|-- DistanceAspect
+    class Dimension {
+        distance: Decimal
+        unit: str
+        axis: str
+    }
 
-    @enduml
+    class ShapeSpec {
+        shape_name: str
+        axes: list[Dimension]
+    }
 
-Mass (in kilograms) and distance (in meters) have a very regular structure.
-Time (in seconds) has some irregularities. Many time units,
-including minutes, hours, days, and weeks have easy-to-understand values.
-Months are a mess.
-Years -- on average -- are less of a mess than months; it makes sense to ignore Gregorian Laap Year
-computations and simply treat all years as 365.25 days long.
+    ShapeSpec *-- Dimension
 
-For effects, there are some more units than time and distance.
-
-..  uml::
-
-    @startuml
-        'https://plantuml.com/class-diagram
-
-        abstract class Lookup {
-            choices: dict[name, Any]
-            parse(text)
-            value(measure)
-        }
-
-        class Unit {
-            value(measure)
-        }
-        Lookup <|-- Unit
-
-        class DieUnit
-        Unit <|-- DieUnit
-
-        class TimeUnit {
-            choices: dict[name, Any]
-        }
-        Unit <|-- TimeUnit
-
-        class DistUnit {
-            choices: dict[name, Any]
-        }
-        Unit <|-- DistUnit
-
-        class MassUnit {
-            choices: dict[name, Any]
-        }
-        Unit <|-- MassUnit
-
-        class VolumeUnit {
-            choices: dict[name, Any]
-        }
-        Unit <|-- VolumeUnit
-
-        IncreasesDifficulty <|-- Effect  : "Mixin"
-        Effect -- Factor : "Strategy"
-        Effect -- Modifier : "Strategy"
-        Unit <|-- Effect : "Mixin"
+    AreaVolumeUnit ..> ShapeSpec : Creates
+    AreaVolumeUnit ..> Dimension : Creates
 
     @enduml
-
-What's important here is that the :py:class:`Unit` parsing is a matter of splitting the text into a number and a unit string.
-The string uses the parent :py:class:`Lookup` to locate the scaling factor.
-
-The :py:class:`DieUnit` is special because it doesn't have a Kilogram-Meter-Second physical unit, but instead uses a ``nD+p`` pattern.
 
 A very few spells reference Volume.
 This is typically cubic meters, to remain consistent with other measures.
 A liter is :math:`\frac{1}{100}` of a cubic meter.
+
+The relationship between the :py:class:`spells.Spell`, and the :py:class:`spells.Aspect` is a container. The Spell contains a number of Aspects.
+
+The various :py:class:`spells.Parser` and :py:class:`spells.Unit` classes define the details of how the aspect's descriptions are parsed.
+
+The ``magic2.output`` module
+============================
+
+The :py:mod:`opend6_tools.magic2.output` module performs a number of output conversions for spells and items.
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/class-diagram
+
+    title magic2.output module
+
+    class TableSummary {
+        spell_csv(Spell) -> tuple
+        item_csv(Item) -> tuple
+    }
+
+    class "summary(book)" as summary << (F,orchid) Function >>
+    hide summary empty members
+
+    summary --> TableSummary
+
+    class "item_summary(book)" as item_summary << (F,orchid) Function >>
+    hide item_summary empty members
+
+    item_summary --> TableSummary
+
+
+    class SpellWriter {
+        base_template: str
+        list_template: str
+        dict_template: str
+        report(spell | book) -> str
+    }
+
+    class ItemWriter
+    SpellWriter <|-- ItemWriter
+
+    class "detail(spell | book)" as detail << (F,orchid) Function >>
+    hide detail empty members
+
+    detail --> ItemWriter
+    detail --> SpellWriter
+
+    class "display(spell | book)" as display << (F,orchid) Function >>
+    hide display empty members
+
+    class "debug(spell | book)" as debug << (F,orchid) Function >>
+    hide debug empty members
+
+    debug --> display
+
+    @enduml
+
+This module has three conceptual features:
+
+-   Writing CSV table summaries.
+
+-   Writing RST-format details for publication.
+
+-   Writing display output to help understand the difficulty computed for a Spell or Item.
+
+These output features are used by the applications that are part of the :py:mod:`magic2.spellbook` module, described later.
+First, however, we'll look at the features that extract Spell and Item definitions from a Jupyter Lab Notebook.
+
+The ``magic2.workbook`` module
+==============================
+
+This module has a few functions for extracting spells from a Jupyter Lab Notebook.
+Generally, these functions are designed to be part of a notebook, and introspect the notebook by looking at the ``globals()`` mapping.
+
+The ``magic2.spellbook`` module
+===============================
+
+This module has a few functions to build elements of a spellbook application.
+These functions serve to create a CLI application using the ``typer`` library.
+
+Generally, these are used as follows:
+
+..  code-block:: python
+
+    from opend6_tools.magic2 import *
+
+    # Spell or Item definitions
+    spells = [...]
+
+    if __name__ == "__main__":
+        app = build_app(spells)
+        app()
+
+This will -- when run from the command line -- build the application around spells (or items) defined in the module.
+It will then launch the application.
+This will parse command-line parameters and execute one various alternative sub-commands: ``test``, ``debug``, or ``display``.
 
 ..  _magic_module.implementation:
 

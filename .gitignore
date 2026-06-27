@@ -7,8 +7,8 @@ wheels/
 *.egg-info
 
 # Virtual environments
-.venv
-.tox
+.venv/
+.tox/
 
 # Sphinx
 /docs/_build/html/.buildinfo
@@ -16,3 +16,10 @@ wheels/
 
 # Other files
 /fix_details.md
+/aspect_and_effect.md
+/plantuml-gplv2-1.2025.7.jar
+plantuml-gplv2-1.2025.7.jar
+/old/
+/spike/
+/extract/
+/docs/_build/doctrees/*/*

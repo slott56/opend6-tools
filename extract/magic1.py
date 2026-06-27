@@ -43,7 +43,7 @@ Conversion to Magic2
 
 Because we have an existing ``Aspect`` class,
 this is a separate module.
-A Conversion App loads ``magic1`` definitions and emits ``magic2`` definitions.
+A Conversion App loads ``magic1`` definitions and emits ``magic`` definitions.
 
 Things that change (profoundly) from ``magic1``.
 

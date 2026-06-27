@@ -8,7 +8,7 @@
 
 ..  _tutorial.define_characters:
 
-Define Characters
+The Character DSL
 ==================
 
 It's time to look at how we can create a number of sections in our campaign document:
@@ -39,7 +39,7 @@ We'll break this tutorial into several steps.
 
 4.  Including the Character's or Creature's RST in the appropriate places in various chapters.
 
-Step 1: Adding a chapter
+Review: Adding a chapter
 -------------------------
 
 In the `Start Writing` part of the tutorial, we added some chapters.
@@ -112,7 +112,7 @@ Let's look closely at writing an Adventure Tips chapter, since it includes both 
         Include a list of creatures.
 
 Some designers find it helpful to have an outline.
-Details are filled in later.
+Details can be filled in later.
 
 The idea to replace these generic ``Include a list...`` constructs with actual character and creature details.
 
@@ -126,8 +126,8 @@ At this point, we can run the following **make** command to see the work in proc
 
 This will regenerate the HTML so we can be see our new, empty chapter.
 
-Background on Character definition
------------------------------------
+Introduction to Character definition
+-------------------------------------
 
 The domain-specific language for characters (and creatures) uses Python syntax.
 Here's an example.
@@ -208,15 +208,17 @@ Here's an example.
             people along the way"""),
     )
 
-The first line adds the Character (and Creature) DSL to the names Python recognizes.
 
-It helps to write a Character definition as an assignment statement.
+The ``from...`` line adds the Character DSL to the names Python recognizes.
+
+The tools need to see a Character definition in an assignment statement.
 A ``name = Character()`` statement has a variable name, ``name``, and an object definition. The ``=`` is required.
+The variable name is limited to letters, digits, and ``_``, and it must start with a letter.
+
 It's helps to make the variable name an echo of the occupation (for generic characters) or the character's name (for important, named characters.)
-Python variable names should be composed **only** of lower-case letters, digits, and the ``_`` character;
-the variable name may not precisely match the character occupation or name.
+Python variable names constraints mean the variable name may not precisely match the character occupation or name.
 For example, character names can have spaces, variable names can't; use ``_`` instead of spaces in the variable name: ``aspiring_hero = Character(occupation="Aspiring Hero", ...)``.
-In the example above, ``hero`` was the variable name used.
+In the example above, ``aspiring_hero`` was the variable name used.
 
 The **OpenD6 Rules** list the six essential attributes for a character, plus an optional seventh.
 However, a character is often described by numerous additional details.
@@ -362,6 +364,34 @@ A number of computations are part of this.
     This is the net cost of those three sets of character options.
 
 
+Step 1: Activate the virtual environment
+----------------------------------------
+
+Each time we sit down to a Terminal window (or Powershell prompt) we'll need to make sure our virtual environment is active.
+The OS prompt should provide hints as to what environment is active.
+There are two parts to this:
+
+-   The current working directory. The book directory, ``campaign_book`` needs to be current.
+    If the prompt doesn't show the directory, there are OS commands to print the working directory: ``pwd`` (or **Windows** ``cd``).
+
+    If the directory isn't correct, use the ``cd`` (or ``chdir``) command to navigate to the correct working directory.
+
+-   The virtual environment. If the prompt starts with ``(my-book)`` then the virtual environment is active. Nothing more needs to be done.
+
+    If the virtual environment isn't active, use one of the following commands to activate it.
+
+    ..  code-block:: bash
+
+        source .venv/bin/activate
+
+    For **Windows** the command is slightly different.
+
+    ..  code-block:: bash
+
+        .venv\Scripts\Activate.ps1
+
+The prompt will have a prefix of ``(my-book)`` as a reminder that the virtual environment is now active.
+
 Step 2: Start Character and Creature Notebooks
 ----------------------------------------------
 
@@ -447,9 +477,12 @@ Here's what it shows; which reveals a number of interesting problems:
     Skills
     Options -1D+2
 
-First, this character is only slightly above the standard budget for **starting** character attributes total of 18D. This is an experienced character, and it would make sense to have a few points of experience to boost the attributes.
+First, this character is only slightly above the standard budget for **starting** characters.
+The rules state the attributes can total 18D.
+This is an experienced character, and it would make sense to have a few points of experience to boost the attributes.
 
-Second, this character has no skills. A starting character should have 7D of skills.
+Second, this character has no skills.
+A starting character should have 7D of skills.
 An experienced character may have at least twice this value, perhaps as much as 21D of skills.
 More work needs to be done on this detail.
 
@@ -536,7 +569,7 @@ Perhaps ``Confusion`` or ``Invisibility`` would be appropriate.
 The overall budget started with 13D of attributes, and 8D of skills.
 This is a total of 21D, which slightly weaker than a starting character with 25D.
 
-Here's the Consider part of this design effort.
+Here's the **Consider** part of this design effort.
 What's this creature's role in the overall world?
 
 -   A stiff fight? If so, this creature needs an additional 4D of advantages, special abilities, skills, or attributes to make it a  challenge for beginning characters.
@@ -563,16 +596,17 @@ The pipeline will have three stages in it.
 3. As we've seen in previous parts of the tutorial, the final document is created by transforming all of the document from RST files to HTML (or PDF or EPUB.)
 
 The final stage of the transformation pipeline is handled by Sphinx's ``Makefile``.
-When we enter the ``make html`` command, the **make** application takes off and does what needs to be done to create the final document.
-This includes running ``sphinx-build`` to do the real work.
+When we enter the ``make html`` command, the **make** tool takes off and does what needs to be done to create the final document.
+Currently, there are two steps, ending in running ``sphinx-build`` to do the real work.
 
 We will make a total of three separate changes to expand the publishing pipeline.
 
-a.  Update the Sphinx ``Makefile`` to add steps 1 and 2 to it.
+a.  Update the Sphinx ``Makefile`` to produce additional files.
 
-b.  Add a ``characters/Makefile`` to provide a concrete implementation for steps 1 and 2.
+b.  Add a ``characters/Makefile`` to provide a concrete implementation for steps 1 and 2, convert notebooks to Python modules, and convert Python modules to RST.
 
-c.  Update the ``adventure_tips.rst`` document in our campaign book to include the generated  RST-format file with the character and creature details, nicely formatted.
+c.  Update the ``adventure_tips.rst`` document in our campaign book.
+    We'll add ``.. include::`` directives to include the generated  RST-format files with the character and creature details.
 
 Step 3a -- Update the Makefile
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -604,9 +638,9 @@ It should look like the following:
 
 The ``%`` recipe now has three steps.
 
-1.  Run ``make`` while changing the working directory to ``spells``. This will use the ``Makefile`` it finds in that directory.
+1.  Run ``make`` while changing the working directory to ``spells``. This will use the ``Makefile`` it finds in the ``spells`` directory.
 
-2.  Run ``make`` while changing the working directory to ``characters``. This will use the ``Makefile`` it finds in that directory.
+2.  Run ``make`` while changing the working directory to ``characters``. This will use the ``Makefile`` it finds in the ``characters`` directory.
 
 3.  Run the ``$(SPHINXBUILD)`` command to create the final document.
 
@@ -620,6 +654,7 @@ There are now four requirements for this recipe to work.
 
 4. The ``characters`` folder has a ``Makefile`` in it.
 
+The :ref:`tutorial.spell_dsl` tutorial made sure the first two requirements were met.
 We'll make some changes to make sure the last two requirements are satisfied.
 
 Step 3b -- add the characters/Makefile
@@ -627,7 +662,7 @@ Step 3b -- add the characters/Makefile
 
 The ``characters/Makefile`` is not terribly complicated.
 It has a bunch of "boilerplate" -- standard stuff that won't change.
-It has one line will change as our document grows and evolves.
+It has one line which will change as our document grows and evolves.
 
 ..  code-block:: make
     :linenos:
@@ -642,7 +677,7 @@ It has one line will change as our document grows and evolves.
 
     # Create an RST text file from a Python Character or Creature module with the same name.
     %.txt : %.py
-        pytest --doctest-modules $<
+        python $< test
         python $< display --format SHORT > $@
 
     characters : fowler.txt monsters.txt
@@ -650,30 +685,39 @@ It has one line will change as our document grows and evolves.
 This ``Makefile`` has four separate recipes, and one directive.
 We'll start at the top.
 
-1. ``.phony: characters`` is a special-purpose recipe to tell **make** that ``characters`` isn't really a file.
+1. ``.phony: characters`` is a special-purpose recipe to tell the **make** tool  ``characters`` isn't really a file.
     It's a phony target name.
 
-2.  The ``vpath`` directoive tells  **make** to search for ``.ipynb`` files in a ``../notebooks`` directory.
-    The ``..`` means the "parent of this directory".
+2.  The ``vpath`` directive tells the **make** tool to search for ``.ipynb`` files in a ``../notebooks`` directory.
+    The ``..`` means navigate to the parent of this directory.
 
-3.  The ``%.py : %.ipynb`` recipe shows how to make a Python module from a Notebook.
-    The use of ``%`` means the file stem remains constant, but a file with a new suffix will be created.
+3.  The ``%.py : %.ipynb`` recipe shows how to make a Python module (``%.py``) from a Notebook (``%.ipynb``).
+    The use of ``%`` means the file stem remains constant.
+    In other words, ``abc.py`` will be created from ``../notebooks/abc.ipynb``.
 
-4.  The ``%.txt : %.py`` recipe shows how to make an RST file from a Python module.
-    The ``display`` argument will provide a useful display of the spells.
-    The ``--format SHORT`` uses the short form for the character or creature.
+4.  The ``%.txt : %.py`` recipe shows how to make an RST-formatted file (``%.txt``) from a Python module (``%.py``).
+    The ``$<`` is the target module file; which will be executed as an application.
+    The module will be given a ``display`` argument value.
+    The ``--format SHORT`` option tells the module to use the short form for the character or creature.
+    The output willbe collected into the ``$@`` target file.
 
 5.  The ``characters : fowler.txt monsters.txt`` recipe provides a concrete definition for the phony ``characters`` target.
     This defines what will be done in response to the ``make characters`` command.
-    The phony target depends on two concrete files, ``fowler.txt``, and ``monsters.txt``.
-    The ``%.txt : %.py`` recipe means an ``fowler.py`` file needs to be found and converted.
-    The ``%.py : %.ipynb`` recipe means an ``fowler.ipynb`` notebook needs to be found and converted.
-    It can be found either in the ``characters`` directory or -- better -- in the ``notebooks`` directory named in the ``vpath`` directive.
 
-    Similarly, to create the ``monsters.txt``, a ``monsters.py`` is requied.
-    This can be built from ``monsters.ipynb``.
+What happens when the command ``make characters`` is run?
 
-This example assumes the notebooks will be called ``fowler.ipynb`` and ``monsters.ipynb``.
+The phony target depends on two concrete files, ``fowler.txt``, and ``monsters.txt``. This means **make** has two goals.
+
+The ``%.txt : %.py`` recipe means an ``fowler.py`` file needs to be found and converted, and a ``monsters.py`` file needs to be found.
+Since these files don't exist, now **make** has two more goals.
+
+The ``%.py : %.ipynb`` recipe means an ``fowler.ipynb`` notebook needs to be found and converted.
+It can be found either in the ``characters`` directory or -- better -- in the ``notebooks`` directory named in the ``vpath`` directive.
+
+Similarly, to create the ``monsters.txt``, a ``monsters.py`` is requied.
+This can be built from ``monsters.ipynb``, also found in the ``notebooks`` directory.
+
+This example assumes the notebooks will be named ``fowler.ipynb`` and ``monsters.ipynb``.
 If the notebooks have different names, use those names instead of ``fowler.ipynb`` or ``monsters.ipynb``.
 The name's stem has to be lowercaes letters, digits, and ``_``. The suffix has to be ``.ipynb``.
 The names claimed in the ``Makefile`` (``fowler`` and ``monsters``) needs to match the actual name the actual notebooks actually have.
@@ -692,7 +736,7 @@ The rest of the file will remain unchanged.
 As new notebooks are created, add the file names to the ``characters :`` recipe.
 The names go at the end, separated from each other by at least one space.
 
-The final step is to add an ``..  include:: characters/fowler.txt`` and ``..  include:: characters/fowler.txt`` in the ``adventure_tips.rst`` chapter of the campaign book.
+The final step is to add an ``..  include::`` directives in the  ``adventure_tips.rst`` chapter of the campaign book.
 
 Step 3b -- include the character and creature RST files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -739,3 +783,7 @@ The notebook organization, then, reflects the organization of ``..  include::`` 
     It's also common because creatures are often split into "common" and "uncommon" groups.
 
 The point here is to make sure the organization of the information is reflected in the file structure.
+
+As our thinking evolves, the file names will change.
+This means changing the ``.. include::`` directives, as well as the targets in the ``characters: `` recipe in the ``Makefile``.
+They RST documents and the ``Makefiles`` have to agree on the file names.

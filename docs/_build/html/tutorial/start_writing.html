@@ -5,13 +5,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Start Writing &#8212; OpenD6 Tools 1.0 documentation</title>
+    <title>Start Writing &#8212; OpenD6 Tools 2026.6.26.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
-    <script src="../_static/documentation_options.js?v=f2a433a1"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=4e5c487b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="OpenD6 Tools" href="opend6_tools.html" />
@@ -44,30 +44,29 @@ This builds HTML-format web pages built from the source files.</p></li>
 </ul>
 <section id="step-1-activate-the-virtual-environment">
 <h2>Step 1: Activate the virtual environment<a class="headerlink" href="#step-1-activate-the-virtual-environment" title="Link to this heading">¶</a></h2>
-<p>Each time we sit down to a fresh, new Terminal window (or Powershell prompt) we’ll need to make sure our virtual environment is active.
-The OS prompt provides a little hint.</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>If the prompt starts with <code class="docutils literal notranslate"><span class="pre">(my-book)</span></code> then the virtual environment is active. Nothing more needs to be done.</dt><dd><p>Skip the rest of this step.</p>
-</dd>
-</dl>
+<p>Each time we sit down to a Terminal window (or Powershell prompt) we’ll need to make sure our virtual environment is active.
+The OS prompt should provide hints as to what environment is active.
+There are two parts to this:</p>
+<ul>
+<li><p>The current working directory. The book directory, <code class="docutils literal notranslate"><span class="pre">campaign_book</span></code> needs to be current.
+If the prompt doesn’t show the directory, there are OS commands to print the working directory: <code class="docutils literal notranslate"><span class="pre">pwd</span></code> (or <strong>Windows</strong> <code class="docutils literal notranslate"><span class="pre">cd</span></code>).</p>
+<p>If the directory isn’t correct, use the <code class="docutils literal notranslate"><span class="pre">cd</span></code> (or <code class="docutils literal notranslate"><span class="pre">chdir</span></code>) command to navigate to the correct working directory.</p>
 </li>
-<li><p>Otherwise, the virtual environment is not active, and needs to be activated.</p></li>
-</ul>
-<p>In order to run <code class="docutils literal notranslate"><span class="pre">make</span></code>, the virtual environment needs to be active.
-Here’s the command to activate the virtual environment.</p>
+<li><p>The virtual environment. If the prompt starts with <code class="docutils literal notranslate"><span class="pre">(my-book)</span></code> then the virtual environment is active. Nothing more needs to be done.</p>
+<p>If the virtual environment isn’t active, use one of the following commands to activate it.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
 </pre></div>
 </div>
-<p>For <strong>Windows</strong> the command is slightly simpler.</p>
+<p>For <strong>Windows</strong> the command is slightly different.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.venv<span class="se">\S</span>cripts<span class="se">\A</span>ctivate.ps1
 </pre></div>
 </div>
-<p>This will make all the Python scripts and tools into first-class parts of the current working environment.</p>
-<p>The prompt will change to include <code class="docutils literal notranslate"><span class="pre">(my-book)</span></code> as a reminder that the virtual environment is now active.</p>
+</li>
+</ul>
+<p>The prompt will have a prefix of <code class="docutils literal notranslate"><span class="pre">(my-book)</span></code> as a reminder that the virtual environment is now active.</p>
 </section>
-<section id="step-2-write">
-<h2>Step 2: Write<a class="headerlink" href="#step-2-write" title="Link to this heading">¶</a></h2>
+<section id="step-2-write-some-content">
+<h2>Step 2: Write Some Content<a class="headerlink" href="#step-2-write-some-content" title="Link to this heading">¶</a></h2>
 <p>Open Spyder.</p>
 <p>Open the <code class="docutils literal notranslate"><span class="pre">index.rst</span></code> file. It should look something like this.</p>
 <div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="c">.. my_book documentation master file, created by</span>
@@ -96,7 +95,7 @@ This is private material, for the author’s eyes only.
 It’s not included in the output.</p></li>
 <li><p>The title is <code class="docutils literal notranslate"><span class="pre">my_book</span> <span class="pre">documentation</span></code>.
 We know this is some kind of heading because it is followed by an underline that has the same length as the line above it.
-A heading <strong>must</strong> have this two-line structure.</p>
+A heading <strong>must</strong> have this two-line structure: a title and a matching underline.</p>
 <p>RST headings are underlined using any of a variety of characters.
 We suggest the following pattern:</p>
 <ul class="simple">
@@ -105,15 +104,21 @@ We suggest the following pattern:</p>
 <li><p>Section titles have <code class="docutils literal notranslate"><span class="pre">-</span></code> as the underline.</p></li>
 <li><p>Subsections can have <code class="docutils literal notranslate"><span class="pre">~</span></code> as the underline.</p></li>
 </ul>
-<p>If you need subsubsections, use <code class="docutils literal notranslate"><span class="pre">*</span></code>.</p>
-<p>Consistency matters.</p>
+<p>If you need subsubsections, use <code class="docutils literal notranslate"><span class="pre">*</span></code> to underline the title.</p>
+<p>These are suggestions, feel free to use other patterns.
+Consistency is what matters.
+The RST processing tools will deduce your pattern if it’s consistent.
+If it’s inconsistent, it will stop processing at the inconsistent heading underline.</p>
 </li>
-<li><p>The use of the <code class="docutils literal notranslate"><span class="pre">``</span></code> character pairs to surround text that’s shown in “terminal” font.
-The <code class="docutils literal notranslate"><span class="pre">index.rst</span></code> example doesn’t show using <code class="docutils literal notranslate"><span class="pre">**</span></code> for strong emphasis, and <code class="docutils literal notranslate"><span class="pre">*</span></code> for emphasis. Strong emphasis often uses a <strong>bold</strong> style. Emphasis often uses an <em>italic</em> style.</p></li>
+<li><p>The  <code class="docutils literal notranslate"><span class="pre">``</span></code> and <code class="docutils literal notranslate"><span class="pre">``</span></code> character pairs are used to surround text that’s shown in “terminal” font.
+There are other pattens for text highlighting.
+Surround text with <code class="docutils literal notranslate"><span class="pre">**</span></code> for strong emphasis, and <code class="docutils literal notranslate"><span class="pre">*</span></code> for emphasis.
+Strong emphasis often uses a <strong>bold</strong> style.
+Emphasis often uses an <em>italic</em> style.</p></li>
 <li><p>There’s a two-part hyperlink: <code class="docutils literal notranslate"><span class="pre">`text</span> <span class="pre">&lt;URL&gt;`_</span></code>.
 Note the use of single <code class="docutils literal notranslate"><span class="pre">`</span></code> characters to surround the hyperlink, and the use of <code class="docutils literal notranslate"><span class="pre">_</span></code> at the end to show that this link leads away from this document to another site on the internet.
-The text is what the reader will see.
-The part in <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> … <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> is the Uniform Resource Locator (URL) to which they can be directed if they click.</p></li>
+The initial text is what the reader will see.
+The trailing text – in <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> … <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> – is the Uniform Resource Locator (URL) to which they can be directed if they click on the link.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> is a “directive”.
 A directive is not part of the text, but is an instruction to Sphinx to do something here.
 This specific directive tells Sphinx to locate the files named within the directive and create a table of contents from them.
@@ -133,9 +138,9 @@ Change the line of <code class="docutils literal notranslate"><span class="pre">
 </ul>
 </li>
 </ul>
-<p>What’s involved in adding a chapter?</p>
+<p>What’s involved in adding a chapter? There are three steps for each of these chapters:</p>
 <ol class="arabic">
-<li><p>Create a new <code class="docutils literal notranslate"><span class="pre">.rst</span></code> file for the chapter.
+<li><p>Use Spyder to create a new <code class="docutils literal notranslate"><span class="pre">.rst</span></code> file for the chapter.
 We might create a file named <code class="docutils literal notranslate"><span class="pre">introduction.rst</span></code>.</p></li>
 <li><p>Put the title in the chapter.
 The first two lines of the <code class="docutils literal notranslate"><span class="pre">introduction.rst</span></code> file can be</p>
@@ -145,16 +150,18 @@ The first two lines of the <code class="docutils literal notranslate"><span clas
 </div>
 <p>Feel free to leave a blank line after the underline and write anything that looks interesting as part of this chapter.</p>
 </li>
-<li><p>Update the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive in <code class="docutils literal notranslate"><span class="pre">index.rst</span></code> to include the stem of the new file’s name. Use <code class="docutils literal notranslate"><span class="pre">introduction</span></code>, because the suffix (<code class="docutils literal notranslate"><span class="pre">.rst</span></code>) is part of the default configuration, and doesn’t need to be included in the the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive’s content.</p>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive in <code class="docutils literal notranslate"><span class="pre">index.rst</span></code> to include the stem of the new file’s name. For example, if you created <code class="docutils literal notranslate"><span class="pre">introduction.rst</span></code>, then put <code class="docutils literal notranslate"><span class="pre">introduction</span></code> as a separate, indented line under the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive.</p>
+<p>The file suffix (<code class="docutils literal notranslate"><span class="pre">.rst</span></code>) is part of the default configuration.
+You don’t include this in the the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive’s content.</p>
 <p>It might look like this:</p>
 <div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">toctree</span><span class="p">::</span>
    <span class="nc">:maxdepth:</span> 2
    <span class="nc">:caption:</span> Contents:
 
-    introduction
+   introduction
 </pre></div>
 </div>
-<p>What’s important is the file name is <strong>indented</strong> within the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive’s content.</p>
+<p>What’s important is (1) the file name is <strong>indented</strong> within the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> directive’s content, and (2) it’s separated from the <code class="docutils literal notranslate"><span class="pre">:maxdepth:</span></code> and <code class="docutils literal notranslate"><span class="pre">:caption:</span></code> lines with one blank line.</p>
 </li>
 </ol>
 <p>These three steps should be repeated for each of the five new chapters.
@@ -183,13 +190,13 @@ Inside here, there’s an <code class="docutils literal notranslate"><span class
 We can write and publish complex TTRPG material with (relative) ease.
 We can decompose the book into multiple files.
 We can easily have several files open at once to make sure sections are consistent.</p>
-<p>We’ve seen the <strong>Change-Compute-Consider</strong> cycle up close.</p>
+<p>We’ve taken a first look at the <strong>Change-Compute-Consider</strong> cycle:</p>
 <ul class="simple">
 <li><p>Change an <code class="docutils literal notranslate"><span class="pre">.rst</span></code> (and other) files in the project directory.</p></li>
 <li><p>Compute a new target document by running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> at the command line.</p></li>
 <li><p>Consider the resulting web site.</p></li>
 </ul>
-<p>To move onto the complicated parts – Spells and Characters – we need a few more tools. In the next part of the tutorial, <a class="reference internal" href="opend6_tools.html#tutorial-opend6-tools"><span class="std std-ref">OpenD6 Tools</span></a>, we’ll add the <code class="docutils literal notranslate"><span class="pre">opend6-tools</span></code> package to our working virtual environment. We’ll also pause to explore Jupyter Lab as a kind of IDE for working with code.</p>
+<p>To move onto the complicated parts – Spells and Characters – we need a few more tools. In the next part of the tutorial, <a class="reference internal" href="opend6_tools.html#tutorial-opend6-tools"><span class="std std-ref">OpenD6 Tools</span></a>. We’ll also pause to explore Jupyter Lab as a kind of IDE for working with code.</p>
 </section>
 </section>
 
@@ -231,32 +238,25 @@ We can easily have several files open at once to make sure sections are consiste
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation and Quickstart</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="index.html#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#the-big-picture">The Big Picture</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html#this-tutorial">This Tutorial</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="installing_software.html">Installing Software</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Start Writing</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#step-1-activate-the-virtual-environment">Step 1: Activate the virtual environment</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#step-2-write">Step 2: Write</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#step-3-run-make">Step 3: Run Make</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#conclusion">Conclusion</a></li>
-</ul>
-</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Start Writing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="opend6_tools.html">OpenD6 Tools</a></li>
-<li class="toctree-l3"><a class="reference internal" href="define_spells.html">Define Spells</a></li>
-<li class="toctree-l3"><a class="reference internal" href="define_characters.html">Define Characters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="define_spells.html">The Spell DSL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="define_characters.html">The Character DSL</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../applications.html">Applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../magic2.html">The <code class="docutils literal notranslate"><span class="pre">magic2</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../character.html">The <code class="docutils literal notranslate"><span class="pre">character</span></code> module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebook_extract.html">The <code class="docutils literal notranslate"><span class="pre">notebook_extract</span></code> application</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../computations.html">Miscellaneous Computations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notes.html">Notes on DSL Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/index.html">Notes</a></li>
 </ul>
 
 
@@ -268,7 +268,7 @@ We can easily have several files open at once to make sure sections are consiste
       &#169;2025, S.Lott.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |

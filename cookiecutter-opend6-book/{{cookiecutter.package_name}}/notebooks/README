@@ -1,0 +1,11 @@
+Put all ``.ipynb`` notebooks here.
+
+The ``Makefiles`` in ``characters``, ``items``, and ``spells`` will 
+extract the definitions from these notebooks to create Python modules.
+
+The modules will then produce the RST files (with extensions ``.txt``) 
+for final publication.
+
+The manually-created RST files will have an extension of ``.rst`` to make
+it clear which files are part of the main outline.
+The ``.txt`` files will be brought into the document with ``..  include::`` directives.

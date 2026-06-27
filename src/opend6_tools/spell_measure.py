@@ -99,10 +99,15 @@ def main(rows: int = 35) -> None:
         for row in range(rows):
             source_row = (row + col * rows for col in range(columns))
             display_row = [
-                table[src][a] if src < len(table) else None for src in source_row for a in (0, 1)
+                table[src][a] if src < len(table) else None
+                for src in source_row
+                for a in (0, 1)
             ]
             target.writerow(display_row)
 
 
-if __name__ == "__main__":
-    typer.run(main)
+app = typer.Typer()
+app.command()(main)
+
+if __name__ == "__main__":  # pragma: no cover
+    app()

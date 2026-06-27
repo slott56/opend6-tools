@@ -6,45 +6,82 @@
 OpenD6 Tools
 ==========================
 
-These tools help preparing documents to support the **OpenD6** Table-Top Role-Playing Game (TTRPG).
+Welcome to a collection of tools to help preparing documents for the **OpenD6** Table-Top Role-Playing Game (TTRPG).
 
-This is focused on two Python libraries that define a Domain Specific Language (DSL) for spells and characters.
-Each offers a number of helpful features:
+The essence is Domain Specific Languages (DSL) to define spells, items, creatures, and characters using Python syntax.
+Python is a programming language, but there's no real "programming" involved.
+The definition doesn't involve iteration or conditional execution; it's an explicit specification of the **OpenD6** object.
 
--  These modules allow the definition of spells (and miracles) using Python syntax.
-   Since the DSL is declaratory, there's no real "programming" involved: only adherence to Python syntax rules.
+There are three DSL's:
 
--  Check the math used to compute spell difficulties, and character budgets (dice or character points.)
+-  The :py:mod:`opend6_tools.magic2` package is for designing spells, invocations, and items.
 
--  Emit ReStructuredText documents that can be processed by the **Sphinx** tool (and any other **docutils** tools) to create published documents.
+-  The :py:mod:`opend6_tools.character` package is for building characters and creatures.
+   (As a nod to the *OpenD6 Fantasy Worldbook: Kingdom of the East*, magical swords can have Charisma and Agility, and are essentially creatures, defined with this package.)
 
-There are two modules that define the DSL's:
+-   The :py:mod:`opend6.dice` package is a small DSL for dice expressions, used by the other two packages.
 
--  The :py:mod:`opend6_tools.magic2` module defines the DSL for designing spells and invocations.
+The package includes the :py:mod:`opend6_tools.notebook_extract` application to extract Spell, Item, or Character definitions from a Jupyter Lab notebook into a Python module.
+Using JupyterLab permits easy, flexible, interactive computation of details.
+When defining a character, for example, the result of a change to the attributes can be computed and displayed immediately in JupyterLab.
+We call this the **Change**-**Compute**-**Consider** cycle for working on a design.
+The extract from the notebook can then be converted to RST to feed the publication pipeline.
 
--  The :py:mod:`opend6_tools.character` module defines a DSL building characters and creatures that fit within a campaign.
+The :py:mod:`opend6_tools.dice` module is also a command-line application to roll dice using the **OpenD6** Wild Die rules.
 
-Additionally, the following applications are also part of publishing the rule books.
+Similarly, the :py:mod:`opend6_tools.character` package is **also** a command-line application to create blank character sheets.
 
-- The :py:mod:`opend6_tools.notebook_extract` module extracts Spell or Character definitions from a Jupyter Lab notebook into a Python module.
-   This can be converted to RST for publication.
+Plus, just for the curious, there are two other other applications.
+See the :ref:`misc_comp` section on creating some of the more complicated tables in the **OpenD6** rules from first principles.
 
-- The :ref:`misc_comp` section describes some modules to compute a few tables in the **OpenD6** rules from first principles.
-   These include the :py:mod:`opend6_tools.die_simplification` and :py:mod:`opend6_tools.spell_measure` modules.
+-  The :py:mod:`opend6_tools.die_simplification` application.
 
-The :ref:`dsl_design` section describes the overall approach to creating the DSLs.
+-  The :py:mod:`opend6_tools.spell_measure` application.
+
+Additionally, some Jupyter Lab notebooks are part of this project. These can help to analyze spells and characters.
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
    :caption: Contents:
 
    installation
    tutorial/index
    usage
+   applications
    architecture
-   magic2
-   character
-   notebook_extract
-   computations
-   notes
+   reference/index
+   notes/index
 
+On DSL's
+--------
+
+These DSL's provide a way to define **OpenD6** objects (like spells or creatures) using using Python syntax.
+These DSL's have a number of benefits:
+
+-   Incomplete definitions are easily identified. The Python syntax errors will show many spelling mistakes.
+
+-   Analytical tools can be used to locate inconsistent spell definitions.
+
+-   The spell difficulties and character dice budgets are directly computed from the details.
+    This is consistent (and automatic); it avoids time with pencil, paper, or calculator.
+
+-   The definition is transformed into ReStructuredText documents with consistent organization. These can be processed by the **Sphinx** tool (and any other **docutils** tools) to create final publications.
+
+The Text User Interface (TUI) of a DSL has a few advantages over a point-and-click Graphical User Interface (GUI).
+
+-   Any programming text editor can be used. A project consists entirely of text files which are **always** accessible.
+
+-   There's no separate save-file format. (A GUI needs to save the state of the graphic presentation in some kind of file format: JSON, TOML, XML, etc.)
+
+-   Processing to do budget computations -- either difficulty or dice -- are an essential feature of the DSL.
+
+-   Conversion to other formats is done via `Jinja <https://jinja.palletsprojects.com/en/stable/>`_ templates to emit the details in the desired format.
+    New templates can be added.
+
+-   Conversions from other sources (e.g., personal notes, a VTT tool, etc.) are a matter of transforming the source to Python format.
+    This requires transforming source text into Python syntax.
+    This is not *easy*, but it is relatively straight-forward text manipulation.
+
+The advantage of a GUI is providing a known, fixed number of slots which must be filled.
+Most designers will create a block of text with a template character definition or a template spell definition.
+Many programming editors have convenient template management features.

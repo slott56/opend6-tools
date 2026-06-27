@@ -1,0 +1,119 @@
+..  _notebook_extract_app:
+
+######################################
+``notebook_extract`` app
+######################################
+
+Spells and Characters (as well as Creatures) are defined in Python modules.
+This makes testing and publication relatively straightforward.
+The DSL is Python, the Python module can be tested, displayed, and debugged using a variety of software development editors and tools.
+
+However, making changes to a module and considering the consequences of those changes is easier in Jupyter Lab.
+The tools is interactive, allowing immediate computation after a change.
+Introducing Jupyter Lab extends the build process slightly.
+
+The following diagram shows how the :py:mod:`opend6_tools.notebook_extract` application pulls Spell (or Invocation) definitions from a notebook.
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/class-diagram
+
+    title From Notebook to Document Source Files
+
+    package opend6_tools {
+        component magic2 <<lib>>
+        component character <<lib>>
+        component notebook_extract.py <<app>>
+    }
+
+    package notebooks {
+        artifact spells_subsection.ipynb <<Notebook>> #line.bold
+        artifact template_character.ipynb <<Notebook>> #line.bold
+    }
+
+    spells_subsection.ipynb ..> magic2 : import
+    template_character.ipynb ..> character : import
+
+    package document_source {
+        artifact magic.rst <<RST>> #line.bold
+        artifact character_templates.rst <<RST>> #line.bold
+
+        package spells {
+            component spells_subsection.py <<app>>
+            artifact spells_subsection.txt <<RST>>
+            spells_subsection.py ..> magic2 : import
+        }
+        spells_subsection.txt <- spells_subsection.py : Creates
+        magic.rst --> spells_subsection.txt : """include::"" directive"
+
+        package characters {
+            component template_character.py <<app>>
+            artifact template_character.txt <<RST>>
+            template_character.py ..> character : import
+        }
+        template_character.txt <- template_character.py : Creates
+        character_templates.rst --> template_character.txt : """include::"" directive"
+    }
+
+    notebook_extract.py --> spells_subsection.ipynb : "Reads"
+    notebook_extract.py ---> spells_subsection.py : "Writes"
+
+    notebook_extract.py ---> template_character.ipynb : "Reads"
+    notebook_extract.py ---> template_character.py : "Writes"
+
+    @enduml
+
+To help clarify the processing, here's a sequence diagram.
+
+..  uml::
+
+    @startuml
+    'https://plantuml.com/activity-diagram-beta
+
+    start
+    repeat
+    :write source material;
+    fork
+    :edit magic.rst\nUse .. include:: for spells;
+    :Change-Compute-Consider\nspells/spells_subsection.ipynb;
+    fork again
+    :edit character_templates.rst\nUse .. include:: for characters;
+    :Change-Compute-Consider\ncharacters/template_character.ipynb;
+    end fork;
+    repeat while (still considering);
+    :run make to publish;
+    partition makefile {
+        :notebook_extract spells_subsection;
+        :spells_subsection display to create .txt;
+        :notebook_extract template_character;
+        :template_character display to create .txt;
+        :sphinx build html;
+    }
+    stop
+    @enduml
+
+The details of executing the :py:mod:`opend6_tools.notebook_extract` application are packaged into a ``Makefile``.
+This makes it easier to focus on character and spell design.
+The conversion from notebook to module and module to RST text is
+all automated.
+
+When engaging with the **Change-Compute-Consider** cycle, it can help to have
+formal test cases to be sure that a small change to a spell doesn't make an unexpected alteration to the difficulty.
+
+This can be included in a Notebook via Python ``assert`` statements that will validate
+an aspect of a Spell (or Character.)
+
+..  code-block::
+
+    assert some_spell.difficulty == 42
+
+This will become part of the ``__test__`` definition in the spell module.
+It is used by **make** to be sure the spell is defined properly, and there's no
+technical problem with the Python code.
+
+Implementation
+==============
+
+..  automodule:: opend6_tools.notebook_extract
+

@@ -1,5 +1,5 @@
 """
-Migrate magic1 definitions to magic2.
+Migrate magic1 definitions to magic.
 
 This covers all aspects **EXCEPT** the effect.
 Effects are all over the map and very difficult to parse.
@@ -82,7 +82,7 @@ import jinja2
 import typer
 
 import magic1
-import magic2
+import magic
 
 
 class ModuleWriter:
@@ -96,7 +96,7 @@ class ModuleWriter:
         from decimal import Decimal
         from typing import Annotated, Any
         import typer
-        from magic2 import *
+        from magic import *
     
         {% block books %}
         spells = [
@@ -180,14 +180,14 @@ class ModuleWriter:
         return template.render(spell_source=spells, title=title, tests=tests)
 
 
-class AisleFive(magic2.GenericAspect):
+class AisleFive(magic.GenericAspect):
     """Requires replacement; the description was uninterpretable."""
 
     pass
 
 
 class RewriteAspect(abc.ABC):
-    """Rewrite a spell aspect into a ``magic2`` version.
+    """Rewrite a spell aspect into a ``magic`` version.
     AND. Save the descriptive text and their conversion status.
     """
     target : type
@@ -201,7 +201,7 @@ class RewriteAspect(abc.ABC):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.target})"
 
-    def convert(self, source: magic1.Aspect) -> magic2.Aspect | magic2.Effect:
+    def convert(self, source: magic1.Aspect) -> magic.Aspect | magic.Effect:
         try:
             new = self.m2(source)
             self.good_descriptions[source.description] += 1
@@ -216,27 +216,27 @@ class RewriteAspect(abc.ABC):
             raise
 
     @abc.abstractmethod
-    def m2(self, source: magic1.Aspect) -> magic2.Aspect | magic2.Effect: ...
+    def m2(self, source: magic1.Aspect) -> magic.Aspect | magic.Effect: ...
 
 
 class MakeGeneric(RewriteAspect):
-    """Rewrite an aspects not otherwise defined into :py:class:`magic2.GenericAspect`."""
-    target = magic2.GenericAspect
+    """Rewrite an aspects not otherwise defined into :py:class:`magic.GenericAspect`."""
+    target = magic.GenericAspect
 
-    def m2(self, source: magic1.Aspect) -> magic2.GenericAspect:
-        return magic2.GenericAspect(
+    def m2(self, source: magic1.Aspect) -> magic.GenericAspect:
+        return magic.GenericAspect(
             difficulty=source.difficulty,
             description=source.description,
         )
 
 
 class MakeAspect(RewriteAspect):
-    """Baseline rewrite where the description text serves to create a ``magic2`` version."""
-    def __init__(self, target: type[magic2.Aspect] = AisleFive) -> None:
+    """Baseline rewrite where the description text serves to create a ``magic`` version."""
+    def __init__(self, target: type[magic.Aspect] = AisleFive) -> None:
         super().__init__()
         self.target = target
 
-    def m2(self, source: magic1.Aspect) -> magic2.GenericAspect:
+    def m2(self, source: magic1.Aspect) -> magic.GenericAspect:
         cls = self.target
         return cls(
             source.description,
@@ -248,7 +248,7 @@ class MakeEffect(RewriteAspect):
     Skill, Attribute, Special Ability, Disadvantage, Damage, Protection, or Measure.
     There are numerous forms and formats for these effects.
     """
-    target = magic2.Effect
+    target = magic.Effect
 
     def __init__(self) -> None:
         super().__init__()
@@ -258,7 +258,7 @@ class MakeEffect(RewriteAspect):
         self.mass = Counter()
         self.unknown = Counter()
 
-    def m2(self, source: magic1.Aspect) -> magic2.Effect:
+    def m2(self, source: magic1.Aspect) -> magic.Effect:
         # 1. Look for a DieCode expression (nD[+-a]) -- skill or attribute effect.
         dice_pat = DIGIT + "D" + optional(chars(DIGIT, PLUS, MINUS))
         self.logger.debug("dice_pat %r, source_description %r", dice_pat, source.description)
@@ -266,7 +266,7 @@ class MakeEffect(RewriteAspect):
             # words [ nD+-a ] words
             pre, die_string, post = source.description[:match.start()], source.description[match.start():match.end()], source.description[match.end():]
             try:
-                return magic2.SkillEffect(f"{pre} {post}", die_string)
+                return magic.SkillEffect(f"{pre} {post}", die_string)
             except ValueError as ex:
                 self.logger.debug(ex)
             self.logger.debug("die %s %r", dice_pat,
@@ -284,11 +284,11 @@ class MakeEffect(RewriteAspect):
             # words [ (R number) ] words
             pre, rank_string, post = source.description[:match.start()], source.description[match.start():match.end()], source.description[match.end():]
             try:
-                return magic2.SpecialAbilityEffect(pre, rank=int(match.group(1)), note=post)
+                return magic.SpecialAbilityEffect(pre, rank=int(match.group(1)), note=post)
             except ValueError as ex:
                 self.logger.debug(ex)
             try:
-                return magic2.DisadvantageEffect(pre, rank=int(match.group(1)), note=post)
+                return magic.DisadvantageEffect(pre, rank=int(match.group(1)), note=post)
             except ValueError as ex:
                 self.logger.debug(ex)
             self.logger.debug("special %s %r", special_pat,
@@ -298,8 +298,8 @@ class MakeEffect(RewriteAspect):
         # 3. Look for "damage resistance" -- protection effect
         if match := re.search(r"damage\s+resistance", source.description, re.IGNORECASE):
             try:
-                diff, desc = magic2.DieUnit().parse(source.description)
-                return magic2.ProtectionEffect(source.description, desc)  # Canonical
+                diff, desc = magic.DieUnit().parse(source.description)
+                return magic.ProtectionEffect(source.description, desc)  # Canonical
             except ValueError as ex:
                 self.logger.debug(ex)
                 self.logger.debug("resistance %r",source.description)
@@ -308,8 +308,8 @@ class MakeEffect(RewriteAspect):
         # 4. Look for "damage" -- damage effect
         if match := re.search(r"damage", source.description, re.IGNORECASE):
             try:
-                diff, desc = magic2.DieUnit().parse(source.description)
-                return magic2.DamageEffect(source.description,desc)  # Canonical
+                diff, desc = magic.DieUnit().parse(source.description)
+                return magic.DamageEffect(source.description,desc)  # Canonical
             except ValueError as ex:
                 self.logger.debug(ex)
                 self.logger.debug("damage %r",source.description)
@@ -331,8 +331,8 @@ class MakeEffect(RewriteAspect):
             # words [ number unit ] words
             pre, measure, post = source.description[:match.start()], source.description[match.start():match.end()], source.description[match.end():]
             try:
-                diff, desc = magic2.TimeUnit().parse(measure)
-                return magic2.TimeEffect(f"{pre} -- {post}", measure)
+                diff, desc = magic.TimeUnit().parse(measure)
+                return magic.TimeEffect(f"{pre} -- {post}", measure)
             except ValueError:
                 self.logger.debug("time %r", source.description)
                 self.time[source.description] += 1
@@ -349,8 +349,8 @@ class MakeEffect(RewriteAspect):
             pre, measure, post = source.description[:match.start()], source.description[match.start():match.end()], source.description[match.end():]
             self.logger.debug("mass pre, measure, post = %r, %r, %r", pre, measure, post)
             try:
-                diff, desc = magic2.MassUnit().parse(measure)
-                return magic2.MassEffect(f"{pre} -- {post}", measure)
+                diff, desc = magic.MassUnit().parse(measure)
+                return magic.MassEffect(f"{pre} -- {post}", measure)
             except ValueError:
                 self.logger.debug("mass %r", source.description)
                 self.mass[source.description] += 1
@@ -358,76 +358,76 @@ class MakeEffect(RewriteAspect):
         # Give up.
         self.unknown[source.description] += 1
         self.logger.error("unparseable %r", source.description)
-        return magic2.Effect(source.description, source.difficulty)
+        return magic.Effect(source.description, source.difficulty)
 
 
-class MakeDuration(magic2.TimeUnit, RewriteAspect):
-    target = magic2.DurationAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Effect:
+class MakeDuration(magic.TimeUnit, RewriteAspect):
+    target = magic.DurationAspect
+    def m2(self, source: magic1.Aspect) -> magic.Effect:
         if "12 rounds" in source.description.lower():
-            return magic2.DurationAspect("12 rounds")
+            return magic.DurationAspect("12 rounds")
         if "4 minutes" in source.description.lower():
-            return magic2.DurationAspect("50 rounds")
+            return magic.DurationAspect("50 rounds")
         if "1.s rounds" in source.description.lower():
-            return magic2.DurationAspect("1.5 rounds")
+            return magic.DurationAspect("1.5 rounds")
         diff, desc = self.parse(source.description)
-        return magic2.DurationAspect(
+        return magic.DurationAspect(
             desc,
         )
 
 
-class MakeRange(magic2.DistUnit, RewriteAspect):
-    target = magic2.RangeAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Effect:
+class MakeRange(magic.DistUnit, RewriteAspect):
+    target = magic.RangeAspect
+    def m2(self, source: magic1.Aspect) -> magic.Effect:
         if "self" in source.description.lower():
-            return magic2.RangeAspect("self")
+            return magic.RangeAspect("self")
         if "1 meter" in source.description.lower():
-            return magic2.RangeAspect("self")
+            return magic.RangeAspect("self")
         if "within 10m" in source.description.lower():
-            return magic2.RangeAspect("10m")
+            return magic.RangeAspect("10m")
         diff, desc = self.parse(source.description)
-        return magic2.RangeAspect(
+        return magic.RangeAspect(
             desc,
         )
 
 
-class MakeCastingTime(magic2.TimeUnit, RewriteAspect):
-    target = magic2.CastingTimeAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Effect:
+class MakeCastingTime(magic.TimeUnit, RewriteAspect):
+    target = magic.CastingTimeAspect
+    def m2(self, source: magic1.Aspect) -> magic.Effect:
         diff, desc = self.parse(source.description)
-        return magic2.CastingTimeAspect(
+        return magic.CastingTimeAspect(
             desc,
         )
 
 
-class MakeSpeed(magic2.TimeUnit, RewriteAspect):
-    target = magic2.SpeedAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Effect:
+class MakeSpeed(magic.TimeUnit, RewriteAspect):
+    target = magic.SpeedAspect
+    def m2(self, source: magic1.Aspect) -> magic.Effect:
         if source.description == "0D":
-            return magic2.SpeedAspect.based_on("range", "Instantaneous")
+            return magic.SpeedAspect.based_on("range", "Instantaneous")
         if source.description == "Immediate":
-            return magic2.SpeedAspect.based_on("range", "Instantaneous")
+            return magic.SpeedAspect.based_on("range", "Instantaneous")
         if "/" in source.description:
             speed_text, note = source.description.split("/")
             speed_text = speed_text.replace("per second", "")
-            return magic2.SpeedAspect(measure=speed_text, note=note)
+            return magic.SpeedAspect(measure=speed_text, note=note)
         diff, desc = self.parse(source.description)
-        return magic2.SpeedAspect.based_on("range", desc)
+        return magic.SpeedAspect.based_on("range", desc)
 
 
-class MakeAreaEffect(magic2.TimeUnit, RewriteAspect):
-    target = magic2.AreaEffectAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Effect:
+class MakeAreaEffect(magic.TimeUnit, RewriteAspect):
+    target = magic.AreaEffectAspect
+    def m2(self, source: magic1.Aspect) -> magic.Effect:
         if "2m sphere" in source.description:
-            return magic2.AreaEffectAspect(
+            return magic.AreaEffectAspect(
                 "2m sphere",
             )
         if "5-meter-radius circle" in source.description:
-            return magic2.AreaEffectAspect(
+            return magic.AreaEffectAspect(
                 "5m radius circle",
             )
         if "height of 3 meters and width of 1 meter" in source.description:
-            return magic2.AreaEffectAspect(
+            return magic.AreaEffectAspect(
                 "3m height 1m width wall"
             )
         # [shape] "with" "radius" "of" [size] "meters"
@@ -452,21 +452,21 @@ class MakeAreaEffect(magic2.TimeUnit, RewriteAspect):
             else:
                 new = f"{match.group(4)} meter radius {match.group(3).lower()}"
             self.logger.info("found %r, created %r", source, new)
-            return magic2.AreaEffectAspect(new)
+            return magic.AreaEffectAspect(new)
         diff, desc = self.parse(source.description)
-        return magic2.AreaEffectAspect(
+        return magic.AreaEffectAspect(
             desc,
         )
 
-class MakeConcentration(magic2.TimeUnit, RewriteAspect):
-    target = magic2.ConcentrationAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Effect:
+class MakeConcentration(magic.TimeUnit, RewriteAspect):
+    target = magic.ConcentrationAspect
+    def m2(self, source: magic1.Aspect) -> magic.Effect:
         if source.description == '2 rounds of concentration with willpower/mettle difficulty of of 8':
-            return magic2.ConcentrationAspect("2 rounds", note="willpower/mettle difficulty 8")
+            return magic.ConcentrationAspect("2 rounds", note="willpower/mettle difficulty 8")
         if source.description == '1 round with willpower/mettle at difficulty 9':
-            return magic2.ConcentrationAspect("1 round", note="willpower/mettle difficulty 9")
+            return magic.ConcentrationAspect("1 round", note="willpower/mettle difficulty 9")
         if source.description.startswith('Every 24 hours'):
-            return magic2.ConcentrationAspect("1 round", note="willpower/mettle difficulty 8; every 24 hours")
+            return magic.ConcentrationAspect("1 round", note="willpower/mettle difficulty 8; every 24 hours")
         pattern_1 = (
             group(
                 noncap_group(one_or_more(DIGIT), zero_or_more(WHITESPACE)),
@@ -476,45 +476,45 @@ class MakeConcentration(magic2.TimeUnit, RewriteAspect):
             + group(ANYTHING + zero_or_more(WHITESPACE) + optional(noncap_group("difficulty" + zero_or_more(WHITESPACE))) + "of" + one_or_more(WHITESPACE) + one_or_more(DIGIT))
         )
         if match_1 := re.search(pattern_1, source.description):
-            return magic2.ConcentrationAspect(match_1.group(1), note=match_1.group(2))
+            return magic.ConcentrationAspect(match_1.group(1), note=match_1.group(2))
         self.logger.info("Pattern: %r, Input: %r", pattern_1, source.description)
         diff, desc = self.parse(source.description)
-        return magic2.ConcentrationAspect(
+        return magic.ConcentrationAspect(
             desc,
         )
 
 class MakeCountenanceAspect(RewriteAspect):
-    target = magic2.CountenanceAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Aspect:
+    target = magic.CountenanceAspect
+    def m2(self, source: magic1.Aspect) -> magic.Aspect:
         # Default is "noticeable"
         # Look for "exteme"
         measure = "extreme" if "extreme" in source.description.lower() else "noticeable"
-        return magic2.CountenanceAspect(source.description, measure)
+        return magic.CountenanceAspect(source.description, measure)
 
 class MakeFeedbackAspect(RewriteAspect):
-    """Makes a magic2.FeedbackAspect."""
-    target = magic2.FeedbackAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Aspect:
+    """Makes a magic.FeedbackAspect."""
+    target = magic.FeedbackAspect
+    def m2(self, source: magic1.Aspect) -> magic.Aspect:
         if '-3 to damage resistance' in source.description:
-            return magic2.FeedbackAspect(3)
+            return magic.FeedbackAspect(3)
         elif '-2 to damage resistance' in source.description:
-            return magic2.FeedbackAspect(2)
+            return magic.FeedbackAspect(2)
         elif '-1 to damage resistance' in source.description:
-            return magic2.FeedbackAspect(1)
-        return magic2.FeedbackAspect(source.description)
+            return magic.FeedbackAspect(1)
+        return magic.FeedbackAspect(source.description)
 
 class MakeFocusedAspect(RewriteAspect):
-    """Makes a magic2.FocusedAspect."""
-    target = magic2.FocusedAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Aspect:
-        return magic2.FocusedAspect.based_on(("effect", "duration"), target=source.format)
+    """Makes a magic.FocusedAspect."""
+    target = magic.FocusedAspect
+    def m2(self, source: magic1.Aspect) -> magic.Aspect:
+        return magic.FocusedAspect.based_on(("effect", "duration"), target=source.format)
 
 
 class MakeGestures(RewriteAspect):
-    target = magic2.GesturesAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Effect:
+    target = magic.GesturesAspect
+    def m2(self, source: magic1.Aspect) -> magic.Effect:
         if "program instructions into robot" in source.description.lower():
-            return magic2.GesturesAspect("program instructions into robot, using devices/tech/robot interface/repair", "challenging", "difficulty 23")
+            return magic.GesturesAspect("program instructions into robot, using devices/tech/robot interface/repair", "challenging", "difficulty 23")
         pattern = (
             group(ANYTHING) + one_or_more(WHITESPACE)
             + OPEN_PAREN + group(ANYTHING) + CLOSE_PAREN
@@ -530,14 +530,14 @@ class MakeGestures(RewriteAspect):
                 measures = f"{roll_match.group(1)} ({roll_match.group(2)})"
             else:
                 measures = measures.replace(",", ";")
-            return magic2.GesturesAspect(note, measures.replace("fairly ", ""))
+            return magic.GesturesAspect(note, measures.replace("fairly ", ""))
         # self.logger.info("Pattern: %r, text: %r", pattern, source.description)
-        return magic2.GesturesAspect(source.description)
+        return magic.GesturesAspect(source.description)
 
 
 class MakeIncantation(RewriteAspect):
-    target = magic2.IncantationsAspect
-    def m2(self, source: magic1.Aspect) -> magic2.Effect:
+    target = magic.IncantationsAspect
+    def m2(self, source: magic1.Aspect) -> magic.Effect:
         pattern = (
             group(ANYTHING) + one_or_more(WHITESPACE)
             + OPEN_PAREN + group(ANYTHING) + CLOSE_PAREN
@@ -553,8 +553,8 @@ class MakeIncantation(RewriteAspect):
                 measures = f"{roll_match.group(1)} ({roll_match.group(2)})"
             else:
                 measures = measures.replace(",", ";")
-            return magic2.IncantationsAspect(note, measures)
-        return magic2.IncantationsAspect(source.description)
+            return magic.IncantationsAspect(note, measures)
+        return magic.IncantationsAspect(source.description)
 
 
 class ConversionError(BaseException):
@@ -574,22 +574,22 @@ class RewriteSpell:
         "area effect": MakeAreaEffect(),
         "area_of_effect": MakeAreaEffect(),
         "area_effect": MakeAreaEffect(),
-        "change target": MakeAspect(magic2.ChangeTargetAspect),
-        "change_target": MakeAspect(magic2.ChangeTargetAspect),
-        "charges": MakeAspect(magic2.ChargesAspect),
+        "change target": MakeAspect(magic.ChangeTargetAspect),
+        "change_target": MakeAspect(magic.ChangeTargetAspect),
+        "charges": MakeAspect(magic.ChargesAspect),
         "focused": MakeFocusedAspect(),
         "focus": MakeFocusedAspect(),
-        "multiple_targets": MakeAspect(magic2.MultipleTargetAspect),
-        "multi-target": MakeAspect(magic2.MultipleTargetAspect),
-        "variable_effect": MakeAspect(magic2.VariableEffect),
-        "variable_movement": MakeAspect(magic2.VariableMovementAspect),
-        "variable_duration": MakeAspect(magic2.VariableDurationAspect),
+        "multiple_targets": MakeAspect(magic.MultipleTargetAspect),
+        "multi-target": MakeAspect(magic.MultipleTargetAspect),
+        "variable_effect": MakeAspect(magic.VariableEffect),
+        "variable_movement": MakeAspect(magic.VariableMovementAspect),
+        "variable_duration": MakeAspect(magic.VariableDurationAspect),
         "other_alterants": MakeGeneric(),
         "other_alterant": MakeGeneric(),
         # The remaining are negative modifiers
-        "community": MakeAspect(magic2.CommunityAspect),
-        "component": MakeAspect(magic2.ComponentsAspect),
-        "components": MakeAspect(magic2.ComponentsAspect),
+        "community": MakeAspect(magic.CommunityAspect),
+        "component": MakeAspect(magic.ComponentsAspect),
+        "components": MakeAspect(magic.ComponentsAspect),
         "concentration": MakeConcentration(),
         "countenance": MakeCountenanceAspect(),
         "feedback": MakeFeedbackAspect(),
@@ -597,10 +597,10 @@ class RewriteSpell:
         "gestures": MakeGestures(),
         "incantation": MakeIncantation(),
         "incantations": MakeIncantation(),
-        "unreal_effect": MakeAspect(magic2.UnrealEffectAspect),
+        "unreal_effect": MakeAspect(magic.UnrealEffectAspect),
         "_other_": MakeGeneric(),  # The other_conditions, which sometimes have area_effect hidden in there.
         # No difficulty: this is similar to the "skill" attribute of a Spell.
-        "arcane knowledge": MakeAspect(magic2.ArcaneKnowledgeAspect),
+        "arcane knowledge": MakeAspect(magic.ArcaneKnowledgeAspect),
     }
     default = MakeGeneric()
 
@@ -608,7 +608,7 @@ class RewriteSpell:
 
     def m2_aspect(
         self, name: str, source: magic1.Aspect, original_name: str = ""
-    ) -> magic2.Aspect:
+    ) -> magic.Aspect:
         if name.lower() not in self.converter_map:
             self.logger.error("  %r: NO CONVERSION", name.lower())
             converter = self.default
@@ -630,7 +630,7 @@ class RewriteSpell:
             self.errors.append(text)
             return name.lower().replace(" ", "_"), AisleFive(0, f"error: {text} in {source!r}")
 
-    def m2_spell(self, source: magic1.Spell) -> magic2.Spell:
+    def m2_spell(self, source: magic1.Spell) -> magic.Spell:
         self.logger.info("Convert %s", source.name)
         self.errors = []
         aspects = dict(
@@ -667,7 +667,7 @@ class RewriteSpell:
         # pprint(aspects)
         if self.errors:
             raise ConversionError(self.errors)
-        return magic2.Spell(
+        return magic.Spell(
             name=source.name, skill=source.skill, notes=source.notes, **aspects
         )
 

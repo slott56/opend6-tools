@@ -7,49 +7,87 @@
 ..  py:module:: opend6_tools.character
     :no-index:
 
-The Character (and Creature) DSL
-===================================
+The :py:mod:`opend6_tools.character` module provides the DSL definitions for characters and creatures.
+The module has a number of features for creating formatted displays of characters, working with creature or character definitions as command-line application, and extracting definitions from a Jupyter Lab notebook.
 
-Characters (and Creatures) are defined in Python modules.
-This makes testing and publication relatively straightforward.
+Dice
+====
 
--   An application imports the definitions and applies ordinary software testing techniques to be sure the syntax is correct. A small computation can assure the budget of dice match expectations.
+This is -- to an extent -- a duplicate of the :py:mod:`opend6_tools.magic2.dice` definitions.
+The supplemental material is the :py:class:`Roll` class hierarchy.
 
--   The module is an application that emits RST-format files for publication.
+..  uml::
 
-The top-level organization of Character and Creature modules in the context of campaign books looks like this.
+    @startuml
+    'https://plantuml.com/class-diagram
+
+    title The DieCode DSL
+
+    class Roll
+
+    class CriticalSuccess
+    Roll <|-- CriticalSuccess
+
+    class CriticalFailure
+    Roll <|-- CriticalFailure
+
+    class DieCode
+
+    DieCode --> Roll : "Creates"
+
+    @enduml
+
+The :py:class:`DieCode` is more than merely a definition of dice.
+It can also roll to generate values for strength damage and body.
+This includes the *OpenD6* "Wild Die" rules, creating values with a somewhat larger distribution than a handful of dice.
+
+Defining Characters and Creatures
+=================================
+
+Because the **make** tool relies on file definitions,
+it helps to isolate creature and character definitions into distinct Python modules.
+Any of a number of organizing principles could be used for creatures, including likely environments, or the number of dice in their budget.
+Keeping creature and character definitions in separate files makes testing and publication relatively straightforward because the **make** tool can build the required RST-format files automatically.
+
+This leads to the following ways in which the :py:mod:`opend6_tools.character` module is used:
+
+-   An character or creature module imports the :py:mod:`opend6_tools.character` module to define character or creatures.
+    Ordinary software testing techniques validate sure the syntax is correct.
+    A ``__test__`` block can be used to apply doctest tools can for validating the dice budget.
+
+-   The character or creature module is **also** an application with a CLI that can emit RST-format files for publication, debugging output, or detailed displays of the definitions.
+
+The top-level organization of Character and Creature modules in the context of campaign books is what a software architect might call an "aggregate root."
+A module is a container for one or more related Characters or Creatures.
 The source is a ``creatures_subsection.py`` file with the Python version of the creature definitions.
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
 
     title Campaign Documents
 
     package python {
-        component character.py
-    }
-
-    package characters {
-        component creatures_subsection.py {
-            component Creature
+        package opend6_tools {
+            component character
         }
-        creatures_subsection.py ..> character.py : imports
     }
 
-    note "Validates design details" as note_1
-    note_1 .. creatures_subsection.py
-
-    package rules {
-        package creature_section {
-            component creatures_subsection.rst
+    package document_source {
+        artifact index.rst <<RST>>
+        artifact characters.rst <<RST>>
+        index.rst -> characters.rst : """toctree::"" directive"
+        package characters {
+            component characters_subsection.py <<app>> {
+                component SomeCharacter
+            }
+            artifact characters_subsection.txt <<RST>>
+            characters_subsection.py ..> character : import
         }
-        creatures_subsection.rst <-- creatures_subsection.py : "created by running with 'display'"
+        characters_subsection.py -> characters_subsection.txt : "Run with 'display'"
+        characters.rst --> characters_subsection.txt : """include::"" directive"
     }
-
-    note "Creates unique campaign documents" as note_2
-    note_2 .. creatures_subsection.rst
 
     @enduml
 
@@ -57,44 +95,46 @@ Often, the characters or creatures are created interactively, using Jupyter Lab.
 This means the :py:mod:`opend6_tools.notebook_extract` builds the module from the notebook.
 For more information, see :ref:`notebook_extract_app`.
 
-The structure within the spell definition module is a Python list object.
-The structure within any creature or character definition module is a Python list object.
-A book of characters (or creatures) is a ``list[Character]``.
+The structure within the character or creature definition module is often a Python list object.
 A Character is an object with a number of other ``Attributes`` and ``Options``.
+Here is the essential structure:
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
 
-        title Character or Creature Module Components
+    title Character or Creature Module Components
 
-        object "list[Creature]" as book
+    object "list[Creature]" as book
 
-        object Creature {
-            name
-            attributes
-            options
-        }
-        book *-- "1..m" Creature
+    object Creature {
+        name
+        attributes
+        options
+    }
+    book *-- "1..m" Creature
 
-        object Attribute {
-            description
-            dice
-        }
-        Creature *-- "6..7" Attribute
+    object Attribute {
+        description
+        dice
+    }
+    Creature *-- "6..7" Attribute
 
-        object Option {
-            description
-            dice
-        }
-        Creature *-- "0..m" Option
+    object Option {
+        description
+        dice
+    }
+    Creature *-- "0..m" Option
 
-        object "~_~_test~_~_" as test
-        book <.. test
+    object "~_~_test~_~_" as test
+    book <.. test
 
-        object app
-        book <.. app
+    object app {
+        display
+        debug
+    }
+    book <.. app
 
     @enduml
 
@@ -102,15 +142,18 @@ The :py:class:`Character` definition is almost identical to the :py:class:`Creat
 
 A creature can have a collection of abilities that are natural abilities. These come from the pool of Special Ability definitions, but don't have an associated cost.
 
-Character and Creature
-----------------------
+Character and Creature DSL
+---------------------------
 
-A Character (and a Creature) is a collection of  :py:class:`Attribute` objects and a number of distinct :py:class:`CharacterOption` objects.
+A Character (and a Creature) is a collection of descriptive strings.
+For the purposese of computing the dice budget, there are :py:class:`Attribute` objects and a number of distinct :py:class:`OptionList` objects.
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
+
+    title Character or Creature classes
 
     class Character {
         name: str
@@ -148,15 +191,16 @@ A Character (and a Creature) is a collection of  :py:class:`Attribute` objects a
 
     abstract class Attribute
     Attribute <|-- Agility
-    Attribute <|-- Intellect
     Attribute <|-- Coordination
-    Attribute <|-- Acumen
     Attribute <|-- Physique
-    Attribute <|-- Charisma
-    Attribute <|-- Magic
-    Attribute <|-- Miracles
+    Attribute <|--- Intellect
+    Attribute <|--- Acumen
+    Attribute <|--- Charisma
+    Attribute <|---- Magic
+    Attribute <|---- Miracles
 
-    Character *-- Agility
+    Character *-- "{6..7}" Attribute
+    /'Character *-- Agility
     Character *-- Intellect
     Character *-- Coordination
     Character *-- Acumen
@@ -164,7 +208,8 @@ A Character (and a Creature) is a collection of  :py:class:`Attribute` objects a
     Character *-- Charisma
     Character *-- Magic
     Character *-- Miracles
-    Character *-- OptionList
+    '/
+    Character *-- OptionList : "advantages\ndisadvantages\nspecial_abilities"
 
     class OptionList <<list[CharacterOption]>>
 
@@ -181,8 +226,8 @@ A Character (and a Creature) is a collection of  :py:class:`Attribute` objects a
     class Creature {
         natural_abilities: OptionList
     }
-    Character <|--- Creature
-    Creature -- OptionList
+    Character <|-- Creature
+    Creature -- OptionList : "natural abilities"
 
     @enduml
 
@@ -191,13 +236,19 @@ The character has a wide variety of features.
 Attributes
 ----------
 
-The attribute model covers the six required attributes, plus the optional, Extranormal, attribute.
+A Character (and most creatures) have six required attributes.
+There are three physical and three mental attributes.
+Optionally, some characters or creatures may have an *Extranormal*, attribute.
+
+While the game play consequence of each attribute are profound,
+from the perspective of defining a character, they're all essentially identical.
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
 
+    title Character or Creature Attributes
 
     abstract class Attribute {
         skills: dict[str, DieCode
@@ -207,33 +258,45 @@ The attribute model covers the six required attributes, plus the optional, Extra
         dice: int
         pips: int
     }
-    Attribute *-- DieCode
+    Attribute *- DieCode
 
     Attribute <|-- Agility
-    Attribute <|-- Intellect
     Attribute <|-- Coordination
-    Attribute <|-- Acumen
     Attribute <|-- Physique
-    Attribute <|-- Charisma
-    Attribute <|-- Magic
-    Attribute <|-- Miracles
+    Attribute <|--- Intellect
+    Attribute <|--- Acumen
+    Attribute <|--- Charisma
+    Attribute <|---- Magic
+    Attribute <|---- Miracles
 
     @enduml
 
 The attributes (and skills) have a simple, uniform
 definition.
-Each skill description has a :py:class:`DieCode` cost.
-Other skills default to the :py:class:`DieCode` cost of the :py:class:`Attribute`.
+Each skill description has a name and a :py:class:`DieCode` cost.
+
+During game play, the skill defines how many dice are rolled
+to overcome difficulties.
+Any skill without a specific budget defaults to the :py:class:`DieCode` cost of the controlling :py:class:`Attribute` for that skill.
 
 Options
 -------
 
+Beyond the core attributes, a character or creature may have
+options.
 There are three distinct types of character options.
+
+For creatures (and some non-human characters) an option
+may be identified as a "natural ability".
+This small shift in terminology permits pigs to fly, by
+calling the special ability of flight a natural ability.
 
 ..  uml::
 
     @startuml
-        'https://plantuml.com/class-diagram
+    'https://plantuml.com/class-diagram
+
+    title Character or Creature Advantages and Limitations
 
     abstract class CharacterOption {
         rank: int
@@ -250,346 +313,194 @@ There are three distinct types of character options.
 
     @enduml
 
-Each subclass -- :py:class:`Disadvantage`, :py:class:`Advantage`, and :py:class:`SpecialAbility` -- is a flat class hierarchy.
+Each of these subclasses -- :py:class:`Disadvantage`, :py:class:`Advantage`, and :py:class:`SpecialAbility` -- is the parent of  a flat collection of subclasses.
+The only unique feature to each subclass is the costs-per-rank of the option.
+
+Here are the subclasses of ``Disadvantage``:
+
+-   AchillesHeel
+-   AdvantageFlaw
+-   Age
+-   BadLuck
+-   BurnOut
+-   CulturalUnfamiliarity
+-   Debt
+-   Devotion
+-   Employed
+-   Enemy
+-   Hindrance
+-   Infamy
+-   LanguageProblems
+-   LearningProblems
+-   Poverty
+-   Prejudice
+-   Price
+-   Quirk
+-   ReducedAttribute
+
+Outside the Fantasy rules, this additional disadvantage is added in the unpublished Magic rules.
+
+-   MinorStigma
+
+
+Here are the subclasses of ``Advantage``:
+
+-   Authority
+-   Contacts
+-   Cultures
+-   Equipment
+-   Fame
+-   Patron
+-   Size
+-   TrademarkSpecialization
+-   Wealth
+
+The Special Abilities include a class-level ``rank_cost`` value that's not simply set to one.
+Each special ability has a distinct rank cost.
+
+Here are the subclasses of ``SpecialAbility``:
+
+-   AcceleratedHealing
+-   Ambidextrous
+-   AnimalControl
+-   ArmorDefeatingAttack
+-   AtmosphericTolerance
+-   AttackResistance
+-   AttributeScramble
+-   Blur
+-   CombatSense
+-   Confusion
+-   Darkness
+-   Elasticity
+-   Endurance
+-   EnhancedSense
+-   EnvironmentalResistance
+-   ExtraBodyPart
+-   ExtraSense
+-   FastReactions
+-   Fear
+-   Flight
+-   GliderWings
+-   Hardiness
+-   Hypermovement
+-   Immortality
+-   Immunity
+-   IncreasedAttribute
+-   InfravisionUltravision
+-   Intangibility
+-   Invisibility
+-   IronWill
+-   LifeDrain
+-   Longevity
+-   LuckGood
+-   LuckGreat
+-   MasterOfDisguise
+-   MultipleAbilities
+-   NaturalArmor
+-   NaturalHandWeapon
+-   NaturalMagick
+-   NaturalRangedWeapon
+-   Omnivorous
+-   ParalyzingTouch
+-   PossessionLimited
+-   PossessionFull
+-   QuickStudy
+-   SenseOfDirection
+-   Shapeshifting
+-   Silence
+-   SkillBonus
+-   SkillMinimum
+-   Teleportation
+-   Transmutation
+-   UncannyAptitude
+-   Ventriloquism
+-   WaterBreathing
+-   YouthfulAppearance
+
+Display and Output
+==================
+
+The output features of this module perform a number of output conversions for characters and creature definitions.
 
 ..  uml::
 
     @startuml
+    'https://plantuml.com/class-diagram
 
-        'https://plantuml.com/class-diagram
+    title character module output features
 
-    abstract class CharacterOption {
-        {static} rank_cost: int = 1
-        rank: int
-        notes: str
+    class CharacterWriter {
+        base_template: str
+        list_template: str
+        dict_template: str
+        report(spell | book) -> str
     }
 
-    abstract class Disadvantage
-    CharacterOption <|-- Disadvantage
+    class CharacterWriter_Short
+    CharacterWriter <|-- CharacterWriter_Short
 
-    class AchillesHeel
-    Disadvantage <|-- AchillesHeel
+    class CharacterWriter_Long2
+    CharacterWriter <|-- CharacterWriter_Long2
 
-    class AdvantageFlaw
-    Disadvantage <|-- AdvantageFlaw
+    class CharacterWriter_Table
+    CharacterWriter <|-- CharacterWriter_Table
 
-    class MinorStigma
-    Disadvantage <|-- MinorStigma
+    class CharacterWriter_Literal
+    CharacterWriter <|-- CharacterWriter_Literal
 
-    class Age
-    Disadvantage <|-- Age
+    class "detail(character | creature)" as detail << (F,orchid) Function >>
+    hide detail empty members
 
-    class BadLuck
-    Disadvantage <|-- BadLuck
+    detail --> CharacterWriter
 
-    class BurnOut
-    Disadvantage <|-- BurnOut
+    class "display(character | book)" as display << (F,orchid) Function >>
+    hide display empty members
 
-    class CulturalUnfamiliarity
-    Disadvantage <|-- CulturalUnfamiliarity
+    class "debug(character | book)" as debug << (F,orchid) Function >>
+    hide debug empty members
 
-    class Debt
-    Disadvantage <|-- Debt
+    debug --> display
 
-    class Devotion
-    Disadvantage <|-- Devotion
+    class "sheet(character)" as sheet << (F,orchid) Function >>
+    hide sheet empty members
 
-    class Employed
-    Disadvantage <|-- Employed
-
-    class Enemy
-    Disadvantage <|--- Enemy
-
-    class Hindrance
-    Disadvantage <|--- Hindrance
-
-    class Infamy
-    Disadvantage <|--- Infamy
-
-    class LanguageProblems
-    Disadvantage <|--- LanguageProblems
-
-    class LearningProblems
-    Disadvantage <|--- LearningProblems
-
-    class Poverty
-    Disadvantage <|--- Poverty
-
-    class Prejudice
-    Disadvantage <|--- Prejudice
-
-    class Price
-    Disadvantage <|--- Price
-
-    class Quirk
-    Disadvantage <|--- Quirk
-
-    class ReducedAttribute
-    Disadvantage <|--- ReducedAttribute
+    sheet --> CharacterWriter
 
     @enduml
 
-Generally, the Advantages are a flat list of class definitions. The only unique features are name of the option.
+Plus functions summary(), detail(), sheet()
+And display(), debug()
 
-..  uml::
+Workbook Features
+==================
 
-    @startuml
-        'https://plantuml.com/class-diagram
+This module has a few functions for extracting characters or creatures from a Jupyter Lab Notebook.
+Generally, these functions are designed to be part of a notebook, and introspect the notebook by looking at the ``globals()`` mapping.
 
-    abstract class CharacterOption {
-        {static} rank_cost: int = 1
-        rank: int
-        notes: str
-    }
 
-    abstract class Advantage
-    CharacterOption <|-- Advantage
+Application Wrapper
+===================
 
-    class Authority
-    Advantage <|-- Authority
+This module has a few functions to build elements of a spellbook application.
+These functions serve to create a CLI application using the ``typer`` library.
 
-    class Contacts
-    Advantage <|-- Contacts
+Generally, these are used as follows:
 
-    class Cultures
-    Advantage <|-- Cultures
+..  code-block:: python
 
-    class Equipment
-    Advantage <|-- Equipment
+    from opend6_tools.character import *
 
-    class Fame
-    Advantage <|-- Fame
+    # Character or Creature definitions
+    creatures = [...]
 
-    class Patron
-    Advantage <|-- Patron
+    if __name__ == "__main__":
+        app = build_app(creatures)
+        app()
 
-    class Size
-    Advantage <|-- Size
+This will -- when run from the command line -- build the application around spells (or items) defined in the module.
+It will then launch the application.
+This will parse command-line parameters and execute one various alternative sub-commands: ``test``, ``debug``, or ``display``.
 
-    class TrademarkSpecialization
-    Advantage <|-- TrademarkSpecialization
-
-    class Wealth
-    Advantage <|-- Wealth
-
-    @enduml
-
-The Special Abilities include a class-level ``rank_cost`` value that's not simply set to one. Each special ability has a distinct rank cost.
-
-Generally, this is a flat list of class definitions. The only unique features are the rank cost and the name of the option.
-
-..  uml::
-
-    @startuml
-        'https://plantuml.com/class-diagram
-
-    abstract class CharacterOption {
-        {static} rank_cost: int
-        rank: int
-        notes: str
-    }
-
-    abstract class SpecialAbility {
-        {static} rank_cost: int
-    }
-    CharacterOption <|-- SpecialAbility
-
-    class AcceleratedHealing
-    SpecialAbility <|-- AcceleratedHealing
-
-    class Ambidextrous
-    SpecialAbility <|-- Ambidextrous
-
-    class AnimalControl
-    SpecialAbility <|-- AnimalControl
-
-    class ArmorDefeatingAttack
-    SpecialAbility <|-- ArmorDefeatingAttack
-
-    class AtmosphericTolerance
-    SpecialAbility <|-- AtmosphericTolerance
-
-    class AttackResistance
-    SpecialAbility <|-- AttackResistance
-
-    class AttributeScramble
-    SpecialAbility <|-- AttributeScramble
-
-    class Blur
-    SpecialAbility <|-- Blur
-
-    class CombatSense
-    SpecialAbility <|-- CombatSense
-
-    class Confusion
-    SpecialAbility <|--- Confusion
-
-    class Darkness
-    SpecialAbility <|--- Darkness
-
-    class Elasticity
-    SpecialAbility <|--- Elasticity
-
-    class Endurance
-    SpecialAbility <|--- Endurance
-
-    class EnhancedSense
-    SpecialAbility <|--- EnhancedSense
-
-    class EnvironmentalResistance
-    SpecialAbility <|--- EnvironmentalResistance
-
-    class ExtraBodyPart
-    SpecialAbility <|--- ExtraBodyPart
-
-    class ExtraSense
-    SpecialAbility <|--- ExtraSense
-
-    class FastReactions
-    SpecialAbility <|--- FastReactions
-
-    class Fear
-    SpecialAbility <|--- Fear
-
-    class Flight
-    SpecialAbility <|---- Flight
-
-    class GliderWings
-    SpecialAbility <|---- GliderWings
-
-    class Hardiness
-    SpecialAbility <|---- Hardiness
-
-    class Hypermovement
-    SpecialAbility <|---- Hypermovement
-
-    class Immortality
-    SpecialAbility <|---- Immortality
-
-    class Immunity
-    SpecialAbility <|---- Immunity
-
-    class IncreasedAttribute
-    SpecialAbility <|---- IncreasedAttribute
-
-    class InfravisionUltravision
-    SpecialAbility <|---- InfravisionUltravision
-
-    class Intangibility
-    SpecialAbility <|---- Intangibility
-
-    class Invisibility
-    SpecialAbility <|---- Invisibility
-
-    class IronWill
-    SpecialAbility <|----- IronWill
-
-    class LifeDrain
-    SpecialAbility <|----- LifeDrain
-
-    class Longevity
-    SpecialAbility <|----- Longevity
-
-    class LuckGood
-    SpecialAbility <|----- LuckGood
-
-    class LuckGreat
-    SpecialAbility <|----- LuckGreat
-
-    class MasterOfDisguise
-    SpecialAbility <|----- MasterOfDisguise
-
-    class MultipleAbilities
-    SpecialAbility <|----- MultipleAbilities
-
-    class NaturalArmor
-    SpecialAbility <|----- NaturalArmor
-
-    class NaturalHandWeapon
-    SpecialAbility <|----- NaturalHandWeapon
-
-    class NaturalMagick
-    SpecialAbility <|----- NaturalMagick
-
-    class NaturalRangedWeapon
-    SpecialAbility <|----- NaturalRangedWeapon
-
-    class Omnivorous
-    SpecialAbility <|------ Omnivorous
-
-    class ParalyzingTouch
-    SpecialAbility <|------ ParalyzingTouch
-
-    class PossessionLimited
-    SpecialAbility <|------ PossessionLimited
-
-    class PossessionFull
-    SpecialAbility <|------ PossessionFull
-
-    class QuickStudy
-    SpecialAbility <|------ QuickStudy
-
-    class SenseOfDirection
-    SpecialAbility <|------ SenseOfDirection
-
-    class Shapeshifting
-    SpecialAbility <|------ Shapeshifting
-
-    class Silence
-    SpecialAbility <|------ Silence
-
-    class SkillBonus
-    SpecialAbility <|------ SkillBonus
-
-    class SkillMinimum
-    SpecialAbility <|------ SkillMinimum
-
-    class Teleportation
-    SpecialAbility <|------ Teleportation
-
-    class Transmutation
-    SpecialAbility <|------ Transmutation
-
-    class UncannyAptitude
-    SpecialAbility <|------ UncannyAptitude
-
-    class Ventriloquism
-    SpecialAbility <|------ Ventriloquism
-
-    class WaterBreathing
-    SpecialAbility <|------ WaterBreathing
-
-    class YouthfulAppearance
-    SpecialAbility <|------ YouthfulAppearance
-    @enduml
-
-Foundational Definitions
--------------------------
-
-Here are some additional definitions used widely in this module.
-
-..  uml::
-
-    @startuml
-        'https://plantuml.com/class-diagram
-
-    class Roll
-
-    class CriticalSuccess
-    Roll <|-- CriticalSuccess
-
-    class CriticalFailure
-    Roll <|-- CriticalFailure
-
-    class DieCode
-
-    DieCode --> Roll : "Creates"
-
-    @enduml
-
-The :py:class:`DieCode` is more than merely a definition of dice.
-It can also roll to generate values for strength damage and body.
-This includes the *OpenD6* "Wild Die" rules, creating values with a somewhat larger distribution.
 
 Implementation
 ==============
