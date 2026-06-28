@@ -73,8 +73,9 @@ This final command will add the tools to the active virtual environment.
 
 ..  code-block:: bash
 
-    uv add opend6-tools
+    uv add git+https://github.com/slott56/opend6-tools --upgrade
 
+(Currently, this is not hosted in PyPI, only in GitHub.)
 
 Quick Start
 ===========
@@ -165,15 +166,18 @@ You can then make a GitHub pull request to include changes into the main distrib
 
 If you have a copy of the tools **and** a set of TTRPG rules you're working on, you may want to build new tools and use them to publish some rules.
 
-This will fetch updated tools from an adjacent directory.
+Generally, you can use this to upgrade the tools used for publishing.
+
+..  code-block:: bash
+
+    uv add git+https://github.com/slott56/opend6-tools --upgrade
+
+If you have the repository checked-out locally, you can fetch from the filesystem location.
+You might want to fetch updated tools from an adjacent directory,
+or from the local clone of the github repository.
 
 ..  code-block:: bash
 
     uv add ../opend6-tools/ --upgrade
-
-If you have the tools somewhere else in your filesystem, provide
-a full path to the tools project.
-
-..  code-block:: bash
 
     uv add ~/github/local/opend6-tools --upgrade
