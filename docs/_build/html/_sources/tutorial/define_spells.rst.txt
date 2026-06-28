@@ -67,7 +67,7 @@ Here's an example.
 
 ..  code-block:: python
 
-    from opend6.magic2 import *
+    from opend6.magic import *
 
     example = Spell(
         name="Example",
@@ -200,7 +200,7 @@ Do the following things in this notebook.
 
     ..  code-block:: python
 
-        from opend6_tools.magic2 import *
+        from opend6_tools.magic import *
 
     This will import the Spell-centric DSL to the notebook.
 

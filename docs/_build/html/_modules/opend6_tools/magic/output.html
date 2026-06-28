@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>opend6_tools.magic.output &#8212; OpenD6 Tools 2025.6.27.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=27fed22d" />
+    <script src="../../../_static/documentation_options.js?v=a5ea56aa"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for opend6_tools.magic.output</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Reporting and Display features.</span>
+
+<span class="sd">These are the conventional top-level application components.</span>
+<span class="sd">The :py:func:`display` function produces the useful RST output.</span>
+
+<span class="sd">Summaries</span>
+<span class="sd">=========</span>
+
+<span class="sd">..  autofunction:: summary</span>
+
+<span class="sd">..  autofunction:: item_summary</span>
+
+<span class="sd">..  autoclass:: TableSummary</span>
+<span class="sd">    :members:</span>
+<span class="sd">    :member-order:  bysource</span>
+
+<span class="sd">Formatted</span>
+<span class="sd">=========</span>
+
+<span class="sd">..  autofunction:: detail</span>
+
+<span class="sd">..  autoclass:: SpellWriter</span>
+<span class="sd">    :members:</span>
+<span class="sd">    :member-order:  bysource</span>
+
+<span class="sd">Debugging</span>
+<span class="sd">==========</span>
+
+<span class="sd">..  autofunction:: dumps</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">singledispatchmethod</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">TextIO</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.spells</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">jinja2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tomli_w</span>
+
+
+<div class="viewcode-block" id="TableSummary">
+<a class="viewcode-back" href="../../../reference/magic2.html#opend6_tools.magic.output.TableSummary">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TableSummary</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize Spells (or Miracles, or Items for CSV output.</span>
+
+<span class="sd">    This extracts name, skill or item type, difficulty or price, and description.</span>
+<span class="sd">    It&#39;s suitable for a player&#39;s guide summary of available spells.</span>
+
+<span class="sd">    &gt;&gt;&gt; import io</span>
+<span class="sd">    &gt;&gt;&gt; import csv</span>
+
+<span class="sd">    &gt;&gt;&gt; example = Spell(</span>
+<span class="sd">    ...     name=&quot;Example&quot;,</span>
+<span class="sd">    ...     notes=&quot;Mage waves their hands and says the words&quot;,</span>
+<span class="sd">    ...     effect=SkillEffect(&quot;Acumen: testing&quot;, &quot;+4D&quot;),</span>
+<span class="sd">    ...     duration=DurationAspect(&quot;1 sec&quot;),</span>
+<span class="sd">    ...     range=RangeAspect(&quot;1m&quot;),</span>
+<span class="sd">    ...     casting_time=CastingTimeAspect(&quot;5 sec&quot;),</span>
+<span class="sd">    ...     speed=SpeedAspect.based_on(&quot;range&quot;, description=&quot;Instantaneous&quot;),</span>
+<span class="sd">    ...     other_aspects={},</span>
+<span class="sd">    ...     other_conditions=[GenericAspect(1, &quot;Everything else is completed&quot;)],</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    &gt;&gt;&gt; buffer = io.StringIO()</span>
+<span class="sd">    &gt;&gt;&gt; book = [example]</span>
+<span class="sd">    &gt;&gt;&gt; writer = csv.writer(buffer, quoting=csv.QUOTE_STRINGS)</span>
+<span class="sd">    &gt;&gt;&gt; _ = writer.writerow(TableSummary.spell_header)</span>
+<span class="sd">    &gt;&gt;&gt; _ = writer.writerows(TableSummary.spell_csv(s) for s in book)</span>
+<span class="sd">    &gt;&gt;&gt; buffer.getvalue().splitlines()</span>
+<span class="sd">    [&#39;&quot;Spell&quot;,&quot;Skill&quot;,&quot;Difficulty&quot;,&quot;Effect&quot;&#39;, &#39;&quot;Example&quot;,&quot;*Acumen: testing*&quot;,&quot;4&quot;,&quot;Acumen: testing 4*D&quot;&#39;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">spell_header</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Spell&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Skill&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Difficulty&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Effect&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">item_header</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Type&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Price&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Effect&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="TableSummary.spell_csv">
+<a class="viewcode-back" href="../../../reference/magic2.html#opend6_tools.magic.output.TableSummary.spell_csv">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spell_csv</span><span class="p">(</span><span class="n">spell</span><span class="p">:</span> <span class="n">Spell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;CSV-oriented extract from a Spell.</span>
+
+<span class="sd">        :returns: tuple with (name, skill, difficulty, and description)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">spell</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">spell</span><span class="o">.</span><span class="n">skill</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">spell</span><span class="o">.</span><span class="n">difficulty</span><span class="p">),</span>
+            <span class="n">spell</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">description</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TableSummary.item_csv">
+<a class="viewcode-back" href="../../../reference/magic2.html#opend6_tools.magic.output.TableSummary.item_csv">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">item_csv</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;CSV-oriented extract from an Item.</span>
+
+<span class="sd">        :return: tuple with (name, type, price, and description)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">price</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">effect</span><span class="o">.</span><span class="n">description</span><span class="p">())</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="summary">
+<a class="viewcode-back" href="../../../reference/magic2.html#opend6_tools.magic.output.summary">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span>
+    <span class="n">book</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Spell</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Spell</span><span class="p">]],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">TextIO</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Writes CSV-format summary of spells (or invocation) to a given destination file.</span>
+<span class="sd">    Uses :py:class:`TableSummary`.</span>
+
+<span class="sd">    :param book: :py:class:`Spell` collection: a list or a mapping from names to lists of spells.</span>
+<span class="sd">    :param destination: Open file, often directed to ``shared/{name}_spells.csv`` or.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wtr</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+    <span class="n">wtr</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">TableSummary</span><span class="o">.</span><span class="n">spell_header</span><span class="p">)</span>
+    <span class="k">match</span> <span class="n">book</span><span class="p">:</span>
+        <span class="k">case</span> <span class="nb">list</span><span class="p">()</span> <span class="k">as</span> <span class="n">single</span><span class="p">:</span>
+            <span class="n">wtr</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">TableSummary</span><span class="o">.</span><span class="n">spell_csv</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">single</span><span class="p">)</span>
+        <span class="k">case</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">as</span> <span class="n">multi</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">multi</span><span class="p">:</span>
+                <span class="n">wtr</span><span class="o">.</span><span class="n">writerow</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;**</span><span class="si">{</span><span class="n">section</span><span class="si">}</span><span class="s2">**&quot;</span><span class="p">,))</span>
+                <span class="n">wtr</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">TableSummary</span><span class="o">.</span><span class="n">spell_csv</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">multi</span><span class="p">[</span><span class="n">section</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="item_summary">
+<a class="viewcode-back" href="../../../reference/magic2.html#opend6_tools.magic.output.item_summary">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">item_summary</span><span class="p">(</span><span class="n">book</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Item</span><span class="p">],</span> <span class="n">destination</span><span class="p">:</span> <span class="n">TextIO</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Writes CSV-format summary of items to a given destination file.</span>
+<span class="sd">    Uses :py:class:`TableSummary`.</span>
+
+<span class="sd">    :param book: :py:class:`Item` collection</span>
+<span class="sd">    :param destination: Open file, often directed to ``shared/{name}_spells.csv`` or.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wtr</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+    <span class="n">wtr</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">TableSummary</span><span class="o">.</span><span class="n">item_header</span><span class="p">)</span>
+    <span class="n">wtr</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">TableSummary</span><span class="o">.</span><span class="n">item_csv</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">book</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SpellWriter">
+<a class="viewcode-back" href="../../../reference/magic2.html#opend6_tools.magic.output.SpellWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpellWriter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Output RST-format details of Spells for publication.</span>
+
+<span class="sd">    This relies on three closely-related :py:mod:`jinja2` templates.</span>
+<span class="sd">    One template handles details of a Spell or Item.</span>
+<span class="sd">    Another is a list wrapper on details.</span>
+<span class="sd">    The third is a dict wrapper for lists of details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">base_template</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;\</span>
+<span class="sd">        {% if detail_underline|length() == 0 %}**{% endif %}{{ spell.name | safe }}{% if detail_underline|length() == 0 %}**{% endif %}</span>
+<span class="sd">        {{ detail_underline * spell.name|length() }}</span>
+
+<span class="sd">        :Skill: {{spell.skill}}</span>
+<span class="sd">        :Difficulty: {{spell.difficulty}} {% if spell._difficulty_note %}(Note: *{{ spell._difficulty_note }}*){% endif %}</span>
+<span class="sd">        :Effect: {{spell.effect.difficulty()}} ({{spell.effect.description()}})</span>
+<span class="sd">        :Range: {{ spell.range.description() if spell.range is defined }} \\({{ spell.range.difficulty() if spell.range is defined }})</span>
+<span class="sd">        :Speed: {{spell.speed.description() if spell.speed is defined }} \\({{spell.speed.difficulty() if spell.speed is defined }})</span>
+<span class="sd">        :Duration: {{spell.duration.description() if spell.duration is defined }} \\({{spell.duration.difficulty() if spell.duration is defined }})</span>
+<span class="sd">        :Casting Time: {{spell.casting_time.description()}} \\({{spell.casting_time.difficulty()}})</span>
+<span class="sd">        {%- if spell.other_aspects %}</span>
+
+<span class="sd">        :Other Aspects:</span>
+<span class="sd">        {% for label, aspect in spell.other_aspects.items() if label != &quot;Difficulty&quot; %}</span>
+<span class="sd">            {{label}} ({{aspect.difficulty()}}): {{aspect.description()}}</span>
+
+<span class="sd">        {% endfor %}</span>
+<span class="sd">        {% endif %}</span>
+<span class="sd">        {% if spell.other_conditions %}</span>
+
+<span class="sd">        :Other Conditions:</span>
+<span class="sd">        {%- for aspect in spell.other_conditions %}</span>
+<span class="sd">            {% if aspect.difficulty() %}({{ aspect.difficulty() }}): {% endif %}{{ aspect.description() }}</span>
+
+<span class="sd">        {% endfor %}</span>
+<span class="sd">        {% endif %}</span>
+
+<span class="sd">        {% if spell.notes is string %}{{spell.notes}}{% else %}</span>
+<span class="sd">        {% for paragraph in spell.notes %}</span>
+<span class="sd">        {{ paragraph }}</span>
+
+<span class="sd">        {% endfor %}</span>
+<span class="sd">        {% endif %}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="p">)</span>
+    <span class="n">list_template</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or spell in book %}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">nclude &quot;base.rst&quot; with context %}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">dict_template</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or name in books %}</span>
+<span class="s2">    {{ name | safe }}</span>
+<span class="s2">    {{ section_underline * name|length() }}</span>
+<span class="s2">    {</span><span class="si">% s</span><span class="s2">et book = books[name] %}</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">nclude &quot;list.rst&quot; with context%}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">section_underline</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">detail_underline</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;~&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the SpellWriter.</span>
+
+<span class="sd">        :param section_underline: The RST section heading underline.</span>
+<span class="sd">        :param detail_underline: The RST spell heading underline.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="p">:</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Environment</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Environment</span><span class="p">(</span>
+            <span class="c1"># autoescape=select_autoescape()</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">loader</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">DictLoader</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;base.rst&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_template</span><span class="p">,</span>
+                <span class="s2">&quot;list.rst&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_template</span><span class="p">,</span>
+                <span class="s2">&quot;dict_list.rst&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_template</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detail_underline</span> <span class="o">=</span> <span class="n">detail_underline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_underline</span> <span class="o">=</span> <span class="n">section_underline</span>
+
+<div class="viewcode-block" id="SpellWriter.report">
+<a class="viewcode-back" href="../../../reference/magic2.html#opend6_tools.magic.output.SpellWriter.report">[docs]</a>
+    <span class="nd">@singledispatchmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thing</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare an RST-formatted report for a Spell, a list of Spells, or a mapping from name to Spell.</span>
+
+<span class="sd">        :param thing: The Spell or Item to display in RST</span>
+<span class="sd">        :returns: The string which can be printed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;base.rst&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="n">spell</span><span class="o">=</span><span class="n">thing</span><span class="p">,</span>
+            <span class="n">detail_underline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detail_underline</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="nd">@report</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Spell</span> <span class="o">|</span> <span class="n">Item</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Report a list of Spells or Items.&quot;&quot;&quot;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;list.rst&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="n">book</span><span class="o">=</span><span class="n">book</span><span class="p">,</span>
+            <span class="n">detail_underline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detail_underline</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@report</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Spell</span> <span class="o">|</span> <span class="n">Item</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Report on a mapping of names to Spell (or Item) lists.&quot;&quot;&quot;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;dict_list.rst&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="n">books</span><span class="o">=</span><span class="n">mapping</span><span class="p">,</span>
+            <span class="n">detail_underline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">detail_underline</span><span class="p">,</span>
+            <span class="n">section_underline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">section_underline</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ItemWriter</span><span class="p">(</span><span class="n">SpellWriter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Output RST-format details of Items for publication.</span>
+<span class="sd">    This relies on :py:mod:`jinja2` templates.</span>
+
+<span class="sd">    The parameter to the base template is &quot;spell&quot;,</span>
+<span class="sd">    which is a little confusing when rendering an item.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">base_template</span> <span class="o">=</span> <span class="n">dedent</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;\</span>
+<span class="sd">        {% if detail_underline|length() == 0 %}**{% endif %}{{ spell.name | safe }}{% if detail_underline|length() == 0 %}**{% endif %}</span>
+<span class="sd">        {{ detail_underline * spell.name|length() }}</span>
+
+<span class="sd">        {% if spell.notes is string %}{{spell.notes}}{% else %}</span>
+<span class="sd">        {% for paragraph in spell.notes %}</span>
+<span class="sd">        {{ paragraph }}</span>
+
+<span class="sd">        {% endfor %}</span>
+<span class="sd">        {% endif %}</span>
+<span class="sd">        </span>
+<span class="sd">        :Effect: {{spell.effect.difficulty()}} ({{spell.effect.description()}})</span>
+<span class="sd">        {% if spell|attr(&#39;range&#39;) is defined -%}</span>
+<span class="sd">        :Range: {{ spell.range.description() if spell.range is defined }} \\({{ spell.range.difficulty() if spell.range is defined }})</span>
+<span class="sd">        {% endif -%}</span>
+<span class="sd">        {% if spell|attr(&#39;speed&#39;) is defined -%}</span>
+<span class="sd">        :Speed: {{spell.speed.description() if spell.speed is defined }} \\({{spell.speed.difficulty() if spell.speed is defined }})</span>
+<span class="sd">        {% endif -%}</span>
+<span class="sd">        {% if spell|attr(&#39;duration&#39;) is defined -%}</span>
+<span class="sd">        :Duration: {{spell.duration.description() if spell.duration is defined }} \\({{spell.duration.difficulty() if spell.duration is defined }})</span>
+<span class="sd">        {% endif -%}</span>
+<span class="sd">        {% if spell.other_aspects -%}</span>
+<span class="sd">        :Other Aspects:</span>
+<span class="sd">        {% for label, aspect in spell.other_aspects.items() if label != &quot;Difficulty&quot; %}</span>
+<span class="sd">            {{label}} ({{aspect.difficulty()}}): {{aspect.description()}}</span>
+
+<span class="sd">        {% endfor %}</span>
+<span class="sd">        {% endif -%}</span>
+<span class="sd">        {% if spell.other_conditions -%}</span>
+<span class="sd">        :Other Conditions:</span>
+<span class="sd">        {%- for aspect in spell.other_conditions %}</span>
+<span class="sd">            {% if aspect.difficulty() %}({{ aspect.difficulty() }}): {% endif %}{{ aspect.description() }}</span>
+
+<span class="sd">        {% endfor -%}</span>
+<span class="sd">        {% endif -%}</span>
+<span class="sd">        {% if spell.type %}:Type: {{ spell.type }}{% endif %}</span>
+<span class="sd">        :Price: {{ spell.price }}</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="detail">
+<a class="viewcode-back" href="../../../reference/magic2.html#opend6_tools.magic.output.detail">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">detail</span><span class="p">(</span>
+    <span class="n">item_spell_book</span><span class="p">:</span> <span class="n">Spell</span>
+    <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Spell</span><span class="p">]</span>
+    <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Spell</span><span class="p">]]</span>
+    <span class="o">|</span> <span class="n">Item</span>
+    <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span>
+    <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Item</span><span class="p">]],</span>
+    <span class="n">section_heading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span>
+    <span class="n">spell_heading</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;~&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints RST-format details of spells to STDOUT.</span>
+<span class="sd">    Uses :py:class:`SpellWriter` to format the detailes of a spell.</span>
+
+<span class="sd">    :param item_spell_book: Spell, Item, or some collection of Spells or Items</span>
+<span class="sd">    :param section_heading: RST underline for section (when collection is a ``dict``)</span>
+<span class="sd">    :param spell_heading: RST underline for each spell.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">match</span> <span class="n">item_spell_book</span><span class="p">:</span>
+        <span class="k">case</span><span class="w"> </span><span class="n">Item</span><span class="p">()</span> <span class="o">|</span> <span class="p">[</span><span class="n">Item</span><span class="p">(),</span> <span class="o">*</span><span class="k">_</span><span class="p">]</span> <span class="k">as</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">ItemWriter</span><span class="p">(</span>
+                <span class="n">section_underline</span><span class="o">=</span><span class="n">section_heading</span><span class="p">,</span> <span class="n">detail_underline</span><span class="o">=</span><span class="n">spell_heading</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">writer</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
+        <span class="k">case</span><span class="w"> </span><span class="n">Spell</span><span class="p">()</span> <span class="o">|</span> <span class="p">[</span><span class="n">Spell</span><span class="p">(),</span> <span class="o">*</span><span class="k">_</span><span class="p">]</span> <span class="k">as</span> <span class="n">spells</span><span class="p">:</span>
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">SpellWriter</span><span class="p">(</span>
+                <span class="n">section_underline</span><span class="o">=</span><span class="n">section_heading</span><span class="p">,</span> <span class="n">detail_underline</span><span class="o">=</span><span class="n">spell_heading</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">writer</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">spells</span><span class="p">))</span>
+        <span class="c1"># Okay. This is weird.</span>
+        <span class="k">case</span> <span class="nb">dict</span><span class="p">(</span><span class="n">mapping</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Item</span><span class="p">)</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sublist</span>
+            <span class="p">):</span>
+                <span class="n">writer</span> <span class="o">=</span> <span class="n">ItemWriter</span><span class="p">(</span>
+                    <span class="n">section_underline</span><span class="o">=</span><span class="n">section_heading</span><span class="p">,</span> <span class="n">detail_underline</span><span class="o">=</span><span class="n">spell_heading</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">writer</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">mapping</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">writer</span> <span class="o">=</span> <span class="n">SpellWriter</span><span class="p">(</span>
+                    <span class="n">section_underline</span><span class="o">=</span><span class="n">section_heading</span><span class="p">,</span> <span class="n">detail_underline</span><span class="o">=</span><span class="n">spell_heading</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">writer</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">mapping</span><span class="p">))</span>
+        <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unknown type: {type(item_spell_book)}&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="dumps">
+<a class="viewcode-back" href="../../../reference/magic2.html#opend6_tools.magic.output.dumps">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">dumps</span><span class="p">(</span><span class="n">spell</span><span class="p">:</span> <span class="n">Spell</span> <span class="o">|</span> <span class="n">Miracle</span> <span class="o">|</span> <span class="n">Cantrip</span> <span class="o">|</span> <span class="n">Item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a TOML-formatted dump of the spell or Item.</span>
+
+<span class="sd">    &gt;&gt;&gt; example = Spell(</span>
+<span class="sd">    ...     name=&quot;Example&quot;,</span>
+<span class="sd">    ...     notes=&quot;Mage waves their hands and says the words&quot;,</span>
+<span class="sd">    ...     effect=SkillEffect(&quot;Acumen: testing&quot;, &quot;+4D&quot;),</span>
+<span class="sd">    ...     duration=DurationAspect(&quot;1 sec&quot;),</span>
+<span class="sd">    ...     range=RangeAspect(&quot;1m&quot;),</span>
+<span class="sd">    ...     casting_time=CastingTimeAspect(&quot;5 sec&quot;),</span>
+<span class="sd">    ...     speed=SpeedAspect.based_on(&quot;range&quot;, description=&quot;Instantaneous&quot;),</span>
+<span class="sd">    ...     other_aspects={},</span>
+<span class="sd">    ...     other_conditions=[GenericAspect(1, &quot;Everything else is completed&quot;)],</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    &gt;&gt;&gt; print(dumps(example))</span>
+<span class="sd">    name = &quot;Example&quot;</span>
+<span class="sd">    notes = &quot;Mage waves their hands and says the words&quot;</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    [effect]</span>
+<span class="sd">    class_ = &quot;SkillEffect&quot;</span>
+<span class="sd">    args = [</span>
+<span class="sd">        &quot;Acumen: testing&quot;,</span>
+<span class="sd">        &quot;+4D&quot;,</span>
+<span class="sd">    ]</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    [duration]</span>
+<span class="sd">    class_ = &quot;DurationAspect&quot;</span>
+<span class="sd">    args = [</span>
+<span class="sd">        &quot;1 sec&quot;,</span>
+<span class="sd">    ]</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    [range]</span>
+<span class="sd">    class_ = &quot;RangeAspect&quot;</span>
+<span class="sd">    args = [</span>
+<span class="sd">        &quot;1m&quot;,</span>
+<span class="sd">    ]</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    [casting_time]</span>
+<span class="sd">    class_ = &quot;CastingTimeAspect&quot;</span>
+<span class="sd">    args = [</span>
+<span class="sd">        &quot;5 sec&quot;,</span>
+<span class="sd">    ]</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    [speed]</span>
+<span class="sd">    class_ = &quot;SpeedAspect&quot;</span>
+<span class="sd">    args = [</span>
+<span class="sd">        0,</span>
+<span class="sd">        &quot;based_on(&#39;range&#39;, description=&#39;Instantaneous&#39;)&quot;,</span>
+<span class="sd">    ]</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+<span class="sd">    [[other_conditions]]</span>
+<span class="sd">    class_ = &quot;GenericAspect&quot;</span>
+<span class="sd">    args = [</span>
+<span class="sd">        1,</span>
+<span class="sd">        &quot;Everything else is completed&quot;,</span>
+<span class="sd">    ]</span>
+<span class="sd">    &lt;BLANKLINE&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">tomli_w</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">spell</span><span class="o">.</span><span class="n">_asdict</span><span class="p">())</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">OpenD6 Tools</a></h1>
+
+
+
+
+
+
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation and Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Using the OpenD6 Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../applications.html">Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/index.html">Notes</a></li>
+</ul>
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, S.Lott.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

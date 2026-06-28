@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using the OpenD6 Tools &#8212; OpenD6 Tools 2026.6.26.dev1 documentation</title>
+    <title>Using the OpenD6 Tools &#8212; OpenD6 Tools 2025.6.27.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
-    <script src="_static/documentation_options.js?v=4e5c487b"></script>
+    <script src="_static/documentation_options.js?v=a5ea56aa"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -70,7 +70,7 @@ The spell’s details (and the situation in the game) determine the difficulty t
 This also includes Invocations and magical Items – they’re all bundles of effects
 with additional aspects.</p>
 <p>Here’s an example.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.magic2</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">opend6_tools.magic</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">example</span> <span class="o">=</span> <span class="n">Spell</span><span class="p">(</span>
@@ -556,16 +556,16 @@ Because the DSL is tied to the rules, the resulting elements of a world, campaig
 <p>There are a few helpful functions that are part of these packages.
 For Spells (and Invocations and Items), there are two useful functions.</p>
 <ul class="simple">
-<li><p>The <a class="reference internal" href="reference/magic2.html#opend6_tools.magic2.workbook.display" title="opend6_tools.magic2.workbook.display"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic2.workbook.display()</span></code></a> function shows some details of the spell and the difficulty computation.
+<li><p>The <a class="reference internal" href="reference/magic2.html#opend6_tools.magic.workbook.display" title="opend6_tools.magic.workbook.display"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic.workbook.display()</span></code></a> function shows some details of the spell and the difficulty computation.
 The <a class="reference internal" href="reference/character.html#opend6_tools.character.workbook.display" title="opend6_tools.character.workbook.display"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.character.workbook.display()</span></code></a> function, similarly, shows details of a character.</p></li>
-<li><p>The <a class="reference internal" href="reference/magic2.html#opend6_tools.magic2.workbook.debug" title="opend6_tools.magic2.workbook.debug"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic2.workbook.debug()</span></code></a> function shows more in-depth details of the spell and the difficulty computation.
+<li><p>The <a class="reference internal" href="reference/magic2.html#opend6_tools.magic.workbook.debug" title="opend6_tools.magic.workbook.debug"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic.workbook.debug()</span></code></a> function shows more in-depth details of the spell and the difficulty computation.
 The <a class="reference internal" href="reference/character.html#opend6_tools.character.workbook.debug" title="opend6_tools.character.workbook.debug"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.character.workbook.debug()</span></code></a> function, similarly, shows details of a character.</p></li>
-<li><p>The <a class="reference internal" href="reference/magic2.html#opend6_tools.magic2.output.detail" title="opend6_tools.magic2.output.detail"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic2.output.detail()</span></code></a> function transforms spell definitions into RST for publication.
+<li><p>The <a class="reference internal" href="reference/magic2.html#opend6_tools.magic.output.detail" title="opend6_tools.magic.output.detail"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.magic.output.detail()</span></code></a> function transforms spell definitions into RST for publication.
 The <a class="reference internal" href="reference/character.html#opend6_tools.character.output.detail" title="opend6_tools.character.output.detail"><code class="xref py py-func docutils literal notranslate"><span class="pre">opend6_tools.character.output.detail()</span></code></a> function creates a character sheet in one of three forms: a short form for publication, and detailed form for publication, and a form that can be given to players to use.</p></li>
 </ul>
 <p>The overall workflow, then, is this:</p>
 <ol class="arabic simple">
-<li><p>Define a <a class="reference internal" href="reference/magic2.html#opend6_tools.magic2.spells.Spell" title="opend6_tools.magic2.spells.Spell"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.magic2.spells.Spell</span></code></a> or <a class="reference internal" href="reference/character.html#opend6_tools.character.features.Character" title="opend6_tools.character.features.Character"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Character</span></code></a> object.</p></li>
+<li><p>Define a <a class="reference internal" href="reference/magic2.html#opend6_tools.magic.spells.Spell" title="opend6_tools.magic.spells.Spell"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.magic.spells.Spell</span></code></a> or <a class="reference internal" href="reference/character.html#opend6_tools.character.features.Character" title="opend6_tools.character.features.Character"><code class="xref py py-class docutils literal notranslate"><span class="pre">opend6_tools.character.features.Character</span></code></a> object.</p></li>
 <li><p>Display it to be sure it has the right characteristics and difficulty.</p></li>
 <li><p>Then, use the publication tool-chain to create the final documents to be shared with game masters and players.</p></li>
 </ol>
@@ -602,7 +602,7 @@ Examples include <strong>Sphinx</strong> and <strong>docutils</strong>.
 The goal of a world designer to to have source material for publication in RST notation.</p>
 <p>Here is a very detailed view of the various documents – and extractions and conversions – involved in publication.</p>
 <p class="plantuml">
-<img src="_images/plantuml-fd0038aa14494034693f0bda3a6f8df07cd9470f.png" alt="&#64;startuml
+<img src="_images/plantuml-acc4c2a04a99b330808936389a5209348ec0d003.png" alt="&#64;startuml
 'https://plantuml.com/component-diagram
 skinparam actorStyle awesome
 
@@ -638,12 +638,12 @@ package book_build {
 
 package opend6_tools {
     component &quot;notebook_extract&quot; as converter &lt;&lt;app&gt;&gt;
-    component magic2
+    component magic
     component character
 }
 
-nb ..&gt; magic2
-mod ..&gt; magic2
+nb ..&gt; magic
+mod ..&gt; magic
 
 Designer --&gt; Browser : &quot;2. Create Notebook&quot;
 Designer --&gt; Terminal : &quot;3. Publish&quot;

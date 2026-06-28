@@ -292,7 +292,7 @@ For **extract_notebook spells**:
 ..  option:: --ranked
 
     Emit a module for each distinct "rank" of spells within the notebook.
-    Difficulty ranks are defined by the :py:func:`opend6_tools.magic2.workbook.workbook_rank` function.
+    Difficulty ranks are defined by the :py:func:`opend6_tools.magic.workbook.workbook_rank` function.
 
     The rank of a spell, :math:`S`, is based on the difficulty :math:`d(S)`. It is a 5-point range around a target, :math:`T`: :math:`-2 \leq d(S) - T < +3`.
     The targets are 5, 10, 15, etc.

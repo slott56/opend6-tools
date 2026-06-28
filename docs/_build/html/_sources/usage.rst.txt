@@ -49,7 +49,7 @@ with additional aspects.
 
 Here's an example.
 
-    >>> from opend6_tools.magic2 import *
+    >>> from opend6_tools.magic import *
 
     >>> example = Spell(
     ...     name="Example",
@@ -344,19 +344,19 @@ Supporting Functions
 There are a few helpful functions that are part of these packages.
 For Spells (and Invocations and Items), there are two useful functions.
 
--   The :py:func:`opend6_tools.magic2.workbook.display` function shows some details of the spell and the difficulty computation.
+-   The :py:func:`opend6_tools.magic.workbook.display` function shows some details of the spell and the difficulty computation.
     The :py:func:`opend6_tools.character.workbook.display` function, similarly, shows details of a character.
 
--   The :py:func:`opend6_tools.magic2.workbook.debug` function shows more in-depth details of the spell and the difficulty computation.
+-   The :py:func:`opend6_tools.magic.workbook.debug` function shows more in-depth details of the spell and the difficulty computation.
     The :py:func:`opend6_tools.character.workbook.debug` function, similarly, shows details of a character.
 
--   The :py:func:`opend6_tools.magic2.output.detail` function transforms spell definitions into RST for publication.
+-   The :py:func:`opend6_tools.magic.output.detail` function transforms spell definitions into RST for publication.
     The :py:func:`opend6_tools.character.output.detail` function creates a character sheet in one of three forms: a short form for publication, and detailed form for publication, and a form that can be given to players to use.
 
 
 The overall workflow, then, is this:
 
-1. Define a :py:class:`opend6_tools.magic2.spells.Spell` or :py:class:`opend6_tools.character.features.Character` object.
+1. Define a :py:class:`opend6_tools.magic.spells.Spell` or :py:class:`opend6_tools.character.features.Character` object.
 
 2. Display it to be sure it has the right characteristics and difficulty.
 
@@ -437,12 +437,12 @@ Here is a very detailed view of the various documents -- and extractions and con
 
     package opend6_tools {
         component "notebook_extract" as converter <<app>>
-        component magic2
+        component magic
         component character
     }
 
-    nb ..> magic2
-    mod ..> magic2
+    nb ..> magic
+    mod ..> magic
 
     Designer --> Browser : "2. Create Notebook"
     Designer --> Terminal : "3. Publish"

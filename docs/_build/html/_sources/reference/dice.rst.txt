@@ -5,7 +5,7 @@
 ############
 
 The :py:mod:`opend6_tools.dice` module is a small DSL for dice specifications.
-This is shared by the :py:mod:`opend6_tools.magic2` and :py:mod:`opend6_tools.character` modules.
+This is shared by the :py:mod:`opend6_tools.magic` and :py:mod:`opend6_tools.character` modules.
 
 A class definition implements operators to support
 *n* ``*D`` and ``D+`` *n*, where *n* is a number.

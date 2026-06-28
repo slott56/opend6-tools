@@ -23,3 +23,11 @@ plantuml-gplv2-1.2025.7.jar
 /spike/
 /extract/
 /docs/_build/doctrees/*/*
+tests/character1.pdf
+tests/character2.pdf
+tests/character3.pdf
+tests/character4.html
+docs/_build/doctrees/applications.doctree
+docs/_build/doctrees/commands.doctree
+docs/_build/doctrees/environment.pickle
+docs/_build/doctrees/environment.pickle

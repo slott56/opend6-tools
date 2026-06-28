@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>opend6_tools.notebook_extract &#8212; OpenD6 Tools 2026.6.22.dev1 documentation</title>
+    <title>opend6_tools.notebook_extract &#8212; OpenD6 Tools 2025.6.27.dev1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5ecbeea2" />
     <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=27fed22d" />
-    <script src="../../_static/documentation_options.js?v=5ec510d0"></script>
+    <script src="../../_static/documentation_options.js?v=a5ea56aa"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -60,11 +60,11 @@
 <span class="sd">    -   Several Python modules, organized by the ``realm`` attribute of the creature.</span>
 
 <span class="sd">Each module extracted from a notebook is a stand-alone application, complete with imports and a typer application object.</span>
-<span class="sd">For spells, the import is ``opend6_tools.magic2`` and the app is ``spellbook_app``.</span>
+<span class="sd">For spells, the import is ``opend6_tools.magic`` and the app is ``spellbook_app``.</span>
 <span class="sd">For characters (and creatures), the import is ``opend6_tools.character`` and the app is ``characters_app``.</span>
 
 <span class="sd">The extract looks for **all** cells that contain an assignment statement: ``name = TypeName(...)``.</span>
-<span class="sd">It looks for :py:class:`opend6_tools.magic2.Spell` and all subclasses, including  ``Cantrip``, ``Miracle``, and ``Invocation``.</span>
+<span class="sd">It looks for :py:class:`opend6_tools.magic.Spell` and all subclasses, including  ``Cantrip``, ``Miracle``, and ``Invocation``.</span>
 <span class="sd">It also looks for :py:class:`opend6_tools.character.Character` and all subclasses, including ``Creature``.</span>
 
 <span class="sd">Typical use is the following construct in a ``Makefile``.</span>
@@ -138,7 +138,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">jinja2</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">typer</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">magic2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">magic</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">character</span>
 
 
@@ -167,7 +167,7 @@
 <span class="s1">        {</span><span class="si">% e</span><span class="s1">ndblock %}</span>
 <span class="s1">        &quot;&quot;&quot;</span>
 <span class="s1">        {% block import %}</span>
-<span class="s1">        from opend6_tools.magic2 import *</span>
+<span class="s1">        from opend6_tools.magic import *</span>
 <span class="s1">        {</span><span class="si">% e</span><span class="s1">ndblock %}</span>
 <span class="s1">        </span>
 <span class="s1">        {</span><span class="si">% f</span><span class="s1">or name, stmt in definitions %}</span>
@@ -304,7 +304,7 @@
 <span class="sd">    The internal ``target_classes`` is the set class names to recognize.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_class</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">base_class</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">magic</span><span class="o">.</span><span class="n">Spell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an ``AssignmentVisitor`` instance.</span>
 
@@ -401,7 +401,7 @@
 <span class="sd">    Uses :py:class:`AssignmentVisitor` to locate the statements.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">magic</span><span class="o">.</span><span class="n">Spell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_type</span> <span class="o">=</span> <span class="n">target_type</span>
@@ -458,7 +458,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">EvalContext</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-    <span class="n">MAGIC</span> <span class="o">=</span> <span class="s2">&quot;from opend6_tools.magic2 import *&quot;</span>
+    <span class="n">MAGIC</span> <span class="o">=</span> <span class="s2">&quot;from opend6_tools.magic import *&quot;</span>
     <span class="n">CHARACTERS</span> <span class="o">=</span> <span class="s2">&quot;from opend6_tools.character import *&quot;</span>
 
 
@@ -466,7 +466,7 @@
 <a class="viewcode-back" href="../../reference/notebook_extract.html#opend6_tools.notebook_extract.eval_cell">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">eval_cell</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">assignment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">variety</span><span class="p">:</span> <span class="n">EvalContext</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span> <span class="o">|</span> <span class="n">character</span><span class="o">.</span><span class="n">Character</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">magic</span><span class="o">.</span><span class="n">Spell</span> <span class="o">|</span> <span class="n">character</span><span class="o">.</span><span class="n">Character</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate an assignment statement to a ``Spell`` (or ``Character``) object.</span>
 
@@ -482,7 +482,7 @@
     <span class="n">exec</span><span class="p">(</span><span class="n">variety</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">global_defs</span><span class="p">,</span> <span class="n">local_vars</span><span class="p">)</span>
     <span class="n">exec</span><span class="p">(</span><span class="n">assignment</span><span class="p">,</span> <span class="n">global_defs</span><span class="p">,</span> <span class="n">local_vars</span><span class="p">)</span>
     <span class="c1"># Magic V2 needed this.</span>
-    <span class="c1"># if isinstance(local_vars[name], magic2.Spell):</span>
+    <span class="c1"># if isinstance(local_vars[name], magic.Spell):</span>
     <span class="c1">#     exec(f&quot;{name}.finalize()&quot;, global_defs, local_vars)</span>
     <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">local_vars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
@@ -507,7 +507,7 @@
 <span class="sd">    :param writer: ModuleWriter instance to write.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">source_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">spell_source</span><span class="p">)</span>  <span class="c1"># map variable name -&gt; statement</span>
-    <span class="n">spell_context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span> <span class="o">|</span> <span class="n">character</span><span class="o">.</span><span class="n">Character</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">spell_context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">magic</span><span class="o">.</span><span class="n">Spell</span> <span class="o">|</span> <span class="n">character</span><span class="o">.</span><span class="n">Character</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">eval_cell</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">EvalContext</span><span class="o">.</span><span class="n">MAGIC</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">variable</span><span class="p">,</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">source_map</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">stmt</span>
@@ -517,7 +517,7 @@
         <span class="k">for</span> <span class="n">variable</span><span class="p">,</span> <span class="n">spell</span> <span class="ow">in</span> <span class="n">spell_context</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">spell</span>
     <span class="p">}</span>  <span class="c1"># map Spell name -&gt; (variable, statement) source</span>
-    <span class="n">ranked</span> <span class="o">=</span> <span class="n">magic2</span><span class="o">.</span><span class="n">workbook_rank</span><span class="p">(</span><span class="n">spell_context</span><span class="p">)</span>
+    <span class="n">ranked</span> <span class="o">=</span> <span class="n">magic</span><span class="o">.</span><span class="n">workbook_rank</span><span class="p">(</span><span class="n">spell_context</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">rank</span><span class="p">,</span> <span class="n">spell_list</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ranked</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
         <span class="n">rank_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">spell_name_to_source</span><span class="p">[</span><span class="n">spell</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">spell</span> <span class="ow">in</span> <span class="n">spell_list</span><span class="p">]</span>
         <span class="n">doctests</span> <span class="o">=</span> <span class="p">{</span>
@@ -644,7 +644,7 @@
 <span class="sd">    :param writer: ModuleWriter instance to write.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">source_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">character_source</span><span class="p">)</span>  <span class="c1"># map variable name -&gt; statement</span>
-    <span class="n">char_context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span> <span class="o">|</span> <span class="n">character</span><span class="o">.</span><span class="n">Character</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">char_context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">magic</span><span class="o">.</span><span class="n">Spell</span> <span class="o">|</span> <span class="n">character</span><span class="o">.</span><span class="n">Character</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">eval_cell</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">EvalContext</span><span class="o">.</span><span class="n">CHARACTERS</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">variable</span><span class="p">,</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">source_map</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">stmt</span>
@@ -712,7 +712,7 @@
         <span class="n">book_variable</span><span class="p">,</span>
         <span class="n">ranked</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">extractor</span> <span class="o">=</span> <span class="n">Extractor</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target_type</span><span class="o">=</span><span class="n">magic2</span><span class="o">.</span><span class="n">Spell</span><span class="p">)</span>
+    <span class="n">extractor</span> <span class="o">=</span> <span class="n">Extractor</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target_type</span><span class="o">=</span><span class="n">magic</span><span class="o">.</span><span class="n">Spell</span><span class="p">)</span>
     <span class="n">spell_source</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">extractor</span><span class="o">.</span><span class="n">definition_iter</span><span class="p">())</span>
     <span class="n">tests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">extractor</span><span class="o">.</span><span class="n">test_case_iter</span><span class="p">())</span>
 
@@ -817,7 +817,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../applications.html">Applications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notes.html">Notes on DSL Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes/index.html">Notes</a></li>
 </ul>
 
 

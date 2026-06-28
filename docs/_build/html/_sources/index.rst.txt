@@ -14,7 +14,7 @@ The definition doesn't involve iteration or conditional execution; it's an expli
 
 There are three DSL's:
 
--  The :py:mod:`opend6_tools.magic2` package is for designing spells, invocations, and items.
+-  The :py:mod:`opend6_tools.magic` package is for designing spells, invocations, and items.
 
 -  The :py:mod:`opend6_tools.character` package is for building characters and creatures.
    (As a nod to the *OpenD6 Fantasy Worldbook: Kingdom of the East*, magical swords can have Charisma and Agility, and are essentially creatures, defined with this package.)

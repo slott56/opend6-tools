@@ -7,7 +7,7 @@
     :maxdepth: 3
 
     dice
-    magic2
+    magic
     character
     notebook_extract
     computations

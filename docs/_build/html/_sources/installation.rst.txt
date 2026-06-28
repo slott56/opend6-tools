@@ -54,7 +54,7 @@ A spell-book module will be a file with the following pattern:
 
 ..  code-block:: python
 
-    from opend6_tools.magic2 import *
+    from opend6_tools.magic import *
 
     some_spell = Spell(name='Some Cool Name', ...)
     another_spell = Spell(name='Another Name', ...)

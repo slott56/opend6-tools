@@ -198,11 +198,11 @@ The following diagram shows how the actor interacts with these components:
         make --> notebook_extract : "runs"
         Terminal --> make
 
-        component magic2
+        component magic
         component character
-        nb ..> magic2
+        nb ..> magic
         nb ..> character
-        py ..> magic2
+        py ..> magic
         py ..> character
 
         Editor --> "other docs"
@@ -242,7 +242,7 @@ The Python module can be created manually or extracted from a notebook.
 
 Generally, spell and character definitions depend on the :py:mod:`opend6_tools` modules in several distinct ways.
 
--   The definition DSLs depend on the :py:mod:`opend6_tools.magic2` (for spells, invocations, and items) or :py:mod:`opend6_tools.character` module (for characters and creatures.)
+-   The definition DSLs depend on the :py:mod:`opend6_tools.magic` (for spells, invocations, and items) or :py:mod:`opend6_tools.character` module (for characters and creatures.)
 
 -   The extraction of a spell module from a Jupter Notebook is performed by the :py:mod:`opend6_tools.notebook_extract`. application.
 
@@ -259,21 +259,21 @@ These relationships are shown below.
     title OpenD6 Tools Components Overview
 
     folder opend6_tools <<library>> {
-    component magic2 <<package>>
+    component magic <<package>>
     component character <<package>>
     component notebook_extract <<application>>
     }
 
     folder notebooks {
         file "spells notebook" as nb <<.ipynb>>
-        nb ..> magic2 : "imports"
+        nb ..> magic : "imports"
         file "characters notebook" as nb <<.ipynb>>
         nb ..> character : "imports"
     }
 
     folder "document source" {
         component "spells module" as spells <<application>>
-        spells ..> magic2 : "imports"
+        spells ..> magic : "imports"
         artifact "spells source" as spellsrst <<RST>>
         spells --> spellsrst : "creates"
         component "characters module" as chars <<application>>
@@ -319,7 +319,7 @@ Spell Use:
     title Document Source for Spells
 
     folder opend6_tools {
-        component magic2
+        component magic
         component character
     }
 
@@ -350,7 +350,7 @@ Spell Use:
     }
 
     characters_subsection.py ...> character : import
-    spells_subsection.py ...> magic2 : import
+    spells_subsection.py ...> magic : import
 
     @enduml
 
@@ -376,7 +376,7 @@ Code
 The implementation code is covered in separate documents:
 
 -   :ref:`dice_module`.
--   :ref:`magic2_package`.
+-   :ref:`magic_package`.
 -   :ref:`character_package`.
 -   :ref:`notebook_extract_app`.
 -   :ref:`misc_comp`.

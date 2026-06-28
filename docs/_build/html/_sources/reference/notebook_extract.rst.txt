@@ -22,7 +22,7 @@ The following diagram shows how the :py:mod:`opend6_tools.notebook_extract` appl
     title From Notebook to Document Source Files
 
     package opend6_tools {
-        component magic2 <<lib>>
+        component magic <<lib>>
         component character <<lib>>
         component notebook_extract.py <<app>>
     }
@@ -32,7 +32,7 @@ The following diagram shows how the :py:mod:`opend6_tools.notebook_extract` appl
         artifact template_character.ipynb <<Notebook>> #line.bold
     }
 
-    spells_subsection.ipynb ..> magic2 : import
+    spells_subsection.ipynb ..> magic : import
     template_character.ipynb ..> character : import
 
     package document_source {
@@ -42,7 +42,7 @@ The following diagram shows how the :py:mod:`opend6_tools.notebook_extract` appl
         package spells {
             component spells_subsection.py <<app>>
             artifact spells_subsection.txt <<RST>>
-            spells_subsection.py ..> magic2 : import
+            spells_subsection.py ..> magic : import
         }
         spells_subsection.txt <- spells_subsection.py : Creates
         magic.rst --> spells_subsection.txt : """include::"" directive"
