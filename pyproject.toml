@@ -1,7 +1,7 @@
 [project]
 name = "opend6-tools"
 version = "2025.6.27.dev1"
-description = "Tools to support designing spells, characters, creatures and items in OpenD6 games"
+description = "DSLs and Tools to help with OpenD6 Spell and Character Design"
 readme = "README.rst"
 authors = [
     { name = "S.Lott", email = "slott56@gmail.com" }

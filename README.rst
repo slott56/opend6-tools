@@ -1,6 +1,6 @@
-#####################################
-  Tools to support OpenD6 Designers
-#####################################
+#################################################################
+  DSLs and Tools to help with OpenD6 Spell and Character Design
+#################################################################
 
 This is a set of tools to help create OpenD6 world books, campaign books, scenarios, and even generate details for an encounter.
 These tools help with spell design by computing difficulty automatically.
