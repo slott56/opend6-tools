@@ -31,3 +31,6 @@ docs/_build/doctrees/applications.doctree
 docs/_build/doctrees/commands.doctree
 docs/_build/doctrees/environment.pickle
 docs/_build/doctrees/environment.pickle
+.idea/*.xml
+/.idea/inspectionProfiles
+*.iml

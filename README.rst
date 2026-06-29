@@ -107,6 +107,21 @@ There are two templates available in the project's ``notebooks`` directory, one 
 
 Open these and start experimenting.
 
+Resources
+=========
+
+Want to learn just enough Python to make these tools work for you?
+
+- https://www.amazon.com/Pivot-Python-professionals-beginners-started-ebook/dp/B0DFMT15GY
+
+- https://books.apple.com/us/book/pivot-to-python/id1586977675
+
+- https://play.google.com/store/books/details/Pivot_to_Python_A_Guide_for_Professionals_and_skil?id=fQ6IEAAAQBAJ&hl=en&pli=1
+
+Want examples of how these DSL's work?
+
+See https://github.com/slott56/opend6-koe-world-campaign for the *Kingdom of the East* Worldbook and the *Bandit King* campaign.
+
 Usage
 =====
 
